@@ -15,7 +15,6 @@ import kotlin.test.Test
 class LoginUseCaseTest {
 
     private lateinit var authenticationRepository: AuthenticationRepository
-    private lateinit var userRepository: UserRepository
     private lateinit var auditRepository: AuditRepository
     private lateinit var hashPasswordUseCase: HashPasswordUseCase
     private lateinit var loginUseCase: LoginUseCase
@@ -23,10 +22,10 @@ class LoginUseCaseTest {
     @BeforeEach
     fun setup() {
         authenticationRepository = mockk(relaxed = true)
-        userRepository = mockk(relaxed = true)
         auditRepository = mockk(relaxed = true)
-        loginUseCase = LoginUseCase(authenticationRepository, userRepository, auditRepository)
         hashPasswordUseCase = HashPasswordUseCase()
+        loginUseCase = LoginUseCase(authenticationRepository, hashPasswordUseCase, auditRepository)
+
     }
 
     @Test
@@ -34,12 +33,12 @@ class LoginUseCaseTest {
         val username = "Malak"
         val password = "123Password"
         val hashedPassword = hashPasswordUseCase.execute((password))
-        every { authenticationRepository.login(username = username, password = hashedPassword) } returns null
+        every { authenticationRepository.login(username = username, password = hashedPassword) } returns createUser()
 
         val result = loginUseCase.execute(username, password)
 
 
-        assertThat(result).isNull()
+        assertThat(result).isEqualTo(createUser())
 
     }
 
@@ -49,9 +48,9 @@ class LoginUseCaseTest {
         val password = "1234Password"
         val hashedPassword = hashPasswordUseCase.execute((password))
 
-        every { authenticationRepository.login(username = username, password = password) } returns null
+        every { authenticationRepository.login(username = username, password = hashedPassword) } returns null
 
-        val result = loginUseCase.execute(username, hashedPassword)
+        val result = loginUseCase.execute(username, password)
 
 
         assertThat(result).isNull()

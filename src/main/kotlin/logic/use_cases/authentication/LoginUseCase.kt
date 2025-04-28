@@ -7,10 +7,12 @@ import net.thechance.logic.repositories.AuthenticationRepository
 
 class LoginUseCase(
     private val authenticationRepository: AuthenticationRepository,
-    private val userRepository: UserRepository,
-    private val auditRepository: AuditRepository
+    private val hashPasswordUseCase: HashPasswordUseCase,
 ) {
     fun execute(username: String, password: String): User? {
-        return null
+        val hashedPassword = hashPasswordUseCase.execute(password)
+
+        return authenticationRepository.login(username,hashedPassword)
+
     }
 }
