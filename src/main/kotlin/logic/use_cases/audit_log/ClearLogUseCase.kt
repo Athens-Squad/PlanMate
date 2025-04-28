@@ -4,6 +4,10 @@ import logic.repositories.AuditRepository
 
 class ClearLogUseCase(private val auditRepository: AuditRepository) {
     fun execute() {
-
+        try {
+            auditRepository.clearLog()
+        } catch (e: Exception) {
+            throw RuntimeException("Failed to clear logs")
+        }
     }
 }
