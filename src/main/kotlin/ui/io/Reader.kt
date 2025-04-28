@@ -1,6 +1,4 @@
-package com.thechance.presentation.io
-
-import com.thechance.data.MealsDataException
+package net.thechance.ui.io
 
 class Reader {
     fun readStringFromUser(): String {
@@ -10,6 +8,6 @@ class Reader {
 
     fun readNumberFromUser(): Int {
         val input = readlnOrNull()
-        return input?.toIntOrNull() ?: throw MealsDataException.InvalidNumericFormatException("$input")
+        return input?.toIntOrNull() ?: throw Exception("$input")
     }
 }
