@@ -1,7 +1,4 @@
-package com.thechance.presentation.io
-
-import net.thechance.ui.io.Printer
-import net.thechance.ui.io.Reader
+package net.thechance.ui.io
 
 data class ConsoleIO (
     val printer: Printer,
