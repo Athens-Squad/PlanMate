@@ -1,7 +1,7 @@
-package com.thechance.logic.usecases.state
+package logic.use_cases.state
 
-import logic.entities.State
 import logic.repositories.StatesRepository
+import net.thechance.logic.entities.State
 
 
 class GetStatesByProjectIdUseCase(private val stateRepository: StatesRepository) {

@@ -40,7 +40,7 @@ kover.reports.filters.includes {
     packages(
         "net.thechance.data",
         "net.thechance.logic",
-        "net.thechance.presentation"
+        "net.thechance.ui"
     )
 }
 kover.reports.verify.rule {
