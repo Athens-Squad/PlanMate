@@ -22,7 +22,7 @@ class DeleteTaskUseCaseTest {
 
     @Test
     fun `should delete task when it exists and return false`() {
-        every { tasksRepository.deleteTask(FakeTask.fakeTask.id) } returns true
+        every { tasksRepository.deleteTask(FakeTask.fakeTask.id) } returns Result.success(Unit)
 
         //when
         val result = deleteTaskUseCase.execute(FakeTask.fakeTask.id)
@@ -33,7 +33,7 @@ class DeleteTaskUseCaseTest {
 
     @Test
     fun `should not be able to delete when task does not exist then return false`() {
-        every { tasksRepository.deleteTask(FakeTask.fakeTask.id) } returns false
+        every { tasksRepository.deleteTask(FakeTask.fakeTask.id) } returns Result.failure(NoSuchElementException())
 
         //when
         val result = deleteTaskUseCase.execute(FakeTask.fakeTask.id)

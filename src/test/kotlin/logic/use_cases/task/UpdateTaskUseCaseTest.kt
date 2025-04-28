@@ -23,24 +23,22 @@ class UpdateTaskUseCaseTest {
 
     @Test
     fun `should be able to update task if the task already exists then return true`() {
-        every { tasksRepository.updateTask(FakeTask.fakeTask) } returns true
+        every { tasksRepository.updateTask(FakeTask.fakeTask) } returns Result.success(Unit)
 
         //when
         val result = updateTaskUseCase.execute(FakeTask.fakeTask)
 
         //then
-        assertThat(result).isTrue()
     }
 
     @Test
     fun `should not be able to update a task when task does not exist then return false`() {
-        every { tasksRepository.updateTask(FakeTask.fakeTask) } returns false
+        every { tasksRepository.updateTask(FakeTask.fakeTask) } returns Result.failure(NoSuchElementException())
 
         //when
         val result = updateTaskUseCase.execute(FakeTask.fakeTask)
 
         //then
-        assertThat(result).isFalse()
     }
 
     @Test

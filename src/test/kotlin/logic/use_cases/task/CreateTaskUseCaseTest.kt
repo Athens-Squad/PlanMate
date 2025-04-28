@@ -23,7 +23,7 @@ class CreateTaskUseCaseTest {
 
     @Test
     fun `should create task when task is valid then return true`() {
-        every { tasksRepository.createTask(FakeTask.fakeTask) } returns true
+        every { tasksRepository.createTask(FakeTask.fakeTask) } returns Result.success(Unit)
 
         //when
         val result = createTaskUseCase.execute(FakeTask.fakeTask)
@@ -34,7 +34,7 @@ class CreateTaskUseCaseTest {
 
     @Test
     fun `should not create task when there is already task with the same id`() {
-        every { tasksRepository.createTask(FakeTask.fakeTask) } returns false
+        every { tasksRepository.createTask(FakeTask.fakeTask) } returns Result.failure(NoSuchElementException())
 
         //when
         val result = createTaskUseCase.execute(FakeTask.fakeTask)
