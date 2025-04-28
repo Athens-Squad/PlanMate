@@ -1,4 +1,4 @@
-package logic.use_cases.audit_log
+package audit_log
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
@@ -55,27 +55,51 @@ class GetAuditLogsByProjectIdUseCaseTest{
   verify(exactly = 1) { auditRepository.getAuditLogs() }
  }
 
-
-
-
  @Test
- fun `getAuditLogs() return empty list when an invalid ProjectId Given`()  {
-  //given
-  val invalidProjectId = "PROJECT-XYZ123"
+ fun `should return empty list when repository throws exception`() {
+  // Given
+  val projectId = "PROJECT-001"
 
-  every { auditRepository.getAuditLogs() } returns emptyList()
+  every { auditRepository.getAuditLogs() } throws Exception("Database error")
 
-  //when
-  val result = getAuditLogsByProjectIdUseCase.execute(invalidProjectId)
+  // When
+  val result = getAuditLogsByProjectIdUseCase.execute(projectId)
 
-  // then
+  // Then
   assertThat(result).isEmpty()
   verify(exactly = 1) { auditRepository.getAuditLogs() }
  }
 
 
+ @Test
+ fun `getAuditLogs() return empty list when an invalid ProjectId Given`()  {
+  // Given
+  val invalidProjectId = "PROJECT-XYZ123"
+  every { auditRepository.getAuditLogs() } returns emptyList()
+
+  // When
+  val result = getAuditLogsByProjectIdUseCase.execute(invalidProjectId)
+
+  // Then
+  assertThat(result).isEmpty()
+  verify(exactly = 1) { auditRepository.getAuditLogs() }
+
+ }
+
+ @Test
+ fun `getAuditLogs return empty list when projectId is blank`() {
+  // Given
+  val blankProjectId = ""
+
+  // When
+  val result = getAuditLogsByProjectIdUseCase.execute(blankProjectId)
+
+  // Then
+  assertThat(result).isEmpty()
+  verify(exactly = 0) { auditRepository.getAuditLogs() }
 
 
+ }
 
 
  }
