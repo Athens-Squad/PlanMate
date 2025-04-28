@@ -3,7 +3,7 @@ package net.thechance.logic.use_cases.project
 import logic.repositories.AuditRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.StatesRepository
-import com.thechance.logic.repositories.TasksRepository
+import logic.repositories.TasksRepository
 
 
 class DeleteProjectUseCase(
