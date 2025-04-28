@@ -44,3 +44,8 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+data_files/
+data_files/audit_log.csv
+data_files/tasks.csv
+data_files/projects.csv
+data_files/users.csv
