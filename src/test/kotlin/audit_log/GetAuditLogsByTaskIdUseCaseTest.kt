@@ -26,7 +26,7 @@ class GetAuditLogsByTaskIdUseCaseTest {
     }
 
     @Test
-    fun ` return audit logs for given task id`() {
+    fun ` getAuditLogs() return audit logs for given task id`() {
           //given
         val taskId = "TASK-001"
         val expected = listOf(
@@ -98,7 +98,7 @@ class GetAuditLogsByTaskIdUseCaseTest {
 
 
     @Test
-    fun `should return empty list when repository throws exception`() {
+    fun `getAuditLogs() return empty list when repository throws exception`() {
         // Given
         val taskId = "Task-001"
 
@@ -113,7 +113,7 @@ class GetAuditLogsByTaskIdUseCaseTest {
         verify(exactly = 1) { auditRepository.getAuditLogs() }
     }
     @Test
-    fun ` return empty list when no logs match the task id`() {
+    fun ` getAuditLogs() return empty list when no logs match the task id`() {
         // Given
         val taskId = "TASK-001"
         val noMatchingLogs = listOf(

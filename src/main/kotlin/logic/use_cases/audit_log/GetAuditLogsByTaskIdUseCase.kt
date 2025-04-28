@@ -13,7 +13,7 @@ class GetAuditLogsByTaskIdUseCase(private val auditRepository: AuditRepository) 
 
         return try {
             auditRepository.getAuditLogs()
-                .filter {  it.entityId==taskId && it.entityType== EntityType.TASK  }
+                .filter {it.entityType== EntityType.TASK && it.entityId==taskId  }
         } catch (e: Exception) {
             emptyList()
         }
