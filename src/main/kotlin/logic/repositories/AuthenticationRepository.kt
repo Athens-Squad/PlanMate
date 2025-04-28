@@ -1,0 +1,8 @@
+package net.thechance.logic.repositories
+
+import logic.entities.User
+
+interface AuthenticationRepository {
+    fun login(username: String, password: String): User?
+}
+
