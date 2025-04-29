@@ -7,7 +7,7 @@ import net.thechance.data.tasks.utils.TaskColumnIndex.ID
 import net.thechance.data.tasks.utils.TaskColumnIndex.PROJECT_ID
 import net.thechance.data.tasks.utils.TaskColumnIndex.TITLE
 import net.thechance.logic.entities.State
-import net.thechance.logic.repositories.CsvSerializable
+import net.thechance.logic.CsvSerializable
 import java.util.UUID
 
 

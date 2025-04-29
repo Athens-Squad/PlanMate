@@ -1,8 +1,8 @@
-package net.thechance.data.tasks.csv_file_handle
+package net.thechance.data.csv_file_handle
 
-import net.thechance.logic.repositories.CsvSerializable
+import net.thechance.logic.CsvSerializable
 
-class CsvParser<T: CsvSerializable> (
+class CsvFileParser<T: CsvSerializable> (
     private val factory: (List<String>) -> T
 ){
     fun parseRecord(record: String): T{

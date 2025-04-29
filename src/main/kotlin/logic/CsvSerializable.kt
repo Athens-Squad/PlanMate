@@ -1,6 +1,5 @@
-package net.thechance.logic.repositories
+package net.thechance.logic
 
-import java.security.KeyFactory
 
 interface CsvSerializable {
     companion object {
