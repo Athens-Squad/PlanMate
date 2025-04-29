@@ -3,9 +3,7 @@ package logic.use_cases.task
 import logic.entities.AuditLog
 import logic.entities.Task
 import logic.repositories.AuditRepository
-import logic.repositories.ProjectsRepository
 import logic.repositories.TasksRepository
-import net.thechance.exceptions.TasksException
 import net.thechance.logic.entities.EntityType
 import net.thechance.logic.use_cases.task.taskvalidations.TaskValidator
 import java.time.LocalDateTime
@@ -26,7 +24,7 @@ class UpdateTaskUseCase(
                             auditLog = AuditLog(
                                 entityType = EntityType.TASK,
                                 entityId = updatedTask.id,
-                                description = "Task updated successfully.",
+                                description = "Task ${updatedTask.title} updated successfully.",
                                 userId = userId,
                                 createdAt = LocalDateTime.now()
                             )

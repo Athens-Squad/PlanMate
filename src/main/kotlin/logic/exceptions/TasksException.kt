@@ -1,4 +1,4 @@
-package net.thechance.exceptions
+package net.thechance.logic.exceptions
 
 
 

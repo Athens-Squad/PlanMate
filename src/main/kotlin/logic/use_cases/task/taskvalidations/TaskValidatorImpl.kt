@@ -4,7 +4,7 @@ import logic.entities.Task
 import logic.repositories.ProjectsRepository
 import logic.repositories.StatesRepository
 import logic.repositories.TasksRepository
-import net.thechance.exceptions.TasksException
+import net.thechance.logic.exceptions.TasksException
 import net.thechance.logic.entities.State
 
 class TaskValidatorImpl(
