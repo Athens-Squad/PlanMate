@@ -1,0 +1,94 @@
+package net.thechance.logic.use_cases.task.taskvalidations
+
+import logic.entities.Task
+import logic.repositories.ProjectsRepository
+import logic.repositories.StatesRepository
+import logic.repositories.TasksRepository
+import net.thechance.exceptions.TasksException
+import net.thechance.logic.entities.State
+
+class TaskValidatorImpl(
+    private val tasksRepository: TasksRepository,
+    private val projectsRepository: ProjectsRepository,
+    private val statesRepository: StatesRepository
+): TaskValidator {
+    override fun doIfTaskExistsOrThrow(taskId: String, action: () -> Unit) {
+        tasksRepository.getTaskById(taskId)
+            .onSuccess {
+                action()
+            }
+            .onFailure {
+                throw TasksException.CannotCreateTaskException("There is existing task with same id")
+            }
+    }
+
+    override fun doIfTaskNotExistsOrThrow(task: Task, action: () -> Unit) {
+        tasksRepository.getTaskById(task.id)
+            .onFailure {
+                action()
+            }
+            .onSuccess {
+                throw TasksException.CannotCreateTaskException("There is existing task with same id")
+            }
+    }
+
+    override fun validateTaskBeforeCreation(task: Task) {
+        //validate task exists
+        validateTaskTitleExists(task)
+
+        // Validate project exists
+        validateProjectExists(task.projectId)
+
+        validateTaskFieldsIsNotBlankOrThrow(task)
+
+        // Validate that the current state belongs to the same project
+        validateTaskState(task.currentState, task.projectId)
+    }
+
+    override fun validateTaskBeforeUpdating(task: Task, updatedTask: Task) {
+        //validate taskId
+        if (task.id != updatedTask.id)
+            throw TasksException.CannotUpdateTaskException("Cannot change taskId!")
+
+        //validate projectId
+        if (task.projectId != updatedTask.projectId)
+            throw TasksException.CannotUpdateTaskException("Cannot change project!")
+
+        validateTaskFieldsIsNotBlankOrThrow(updatedTask)
+
+        validateTaskState(updatedTask.currentState, updatedTask.projectId)
+    }
+
+    private fun validateTaskFieldsIsNotBlankOrThrow(task: Task) {
+        // Validate task fields (title, description, currentState)
+        if (task.title.isBlank()) throw TasksException.InvalidTaskException("Task title cannot be empty.")
+        if (task.description.isBlank()) throw TasksException.InvalidTaskException("Task description cannot be empty.")
+        if (task.currentState.id.isBlank() || task.currentState.name.isBlank())
+            throw TasksException.InvalidTaskException("Task currentState cannot be empty.")
+
+    }
+
+    private fun validateTaskTitleExists(task: Task) {
+        //Check if the task exists in the repository
+        val taskExists = tasksRepository.getTasksByProjectId(task.projectId).getOrThrow()
+            .find { it.title == task.title } != null
+        if (taskExists) {
+            throw TasksException.InvalidTaskException("Task with the same title already exist in this project.")
+        }
+
+    }
+
+    private fun validateProjectExists(projectId: String) {
+        projectsRepository.getProjects().getOrNull()?.find { it.id == projectId }
+            ?: throw TasksException.InvalidTaskException("Project with ID $projectId does not exist.")
+
+    }
+
+    private fun validateTaskState(currentState: State, projectId: String) {
+        statesRepository.getStates().getOrNull()
+            ?.find { it.id == currentState.id && it.projectId == projectId }
+            ?: throw TasksException.InvalidTaskException("State '${currentState.name}' is not valid for the given project.")
+
+    }
+
+}
