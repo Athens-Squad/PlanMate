@@ -1,17 +1,17 @@
 package net.thechance.data.tasks.data_source
 
 import logic.entities.Task
-import net.thechance.data.tasks.csv_file_handle.TasksFileHandler
-import net.thechance.data.tasks.csv_file_handle.TasksFileParser
+import net.thechance.data.tasks.csv_file_handle.CsvFileHandler
+import net.thechance.data.tasks.csv_file_handle.CsvParser
 
 class TasksFileDataSource(
-    private val tasksFileHandler: TasksFileHandler,
-    private val tasksFileParser: TasksFileParser
+    private val tasksFileHandler: CsvFileHandler,
+    private val csvParser: CsvParser<Task>
 ): TasksDataSource {
 
     override fun createTask(task: Task): Result<Unit> {
         return runCatching {
-            val record = tasksFileParser.taskToCsvRecord(task)
+            val record = csvParser.toCsvRecord(task)
             tasksFileHandler.appendRecord(record)
         }
     }
@@ -36,7 +36,7 @@ class TasksFileDataSource(
     override fun getAllTasks(): Result<List<Task>> {
         return runCatching {
             tasksFileHandler.readRecords()
-                .map { tasksFileParser.parseRecord(it) }
+                .map {csvParser.parseRecord(it) }
         }
     }
 
@@ -45,7 +45,7 @@ class TasksFileDataSource(
             val updatedTasks = getAllTasks()
                 .getOrThrow()
                 .map { if (it.id == updatedTask.id) updatedTask else it }
-            val updatedRecords = updatedTasks.map { tasksFileParser.taskToCsvRecord(it) }
+            val updatedRecords = updatedTasks.map { csvParser.toCsvRecord(it) }
             tasksFileHandler.writeRecords(updatedRecords)
         }
     }
@@ -55,7 +55,7 @@ class TasksFileDataSource(
             val updatedTasks = getAllTasks()
                 .getOrThrow()
                 .filter { it.id != taskId }
-            val updatedRecords = updatedTasks.map { tasksFileParser.taskToCsvRecord(it) }
+            val updatedRecords = updatedTasks.map {  csvParser.toCsvRecord(it) }
             tasksFileHandler.writeRecords(updatedRecords)
         }
     }

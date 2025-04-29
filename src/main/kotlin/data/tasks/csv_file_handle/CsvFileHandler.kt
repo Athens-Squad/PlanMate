@@ -2,7 +2,7 @@ package net.thechance.data.tasks.csv_file_handle
 
 import java.io.File
 
-class TasksFileHandler(private val file: File) {
+class CsvFileHandler(private val file: File) {
 
     fun readRecords(): List<String> {
         return if (file.exists()) file.readLines() else emptyList()
