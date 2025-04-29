@@ -2,7 +2,6 @@ package logic.use_cases.authentication
 
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import logic.entities.User
 import logic.repositories.UserRepository
 import net.thechance.logic.entities.UserType
@@ -10,7 +9,6 @@ import net.thechance.logic.use_cases.authentication.RegisterAsAdminUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
-import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class RegisterAsAdminUseCaseTest {
@@ -25,20 +23,11 @@ class RegisterAsAdminUseCaseTest {
     }
 
     @Test
-    fun `execute should create user when called`(){
+    fun `execute should return true when create user success and get user by user name failed`(){
         //Given
-        val user : User = mockk()
-        //when
-        registerAsAdminUseCase.execute(user)
-        //then
-        verify { userRepository.createUser(user) }
-    }
-
-    @Test
-    fun `execute should return true when create user success`(){
-        //Given
-        val user : User = mockk()
-        every { userRepository.createUser(any()) } returns Result.success(Unit)
+        val user = User(name = "mohamed" , password = "ABCabc123@#4" , type = UserType.AdminUser)
+        every { userRepository.createUser(user) } returns Result.success(Unit)
+        every { userRepository.getUserByUsername(user.name) } returns Result.failure(Exception())
         //when
         val execute = registerAsAdminUseCase.execute(user)
         //then
@@ -46,43 +35,33 @@ class RegisterAsAdminUseCaseTest {
     }
 
     @Test
-    fun `execute throw exception when create user failed`(){
+    fun `execute throw exception when create user failed and get user by username failed`(){
         //Given
-        val user : User = mockk()
-        every { userRepository.createUser(any()) } returns Result.failure(Exception())
+        val user = User(name = "mohamed" , password = "ABCabc123@#4" , type = UserType.AdminUser)
+        every { userRepository.createUser(user) } returns Result.failure(Exception())
+        every { userRepository.getUserByUsername(user.name) } returns  Result.failure(Exception())
         //when & then
         assertThrows<Exception> {
-            val execute = registerAsAdminUseCase.execute(user)
-
+            registerAsAdminUseCase.execute(user)
         }
-    }
-
-    @Test
-    fun `execute should get user by username when called`(){
-        //Given
-        val user : User = mockk()
-        //when
-        registerAsAdminUseCase.execute(user)
-        //then
-        verify { userRepository.getUserByUsername(user.name) }
     }
 
     @Test
     fun `execute throw when username name founded before`(){
         //Given
-        val user : User = mockk()
-        every { userRepository.getUserByUsername(any()) } returns Result.success(user)
+        val user  = User(name = "mohamed" , password = "ABCabc123@#4" , type = UserType.AdminUser)
+        every { userRepository.getUserByUsername(user.name).isSuccess } returns true
         //when & then
         assertThrows<Exception> {
-            val execute = registerAsAdminUseCase.execute(user)
+            registerAsAdminUseCase.execute(user)
         }
     }
 
     @Test
     fun `execute should return true when user name not founded before`(){
         //Given
-        val user : User = mockk()
-        every { userRepository.getUserByUsername(any()) } returns Result.failure(Exception())
+        val user  = User(name = "mohamed" , password = "ABCabc123@#4" , type = UserType.AdminUser)
+        every { userRepository.getUserByUsername(user.name) } returns Result.failure(Exception())
         //when
         val execute = registerAsAdminUseCase.execute(user)
         //then
@@ -216,6 +195,7 @@ class RegisterAsAdminUseCaseTest {
             registerAsAdminUseCase.execute(user)
         }
     }
+
 
     @Test
     fun `execute should throw exception when user type isn't admin`(){

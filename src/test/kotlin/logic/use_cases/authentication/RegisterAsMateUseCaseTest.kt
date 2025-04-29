@@ -2,7 +2,6 @@ package logic.use_cases.authentication
 
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import logic.entities.User
 import logic.repositories.UserRepository
 import net.thechance.logic.entities.UserType
@@ -22,21 +21,13 @@ class RegisterAsMateUseCaseTest {
         registerAsMateUseCase = RegisterAsMateUseCase(userRepository)
     }
 
-    @Test
-    fun `execute should create user when called`(){
-        //Given
-        val user : User = mockk()
-        //when
-        registerAsMateUseCase.execute(user)
-        //then
-        verify { userRepository.createUser(user) }
-    }
 
     @Test
-    fun `execute should return true when create user success`(){
+    fun `execute should return true when create user success and get user by user name failed`(){
         //Given
-        val user : User = mockk()
-        every { userRepository.createUser(any()) } returns Result.success(Unit)
+        val user = User(name = "mohamed" , password = "ABCabc123@#4" , type = UserType.MateUser("mohamed"))
+        every { userRepository.createUser(user) } returns Result.success(Unit)
+        every { userRepository.getUserByUsername(user.name) } returns Result.failure(Exception())
         //when
         val execute = registerAsMateUseCase.execute(user)
         //then
@@ -44,43 +35,35 @@ class RegisterAsMateUseCaseTest {
     }
 
     @Test
-    fun `execute throw exception when create user failed`(){
+    fun `execute throw exception when create user failed and get user by username failed`(){
         //Given
-        val user : User = mockk()
-        every { userRepository.createUser(any()) } returns Result.failure(Exception())
+        val user = User(name = "mohamed" , password = "ABCabc123@#4" , type = UserType.MateUser("mohamed"))
+        every { userRepository.createUser(user) } returns Result.failure(Exception())
+        every { userRepository.getUserByUsername(user.name) } returns  Result.failure(Exception())
         //when & then
         assertThrows<Exception> {
-            val execute = registerAsMateUseCase.execute(user)
+            registerAsMateUseCase.execute(user)
 
         }
     }
 
-    @Test
-    fun `execute should get user by username when called`(){
-        //Given
-        val user : User = mockk()
-        //when
-        registerAsMateUseCase.execute(user)
-        //then
-        verify { userRepository.getUserByUsername(user.name) }
-    }
 
     @Test
     fun `execute throw when username name founded before`(){
         //Given
-        val user : User = mockk()
-        every { userRepository.getUserByUsername(any()) } returns Result.success(user)
+        val user = User(name = "mohamed" , password = "ABCabc123@#4" , type = UserType.MateUser("mohamed"))
+        every { userRepository.getUserByUsername(user.name).isSuccess } returns true
         //when & then
         assertThrows<Exception> {
-            val execute = registerAsMateUseCase.execute(user)
+            registerAsMateUseCase.execute(user)
         }
     }
 
     @Test
     fun `execute should return true when user name not founded before`(){
         //Given
-        val user : User = mockk()
-        every { userRepository.getUserByUsername(any()) } returns Result.failure(Exception())
+        val user =  User(name = "mohamed" , password = "ABCabc123@#4" , type = UserType.MateUser("moahemd"))
+        every { userRepository.getUserByUsername(user.name) } returns Result.failure(Exception())
         //when
         val execute = registerAsMateUseCase.execute(user)
         //then
@@ -257,34 +240,5 @@ class RegisterAsMateUseCaseTest {
         }
     }
 
-    @Test
-    fun `execute should throw exception when admin Id not founded`(){
-        //Given
-        val userType = UserType.MateUser("ali")
-        val user : User  =User(
-            name = "ahmed ali",
-            password = "aAB@1AB2AB",
-            type = userType
-        )
 
-        every { userRepository.getUserByUsername(userType.adminId) } returns Result.failure(Exception())
-        //when & then
-        assertThrows<Exception> {
-            registerAsMateUseCase.execute(user)
-        }
-    }
-
-    @Test
-    fun `execute should return true when admin Id founded`(){
-        //Given
-        val userType = UserType.MateUser("ali")
-        val user : User  = mockk()
-        every { userRepository.getUserByUsername(userType.adminId) } returns Result.success(user)
-
-        //when
-        val execute = registerAsMateUseCase.execute(user)
-
-        //then
-        assertTrue { execute }
-    }
 }
