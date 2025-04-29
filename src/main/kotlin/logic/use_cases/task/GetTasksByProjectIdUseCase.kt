@@ -1,7 +1,7 @@
-package net.thechance.logic.use_cases.task
+package logic.use_cases.task
 
 import logic.entities.Task
-import com.thechance.logic.repositories.TasksRepository
+import logic.repositories.TasksRepository
 
 
 class GetTasksByProjectIdUseCase(private val taskRepository: TasksRepository) {
