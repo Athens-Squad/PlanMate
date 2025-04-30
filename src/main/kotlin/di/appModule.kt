@@ -1,26 +1,26 @@
 package net.thechance.di
 
-import logic.entities.Task
+import logic.entities.AuditLog
+import net.thechance.data.aduit_log_csvfile.data_source.AuditLogDataSource
+import net.thechance.data.aduit_log_csvfile.data_source.AuditLogFileDataSource
 import net.thechance.data.csv_file_handle.CsvFileHandler
 import net.thechance.data.csv_file_handle.CsvFileParser
-import net.thechance.data.tasks.data_source.TasksDataSource
-import net.thechance.data.tasks.data_source.TasksFileDataSource
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
 
 val appModule = module {
-    single(named("tasksCsvFile")) { File("data_files/tasks.csv") }
+    single(named("auditLogCsvFile")) { File("data_files/audit_log.csv") }
 
-    single(named("tasksFileHandler")) { CsvFileHandler(get(named("tasksCsvFile"))) }
+    single(named("AuditLogFileHandler")) { CsvFileHandler(get(named("auditLogCsvFile"))) }
 
-    single(named("tasksFileParser")) { CsvFileParser(factory = Task.Companion::fromCsv) }
+    single(named("AuditLogFileParser")) { CsvFileParser(factory = AuditLog.Companion::fromCsv) }
 
 
-    single<TasksDataSource> {
-        TasksFileDataSource(
-            tasksFileHandler = get(named("tasksFileHandler")),
-            csvFileParser = get(named("tasksFileParser"))
+    single<AuditLogDataSource> {
+        AuditLogFileDataSource(
+            auditLogFileHandler = get(named("AuditLogFileHandler")),
+            csvFileParser = get(named("AuditLogFileParser"))
         )
     }
 }
