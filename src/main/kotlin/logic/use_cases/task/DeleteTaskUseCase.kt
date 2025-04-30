@@ -8,7 +8,7 @@ class DeleteTaskUseCase(
     private val taskRepository: TasksRepository,
     private val auditRepository: AuditRepository
 ) {
-    fun execute(taskId: Int, projectInt: String, userName: String): Boolean {
+    fun execute(taskId: String): Boolean {
         return false
     }
 }
