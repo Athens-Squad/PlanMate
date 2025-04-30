@@ -6,16 +6,19 @@ import net.thechance.logic.entities.EntityType
 
 
 class GetAuditLogsByProjectIdUseCase(private val auditRepository: AuditRepository) {
-    fun execute(projectId: String): List<AuditLog> {
+    fun execute(projectId: String):Result< List<AuditLog>> {
         if (projectId.isBlank()) {
-            return emptyList()
+            return Result.success(emptyList())
         }
 
-        return try {
-            auditRepository.getAuditLogs()
-                .filter { it.entityType==EntityType.PROJECT && it.entityId==projectId }
-        } catch (e: Exception) {
-            emptyList()
-        }
+        return kotlin.runCatching { auditRepository.getAuditLogs()
+            .filter { it.entityType==EntityType.PROJECT && it.entityId==projectId }}
+            .recoverCatching {
+                //throwable->
+                  //throw RuntimeException("Failed to retrieve audit logs", throwable)
+                   emptyList()
+            }
+
+
     }
     }

@@ -6,16 +6,15 @@ import net.thechance.logic.entities.EntityType
 
 
 class GetAuditLogsByTaskIdUseCase(private val auditRepository: AuditRepository) {
-    fun execute(taskId: String): List<AuditLog> {
+    fun execute(taskId: String): Result<List<AuditLog>> {
         if (taskId.isBlank()) {
-            return emptyList()
+            return Result.success(emptyList())
         }
 
-        return try {
-            auditRepository.getAuditLogs()
-                .filter {it.entityType== EntityType.TASK && it.entityId==taskId  }
-        } catch (e: Exception) {
-            emptyList()
-        }
+        return kotlin.runCatching { auditRepository.getAuditLogs()
+            .filter { it.entityType==EntityType.TASK && it.entityId==taskId} }
+            .recoverCatching { emptyList() }
+
+
     }
 }

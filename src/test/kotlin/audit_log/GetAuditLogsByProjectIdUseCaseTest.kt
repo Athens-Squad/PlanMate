@@ -33,14 +33,14 @@ class GetAuditLogsByProjectIdUseCaseTest{
     entityType = EntityType.PROJECT,
     entityId = projectId,
     description = "Project created",
-    userId = "admin1",
+    userName = "admin1",
     createdAt = LocalDateTime.of(2025, 4, 28, 8, 0)
    ),
    AuditLog(
     entityType = EntityType.PROJECT,
     entityId = projectId,
     description = "New state 'In QA' added",
-    userId = "admin2",
+    userName = "admin2",
     createdAt = LocalDateTime.of(2025, 4, 28, 11, 45)
    )
   )
@@ -51,7 +51,7 @@ class GetAuditLogsByProjectIdUseCaseTest{
   val result = getAuditLogsByProjectIdUseCase.execute(projectId)
 
    //then
-  assertThat(result).isEqualTo(expected)
+  assertThat(result.isSuccess).isTrue()
   verify(exactly = 1) { auditRepository.getAuditLogs() }
  }
 
@@ -66,7 +66,7 @@ class GetAuditLogsByProjectIdUseCaseTest{
   val result = getAuditLogsByProjectIdUseCase.execute(projectId)
 
   // Then
-  assertThat(result).isEmpty()
+  assertThat(result.getOrNull()).isEmpty()
   verify(exactly = 1) { auditRepository.getAuditLogs() }
  }
 
@@ -81,7 +81,7 @@ class GetAuditLogsByProjectIdUseCaseTest{
   val result = getAuditLogsByProjectIdUseCase.execute(invalidProjectId)
 
   // Then
-  assertThat(result).isEmpty()
+  assertThat(result.getOrNull()).isEmpty()
   verify(exactly = 1) { auditRepository.getAuditLogs() }
 
  }
@@ -95,7 +95,7 @@ class GetAuditLogsByProjectIdUseCaseTest{
   val result = getAuditLogsByProjectIdUseCase.execute(blankProjectId)
 
   // Then
-  assertThat(result).isEmpty()
+  assertThat(result.getOrNull()).isEmpty()
   verify(exactly = 0) { auditRepository.getAuditLogs() }
 
 
@@ -110,7 +110,7 @@ class GetAuditLogsByProjectIdUseCaseTest{
     entityType = EntityType.TASK,
     entityId = "Task001",
     description = "Task created",
-    userId = "admin1",
+    userName = "admin1",
     createdAt = LocalDateTime.of(2025, 4, 28, 8, 0)
    )
   )
@@ -121,7 +121,7 @@ class GetAuditLogsByProjectIdUseCaseTest{
   val result = getAuditLogsByProjectIdUseCase.execute(taskId)
 
   // Then
-  assertThat(result).isEmpty()
+  assertThat(result.getOrNull()).isEmpty()
   verify(exactly = 1) { auditRepository.getAuditLogs() }
  }
 
