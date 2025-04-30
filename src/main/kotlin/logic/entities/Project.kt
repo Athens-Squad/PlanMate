@@ -1,15 +1,12 @@
 package logic.entities
 
-import net.thechance.data.tasks.utils.TaskColumnIndex.CURRENT_STATE_ID
-import net.thechance.data.tasks.utils.TaskColumnIndex.CURRENT_STATE_NAME
-import net.thechance.data.tasks.utils.TaskColumnIndex.DESCRIPTION
-import net.thechance.data.tasks.utils.TaskColumnIndex.ID
-import net.thechance.data.tasks.utils.TaskColumnIndex.PROJECT_ID
-import net.thechance.data.tasks.utils.TaskColumnIndex.TITLE
+import net.thechance.data.projects.utils.ProjectColumnIndex.CREATED_BY
+import net.thechance.data.projects.utils.ProjectColumnIndex.DESCRIPTION
+import net.thechance.data.projects.utils.ProjectColumnIndex.ID
+import net.thechance.data.projects.utils.ProjectColumnIndex.NAME
 import net.thechance.logic.CsvSerializable
 import net.thechance.logic.entities.State
-import java.util.UUID
-
+import java.util.*
 
 
 data class Project(
@@ -30,12 +27,12 @@ data class Project(
     companion object {
         fun fromCsv(fields: List<String>): Project {
             return Project(
-                id = fields[0],
-                name = fields[1],
-                description = fields[2],
+                id = fields[ID],
+                name = fields[NAME],
+                description = fields[DESCRIPTION],
                 states = mutableListOf(),
                 tasks = mutableListOf(),
-                createdBy = fields[3]
+                createdBy = fields[CREATED_BY]
             )
         }
     }

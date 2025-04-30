@@ -1,41 +1,44 @@
 package data.projects
 
-import com.google.common.truth.Truth.assertThat
 import helper.project_helper.createProject
+import io.mockk.mockk
+import io.mockk.verify
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
+import net.thechance.data.projects.ProjectsDataSource
 import net.thechance.data.projects.ProjectsRepositoryImpl
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class ProjectsRepositoryImplTest {
 
+    private val projectsDataSource: ProjectsDataSource = mockk(relaxed = true)
     private lateinit var projectsRepository: ProjectsRepository
     private lateinit var fakeProject: Project
 
    @BeforeEach
     fun setUp() {
-        projectsRepository = ProjectsRepositoryImpl()
+        projectsRepository = ProjectsRepositoryImpl(projectsDataSource)
         fakeProject = createProject()
+
     }
 
     @Test
     fun `should get all projects, when called`() {
         // When
-        val projects = projectsRepository.getProjects()
+        projectsRepository.getProjects()
 
         // Then
-        assertThat(projects.isSuccess).isTrue()
+        verify(exactly = 1) { projectsDataSource.getProjectsFromCsvFile() }
     }
 
     @Test
     fun `should create project, when called`() {
         // When
         projectsRepository.createProject(fakeProject)
-        val projects = projectsRepository.getProjects()
 
         // Then
-        assertThat(projects.getOrNull()).containsExactly(fakeProject)
+        verify(exactly = 1) { projectsDataSource.saveProjectInCsvFile(fakeProject) }
     }
 
     @Test
@@ -49,20 +52,18 @@ class ProjectsRepositoryImplTest {
 
         // When
         projectsRepository.updateProject(newFakeProject)
-        val projects = projectsRepository.getProjects()
 
         // Then
-        assertThat(projects.getOrNull()).containsExactly(newFakeProject)
+        verify(exactly = 1) { projectsDataSource.updateProjectFromCsvFile(newFakeProject) }
     }
 
     @Test
     fun `should delete project, when called`() {
         // When
-        val projects = projectsRepository.getProjects()
         projectsRepository.deleteProject(fakeProject.id)
 
         // Then
-        assertThat(projects.getOrNull()).isEmpty()
+        verify(exactly = 1) { projectsDataSource.deleteProjectFromCsvFile(fakeProject.id) }
     }
 
 }
