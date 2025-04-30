@@ -4,6 +4,9 @@ import logic.entities.Project
 import logic.entities.Task
 import net.thechance.logic.entities.State
 
+
+const val validRecordString = "project1,Plan Mate,this is my description,user1"
+const val validSecondRecordString = "project2,Plan Mate V2.0,this is new description,user2"
 fun createProject(
     id: String = "project1",
     name: String = "Plan Mate",
