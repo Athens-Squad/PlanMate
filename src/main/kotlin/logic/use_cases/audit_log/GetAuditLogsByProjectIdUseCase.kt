@@ -11,14 +11,12 @@ class GetAuditLogsByProjectIdUseCase(private val auditRepository: AuditRepositor
             return Result.success(emptyList())
         }
 
-        return kotlin.runCatching { auditRepository.getAuditLogs()
-            .filter { it.entityType==EntityType.PROJECT && it.entityId==projectId }}
-            .recoverCatching {
-                //throwable->
-                  //throw RuntimeException("Failed to retrieve audit logs", throwable)
-                   emptyList()
-            }
-
-
-    }
+        return auditRepository.getAuditLogs()
+                .mapCatching { auditLogs ->
+                    auditLogs.filter { it.entityType == EntityType.PROJECT && it.entityId == projectId }
+                }
+                .recoverCatching {
+                    emptyList()
+                }
+        }
     }

@@ -1,4 +1,4 @@
-package logic.use_cases.audit_log
+package audit_log
 
 import io.mockk.*
 import logic.repositories.AuditRepository
@@ -19,7 +19,7 @@ class ClearLogUseCaseTest{
  @Test
  fun `should clear all audit logs`() {
   //given
-  every {  auditRepository.clearLog()   } just Runs
+  every {  auditRepository.clearLog()  } returns Result.success(Unit)
  //when
   clearLogUseCase.execute()
   //then
@@ -32,7 +32,7 @@ class ClearLogUseCaseTest{
     @Test
     fun ` handle  when there are no logs to clear`() {
         // Given:
-        every { auditRepository.clearLog() } just runs
+        every { auditRepository.clearLog() } returns Result.success(Unit)
 
         // When
         clearLogUseCase.execute()

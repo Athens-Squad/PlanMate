@@ -1,4 +1,4 @@
-package logic.use_cases.audit_log
+package audit_log
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach
 import java.time.LocalDateTime
 import kotlin.test.Test
 import io.mockk.*
+import logic.use_cases.audit_log.CreateAuditLogUseCase
 
 class CreateAuditLogUseCaseTest {
 
@@ -33,7 +34,7 @@ class CreateAuditLogUseCaseTest {
             createdAt = LocalDateTime.of(2025, 4, 28, 20, 0)
         )
 
-        every { auditRepository.createAuditLog(auditLog) } just Runs
+        every { auditRepository.createAuditLog(auditLog) } returns Result.success(Unit)
 
         val result = createAuditLogUseCase.execute(auditLog)
         assertThat(result.isSuccess).isTrue()
@@ -53,7 +54,7 @@ class CreateAuditLogUseCaseTest {
         )
 
         // when
-        every { auditRepository.createAuditLog(invalidAuditLog) } just Runs
+        every { auditRepository.createAuditLog(invalidAuditLog) } returns Result.success(Unit)
 
         // then
         createAuditLogUseCase.execute(invalidAuditLog)
@@ -71,7 +72,7 @@ class CreateAuditLogUseCaseTest {
         )
 
         // when
-        every { auditRepository.createAuditLog(invalidAuditLog) } just Runs
+        every { auditRepository.createAuditLog(invalidAuditLog) } returns Result.success(Unit)
 
         // then
         createAuditLogUseCase.execute(invalidAuditLog)
@@ -89,7 +90,7 @@ class CreateAuditLogUseCaseTest {
         )
 
         // when
-        every { auditRepository.createAuditLog(invalidAuditLog) } just Runs
+        every { auditRepository.createAuditLog(invalidAuditLog) } returns Result.success(Unit)
 
         // then
         createAuditLogUseCase.execute(invalidAuditLog)

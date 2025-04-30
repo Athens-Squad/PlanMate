@@ -46,7 +46,7 @@ class GetAuditLogsByTaskIdUseCaseTest {
             )
         )
 
-        every { auditRepository.getAuditLogs() } returns expected
+        every { auditRepository.getAuditLogs() }  returns Result.success(expected)
 
         //when
 
@@ -67,7 +67,7 @@ class GetAuditLogsByTaskIdUseCaseTest {
         val invalidTaskId = "TASK-XYZ123"
 
 
-        every { auditRepository.getAuditLogs() } returns emptyList()
+        every { auditRepository.getAuditLogs() } returns Result.success(emptyList())
 
         //when
         val result = getAuditLogsByTaskIdUseCase.execute(invalidTaskId)
@@ -103,7 +103,7 @@ class GetAuditLogsByTaskIdUseCaseTest {
         val taskId = "Task-001"
 
 
-        every { auditRepository.getAuditLogs() } throws Exception("Database error")
+        every { auditRepository.getAuditLogs() } returns Result.failure(Exception("error"))
 
         // When
         val result = getAuditLogsByTaskIdUseCase.execute(taskId)
@@ -126,7 +126,7 @@ class GetAuditLogsByTaskIdUseCaseTest {
             )
         )
 
-        every { auditRepository.getAuditLogs() } returns noMatchingLogs
+        every { auditRepository.getAuditLogs() } returns Result.success(noMatchingLogs)
 
         // When
         val result = getAuditLogsByTaskIdUseCase.execute(taskId)

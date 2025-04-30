@@ -45,7 +45,7 @@ class GetAuditLogsByProjectIdUseCaseTest{
    )
   )
 
-  every { auditRepository.getAuditLogs() } returns expected
+  every { auditRepository.getAuditLogs() } returns Result.success(expected)
 
   //when
   val result = getAuditLogsByProjectIdUseCase.execute(projectId)
@@ -60,7 +60,7 @@ class GetAuditLogsByProjectIdUseCaseTest{
   // Given
   val projectId = "PROJECT-001"
 
-  every { auditRepository.getAuditLogs() } throws Exception("Database error")
+  every { auditRepository.getAuditLogs() } returns Result.failure(Exception("error"))
 
   // When
   val result = getAuditLogsByProjectIdUseCase.execute(projectId)
@@ -75,7 +75,7 @@ class GetAuditLogsByProjectIdUseCaseTest{
  fun `getAuditLogs() return empty list when an invalid ProjectId Given`()  {
   // Given
   val invalidProjectId = "PROJECT-XYZ123"
-  every { auditRepository.getAuditLogs() } returns emptyList()
+  every { auditRepository.getAuditLogs() }  returns Result.success(emptyList())
 
   // When
   val result = getAuditLogsByProjectIdUseCase.execute(invalidProjectId)
@@ -102,7 +102,7 @@ class GetAuditLogsByProjectIdUseCaseTest{
  }
 
  @Test
- fun ` getAuditLogs() return empty list when no audit logs match the task id`() {
+ fun ` getAuditLogs() return empty list when no audit logs match the project id`() {
   // Given
   val taskId = "TASK-001"
   val noMatchingAuditLogs = listOf(
@@ -115,7 +115,7 @@ class GetAuditLogsByProjectIdUseCaseTest{
    )
   )
 
-  every { auditRepository.getAuditLogs() } returns noMatchingAuditLogs
+  every { auditRepository.getAuditLogs() } returns Result.success(noMatchingAuditLogs)
 
   // When
   val result = getAuditLogsByProjectIdUseCase.execute(taskId)

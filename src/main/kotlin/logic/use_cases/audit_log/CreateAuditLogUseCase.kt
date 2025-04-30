@@ -13,7 +13,7 @@ class CreateAuditLogUseCase(private val auditRepository: AuditRepository) {
 
         }
 
-        return kotlin.runCatching { auditRepository.createAuditLog(auditLog) }
+        return  auditRepository.createAuditLog(auditLog)
             .recoverCatching { throwable ->
                 throw RuntimeException("Failed to create audit log", throwable)  }
 

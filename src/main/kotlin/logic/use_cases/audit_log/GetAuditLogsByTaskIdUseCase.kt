@@ -11,10 +11,18 @@ class GetAuditLogsByTaskIdUseCase(private val auditRepository: AuditRepository) 
             return Result.success(emptyList())
         }
 
-        return kotlin.runCatching { auditRepository.getAuditLogs()
+        return auditRepository.getAuditLogs()
+            .mapCatching { auditlog->
+                auditlog.filter { it.entityType==EntityType.TASK && it.entityId==taskId }
+            }  .recoverCatching {
+                emptyList()
+            }
+
+
+        /*kotlin.runCatching { auditRepository.getAuditLogs()
             .filter { it.entityType==EntityType.TASK && it.entityId==taskId} }
             .recoverCatching { emptyList() }
 
 
-    }
-}
+    }*/
+}}
