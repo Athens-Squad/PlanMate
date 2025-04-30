@@ -14,12 +14,12 @@ class AuditLogFileParser(private val formatter: DateTimeFormatter) {
             entityType = EntityType.valueOf(parts[0]),
             entityId = parts[1],
             description = parts[2],
-            userId = parts[3],
+            userName = parts[3],
             createdAt = LocalDateTime.parse(parts[4], formatter)
         )
     }
 
     fun toCsv(auditLog: AuditLog): String {
-        return "${auditLog.entityId},${auditLog.entityType},${auditLog.userId},${auditLog.description},${auditLog.createdAt}"
+        return "${auditLog.entityId},${auditLog.entityType},${auditLog.userName},${auditLog.description},${auditLog.createdAt}"
     }
 }
