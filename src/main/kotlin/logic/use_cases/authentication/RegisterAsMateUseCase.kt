@@ -7,74 +7,33 @@ import net.thechance.logic.entities.UserType
 class RegisterAsMateUseCase(
     private val userRepository: UserRepository,
 ) {
-    fun execute(mateUser: User): Boolean {
-        if (
-            mateUser.name.isEmpty() ||
-            mateUser.name.trim().isEmpty()
+    fun execute(mateUser: User): Result<Unit> {
+        return if (
+            isUsernameNotValid(mateUser.name) ||
+            isPasswordNotValid(mateUser.password) ||
+            isTypeNotMate(mateUser.type) ||
+            isMateAdminIdNotValid(mateUser.type)||
+            userNameExist(mateUser.name)
         ) {
-            throw Exception()
-        }
-
-        if (
-            mateUser.password.length < 8 ||
-            mateUser.password.length > 20 ||
-            isValidPassword(mateUser.password)
-        ) {
-            throw Exception()
-        }
-
-        if (
-            mateUser.type is UserType.AdminUser
-        ) {
-            throw Exception()
-        }
-
-        if( (mateUser.type as UserType.MateUser).adminId.trim().isEmpty() ){
-            throw Exception()
-        }
-
-        val x = userRepository.getUserByUsername(mateUser.name)
-        if (x.isSuccess) {
-            throw Exception()
-        }
-
-        if (userRepository.createUser(mateUser).isSuccess) {
-            return true
+            Result.failure(Exception())
         } else {
-            throw Exception()
+            runCatching {
+                userRepository.createUser(mateUser).getOrThrow()
+            }
         }
 
     }
 
-    private fun isValidPassword(password: String): Boolean {
-        var hasCapitalChar = false
-        var hasSmallChar = false
-        var hasNumbers = false
-        var hasSymbols = false
-        password.forEach {
-            hasCapitalChar = isCapitalChar(it) || hasCapitalChar
-            hasSmallChar = isSmallChar(it) || hasSmallChar
-            hasNumbers = isNumbers(it) || hasNumbers
-            hasSymbols = checkCharIsSymbol(hasNumbers, hasCapitalChar, hasSmallChar) || hasSymbols
-        }
-        return (hasCapitalChar && hasSmallChar && hasNumbers && hasSymbols)
-    }
+    private fun isUsernameNotValid(userName: String) = userName.isEmpty() || userName.trim().isEmpty()
 
-    private fun isCapitalChar(char: Char): Boolean {
-        return char in 'A'..'Z'
-    }
+    private fun isMateAdminIdNotValid(type: UserType) =  (type as UserType.MateUser).adminId.trim().isEmpty()
 
-    private fun isSmallChar(char: Char): Boolean {
-        return char in 'a'..'z'
-    }
+    private fun isPasswordNotValid(password: String) = password.length < 8 || password.length > 20
 
-    private fun isNumbers(char: Char): Boolean {
-        return char in '0'..'9'
-    }
+    private fun isTypeNotMate(userType: UserType) = userType is UserType.AdminUser
 
-    private fun checkCharIsSymbol(isNumber: Boolean, isCapitalChar: Boolean, isSmallChar: Boolean): Boolean {
-        return !(isNumber || isCapitalChar || isSmallChar)
-    }
+    private fun userNameExist(userName: String) = userRepository.getUserByUsername(userName).isSuccess
+
 }
 
 
