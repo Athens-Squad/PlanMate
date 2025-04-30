@@ -7,69 +7,27 @@ import net.thechance.logic.entities.UserType
 class RegisterAsAdminUseCase(
     private val userRepository: UserRepository,
 ) {
-    fun execute(adminUser: User): Boolean {
-        if (
-            adminUser.name.isEmpty() ||
-            adminUser.name.trim().isEmpty()
+
+    fun execute(adminUser: User): Result<Unit> {
+        return if (
+            isUsernameNotValid(adminUser.name) ||
+            isPasswordNotValid(adminUser.password) ||
+            isTypeNotAdmin(adminUser.type) ||
+            userNameExist(adminUser.name)
         ) {
-            throw Exception()
-        }
-
-        if (
-            adminUser.password.length < 8 ||
-            adminUser.password.length > 20 ||
-            isValidPassword(adminUser.password)
-        ) {
-            throw Exception()
-        }
-
-        if (
-            adminUser.type is UserType.MateUser
-        ) {
-            throw Exception()
-        }
-
-        val x = userRepository.getUserByUsername(adminUser.name)
-        if (x.isSuccess) {
-            throw Exception()
-        }
-
-        if (userRepository.createUser(adminUser).isSuccess) {
-            return true
+            Result.failure(Exception())
         } else {
-            throw Exception()
+            runCatching {
+                userRepository.createUser(adminUser).getOrThrow()
+            }
         }
-
     }
 
-    private fun isValidPassword(password: String): Boolean {
-        var hasCapitalChar = false
-        var hasSmallChar = false
-        var hasNumbers = false
-        var hasSymbols = false
-        password.forEach {
-            hasCapitalChar = isCapitalChar(it) || hasCapitalChar
-            hasSmallChar = isSmallChar(it) || hasSmallChar
-            hasNumbers = isNumbers(it) || hasNumbers
-            hasSymbols = checkCharIsSymbol(hasNumbers, hasCapitalChar, hasSmallChar) || hasSymbols
-        }
-        return (hasCapitalChar && hasSmallChar && hasNumbers && hasSymbols)
-    }
+    private fun isUsernameNotValid(userName: String) = userName.isEmpty() || userName.trim().isEmpty()
 
-    private fun isCapitalChar(char: Char): Boolean {
-        return char in 'A'..'Z'
-    }
+    private fun isPasswordNotValid(password: String) = password.length < 8 || password.length > 20
 
-    private fun isSmallChar(char: Char): Boolean {
-        return char in 'a'..'z'
-    }
+    private fun isTypeNotAdmin(userType: UserType) = userType is UserType.MateUser
 
-    private fun isNumbers(char: Char): Boolean {
-        return char in '0'..'9'
-    }
-
-    private fun checkCharIsSymbol(isNumber: Boolean, isCapitalChar: Boolean, isSmallChar: Boolean): Boolean {
-        return !(isNumber || isCapitalChar || isSmallChar)
-    }
-
+    private fun userNameExist(userName: String) = userRepository.getUserByUsername(userName).isSuccess
 }
