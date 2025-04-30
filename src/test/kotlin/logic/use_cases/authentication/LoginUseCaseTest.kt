@@ -4,27 +4,24 @@ import com.google.common.truth.Truth.assertThat
 import helper.createUser
 import io.mockk.every
 import io.mockk.mockk
-import logic.repositories.AuditRepository
-import logic.repositories.UserRepository
 import net.thechance.logic.repositories.AuthenticationRepository
 import net.thechance.logic.use_cases.authentication.HashPasswordUseCase
 import net.thechance.logic.use_cases.authentication.LoginUseCase
+import net.thechance.logic.use_cases.authentication.exceptions.InvalidCredentialsException
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 
 class LoginUseCaseTest {
 
     private lateinit var authenticationRepository: AuthenticationRepository
-    private lateinit var auditRepository: AuditRepository
     private lateinit var hashPasswordUseCase: HashPasswordUseCase
     private lateinit var loginUseCase: LoginUseCase
 
     @BeforeEach
     fun setup() {
         authenticationRepository = mockk(relaxed = true)
-        auditRepository = mockk(relaxed = true)
         hashPasswordUseCase = HashPasswordUseCase()
-        loginUseCase = LoginUseCase(authenticationRepository, hashPasswordUseCase, auditRepository)
+        loginUseCase = LoginUseCase(authenticationRepository, hashPasswordUseCase)
 
     }
 
@@ -33,12 +30,16 @@ class LoginUseCaseTest {
         val username = "Malak"
         val password = "123Password"
         val hashedPassword = hashPasswordUseCase.execute((password))
-        every { authenticationRepository.login(username = username, password = hashedPassword) } returns createUser()
+        val expectedUser = createUser()
+
+        every { authenticationRepository.login(username = username, password = hashedPassword) } returns Result.success(
+            expectedUser
+        )
 
         val result = loginUseCase.execute(username, password)
 
 
-        assertThat(result).isEqualTo(createUser())
+        assertThat(result).isEqualTo(Result.success(expectedUser))
 
     }
 
@@ -48,12 +49,14 @@ class LoginUseCaseTest {
         val password = "1234Password"
         val hashedPassword = hashPasswordUseCase.execute((password))
 
-        every { authenticationRepository.login(username = username, password = hashedPassword) } returns null
+        every { authenticationRepository.login(username = username, password = hashedPassword) } returns Result.failure(
+            InvalidCredentialsException()
+        )
 
         val result = loginUseCase.execute(username, password)
 
 
-        assertThat(result).isNull()
+        assertThat(result.exceptionOrNull()).isInstanceOf(InvalidCredentialsException::class.java)
     }
 
     @Test
@@ -62,12 +65,14 @@ class LoginUseCaseTest {
         val password = "123Password"
         val hashedPassword = hashPasswordUseCase.execute((password))
 
-        every { authenticationRepository.login(username = username, password = hashedPassword) } returns null
+        every { authenticationRepository.login(username = username, password = hashedPassword) } returns Result.failure(
+            InvalidCredentialsException()
+        )
 
         val result = loginUseCase.execute(username, password)
 
 
-        assertThat(result).isNull()
+        assertThat(result.exceptionOrNull()).isInstanceOf(InvalidCredentialsException::class.java)
     }
 
     @Test
@@ -76,12 +81,14 @@ class LoginUseCaseTest {
         val password = "123Password"
         val hashedPassword = hashPasswordUseCase.execute((password))
 
-        every { authenticationRepository.login(username = username, password = hashedPassword) } returns null
+        every { authenticationRepository.login(username = username, password = hashedPassword) } returns Result.failure(
+            InvalidCredentialsException()
+        )
 
         val result = loginUseCase.execute(username, password)
 
 
-        assertThat(result).isNull()
+        assertThat(result.exceptionOrNull()).isInstanceOf(InvalidCredentialsException::class.java)
     }
 
     @Test
@@ -90,11 +97,13 @@ class LoginUseCaseTest {
         val password = ""
         val hashedPassword = hashPasswordUseCase.execute((password))
 
-        every { authenticationRepository.login(username = username, password = hashedPassword) } returns null
+        every { authenticationRepository.login(username = username, password = hashedPassword) } returns Result.failure(
+            InvalidCredentialsException()
+        )
 
         val result = loginUseCase.execute(username, password)
 
 
-        assertThat(result).isNull()
+        assertThat(result.exceptionOrNull()).isInstanceOf(InvalidCredentialsException::class.java)
     }
 }
