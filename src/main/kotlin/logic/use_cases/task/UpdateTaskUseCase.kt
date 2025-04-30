@@ -15,23 +15,34 @@ class UpdateTaskUseCase(
     private val taskValidator: TaskValidator
 ) {
 
-    fun execute(updatedTask: Task, userId: String): Result<Unit> {
+    fun execute(updatedTask: Task, userName: String): Result<Unit> {
         return runCatching {
-            taskValidator.doIfTaskExistsOrThrow(updatedTask.id) {
+            //update only if task exists
+            taskValidator.doIfTaskExistsOrThrow(updatedTask.id) { task ->
+
+                //validate updatedTask
+                taskValidator.validateTaskBeforeUpdating(task, updatedTask)
+
                 taskRepository.updateTask(updatedTask)
                     .onSuccess {
-                        auditRepository.createAuditLog(
-                            auditLog = AuditLog(
-                                entityType = EntityType.TASK,
-                                entityId = updatedTask.id,
-                                description = "Task ${updatedTask.title} updated successfully.",
-                                userId = userId,
-                                createdAt = LocalDateTime.now()
-                            )
-                        )
+
+                        //create log
+                        createLog(updatedTask, userName)
+
                     }
             }
         }
+    }
+
+    private fun createLog(task: Task, userName: String) {
+        val auditLog = AuditLog(
+            entityType = EntityType.TASK,
+            entityId = task.id,
+            description = "Task ${task.title} updated successfully.",
+            userId = userName,
+            createdAt = LocalDateTime.now()
+        )
+        auditRepository.createAuditLog(auditLog).getOrThrow()
     }
 
 }

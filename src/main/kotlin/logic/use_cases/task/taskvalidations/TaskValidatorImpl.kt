@@ -12,13 +12,13 @@ class TaskValidatorImpl(
     private val projectsRepository: ProjectsRepository,
     private val statesRepository: StatesRepository
 ): TaskValidator {
-    override fun doIfTaskExistsOrThrow(taskId: String, action: () -> Unit) {
+    override fun doIfTaskExistsOrThrow(taskId: String, action: (Task) -> Unit) {
         tasksRepository.getTaskById(taskId)
             .onSuccess {
-                action()
+                action(it)
             }
             .onFailure {
-                throw TasksException.CannotCreateTaskException("There is existing task with same id")
+                throw TasksException.CannotCompleteTaskOperationException("Cannot find the task!")
             }
     }
 
@@ -28,7 +28,7 @@ class TaskValidatorImpl(
                 action()
             }
             .onSuccess {
-                throw TasksException.CannotCreateTaskException("There is existing task with same id")
+                throw TasksException.CannotCompleteTaskOperationException("There is existing task with same id")
             }
     }
 

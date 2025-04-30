@@ -13,27 +13,30 @@ class CreateTaskUseCase(
     private val auditRepository: AuditRepository,
     private val taskValidator: TaskValidator
 ) {
-    fun execute(task: Task, userId: String): Result<Unit> {
+    fun execute(task: Task, userName: String): Result<Unit> {
         return runCatching {
-            taskValidator.doIfTaskExistsOrThrow(task.id) {
+            taskValidator.doIfTaskNotExistsOrThrow(task) {
                 //validate task
                 taskValidator.validateTaskBeforeCreation(task)
 
                 //create task
-                taskRepository.createTask(task).getOrThrow()
+                taskRepository.createTask(task)
+                    .onSuccess {
+                        //create log
+                        createLog(task, userName)
+                    }
 
-                //create log
-                createLog(task, userId)
+
             }
         }
     }
 
-    private fun createLog(task: Task, userId: String) {
+    private fun createLog(task: Task, userName: String) {
         val auditLog = AuditLog(
             entityType = EntityType.TASK,
             entityId = task.id,
             description = "Task ${task.title} created successfully.",
-            userId = userId,
+            userId = userName,
             createdAt = LocalDateTime.now()
         )
         auditRepository.createAuditLog(auditLog).getOrThrow()
