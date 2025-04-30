@@ -30,7 +30,7 @@ class ClearLogUseCaseTest{
 
 
     @Test
-    fun ` handle case when there are no logs to clear`() {
+    fun ` handle  when there are no logs to clear`() {
         // Given:
         every { auditRepository.clearLog() } just runs
 

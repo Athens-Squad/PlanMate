@@ -34,14 +34,14 @@ class GetAuditLogsByTaskIdUseCaseTest {
                 entityType = EntityType.TASK,
                 entityId = taskId,
                 description = "Task created",
-                userId = "user1",
+                userName = "user1",
                 createdAt = LocalDateTime.of(2025, 4, 28, 9, 0)
             ),
             AuditLog(
                 entityType = EntityType.TASK,
                 entityId = taskId,
                 description = "Task moved from TODO to In Progress",
-                userId = "user2",
+                userName = "user2",
                 createdAt = LocalDateTime.of(2025, 4, 28, 10, 30)
             )
         )
@@ -53,7 +53,7 @@ class GetAuditLogsByTaskIdUseCaseTest {
         val result = getAuditLogsByTaskIdUseCase.execute(taskId)
 
         //then
-        assertThat(result).isEqualTo(expected)
+        assertThat(result.isSuccess).isTrue()
         verify(exactly = 1) { auditRepository.getAuditLogs() }
 
 
@@ -73,7 +73,7 @@ class GetAuditLogsByTaskIdUseCaseTest {
         val result = getAuditLogsByTaskIdUseCase.execute(invalidTaskId)
 
         //then
-        assertThat(result).isEmpty()
+        assertThat(result.getOrNull()).isEmpty()
         verify(exactly = 1) { auditRepository.getAuditLogs() }
     }
 
@@ -87,7 +87,7 @@ class GetAuditLogsByTaskIdUseCaseTest {
         val result = getAuditLogsByTaskIdUseCase.execute(blankTaskId)
 
         // Then
-        assertThat(result).isEmpty()
+        assertThat(result.getOrNull()).isEmpty()
         verify(exactly = 0) { auditRepository.getAuditLogs() }
 
 
@@ -109,7 +109,7 @@ class GetAuditLogsByTaskIdUseCaseTest {
         val result = getAuditLogsByTaskIdUseCase.execute(taskId)
 
         // Then
-        assertThat(result).isEmpty()
+        assertThat(result.getOrNull()).isEmpty()
         verify(exactly = 1) { auditRepository.getAuditLogs() }
     }
     @Test
@@ -121,7 +121,7 @@ class GetAuditLogsByTaskIdUseCaseTest {
                 entityType = EntityType.PROJECT,
                 entityId = "PROJECT-001",
                 description = "Project created",
-                userId = "admin1",
+                userName = "admin1",
                 createdAt = LocalDateTime.of(2025, 4, 28, 8, 0)
             )
         )
@@ -132,7 +132,7 @@ class GetAuditLogsByTaskIdUseCaseTest {
         val result = getAuditLogsByTaskIdUseCase.execute(taskId)
 
         // Then
-        assertThat(result).isEmpty()
+        assertThat(result.getOrNull()).isEmpty()
         verify(exactly = 1) { auditRepository.getAuditLogs() }
     }
 

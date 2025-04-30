@@ -4,15 +4,20 @@ import logic.entities.AuditLog
 import logic.repositories.AuditRepository
 
 class CreateAuditLogUseCase(private val auditRepository: AuditRepository) {
-    fun execute(auditLog: AuditLog): Boolean {
-        if (auditLog.entityId.isBlank() || auditLog.description.isBlank() || auditLog.userId.isBlank()) {
-            return false
+    fun execute(auditLog: AuditLog): Result<Unit> {
+        if (auditLog.entityId.isBlank() || auditLog.description.isBlank() || auditLog.userName.isBlank()) {
+           return Result.
+           failure(
+               IllegalArgumentException("Invalid audit log: missing required fields")
+                 )
+
         }
-        try {
-            auditRepository.createAuditLog(auditLog)
-            return true
-        } catch (e: Exception) {
-            return false
-        }
+
+        return kotlin.runCatching { auditRepository.createAuditLog(auditLog) }
+            .recoverCatching { throwable ->
+                throw RuntimeException("Failed to create audit log", throwable)  }
+
+
+
     }
 }

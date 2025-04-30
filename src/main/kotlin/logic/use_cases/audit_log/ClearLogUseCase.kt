@@ -3,11 +3,11 @@ package net.thechance.logic.use_cases.audit_log
 import logic.repositories.AuditRepository
 
 class ClearLogUseCase(private val auditRepository: AuditRepository) {
-    fun execute() {
-        try {
-            auditRepository.clearLog()
-        } catch (e: Exception) {
-            throw RuntimeException("Failed to clear logs")
-        }
-    }
-}
+    fun execute():Result<Unit> {
+
+         return kotlin.runCatching { auditRepository.clearLog() }
+             .onFailure {throwable ->
+                 throw RuntimeException("Failed to clear logs", throwable)
+             }
+
+}}

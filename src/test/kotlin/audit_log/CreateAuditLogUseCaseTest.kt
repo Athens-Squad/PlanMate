@@ -29,26 +29,26 @@ class CreateAuditLogUseCaseTest {
             entityType = EntityType.TASK,
             entityId = "TASK-001",
             description = "Task moved from TODO to InProgress",
-            userId = "user 1",
+            userName = "user 1",
             createdAt = LocalDateTime.of(2025, 4, 28, 20, 0)
         )
 
         every { auditRepository.createAuditLog(auditLog) } just Runs
 
         val result = createAuditLogUseCase.execute(auditLog)
-        assertThat(result).isTrue()
+        assertThat(result.isSuccess).isTrue()
         verify(exactly = 1) { auditRepository.createAuditLog(auditLog) }
 
     }
 
     @Test
-    fun `createAuditLog not create audit log if description is missing`() {
+    fun `createAuditLog not create audit log when description is missing`() {
         //given
         val invalidAuditLog = AuditLog(
             entityType = EntityType.TASK,
             entityId = "TASK-001",
             description = "",
-            userId = "user 1",
+            userName = "user 1",
             createdAt = LocalDateTime.of(2025, 4, 28, 9, 0)
         )
 
@@ -60,13 +60,13 @@ class CreateAuditLogUseCaseTest {
         verify(exactly = 0) { auditRepository.createAuditLog(invalidAuditLog) }
     }
     @Test
-    fun `createAuditLog not create audit log if entityId is missing`() {
+    fun `createAuditLog not create audit log when entityId is missing`() {
         //given
         val invalidAuditLog = AuditLog(
             entityType = EntityType.TASK,
             entityId = "",
             description = "Task moved from TODO to InProgress",
-            userId = "user 1",
+            userName = "user 1",
             createdAt = LocalDateTime.of(2025, 4, 28, 9, 0)
         )
 
@@ -78,13 +78,13 @@ class CreateAuditLogUseCaseTest {
         verify(exactly = 0) { auditRepository.createAuditLog(invalidAuditLog) }
     }
     @Test
-    fun `createAuditLog not create audit userId is missing`() {
+    fun `createAuditLog not create log when  userId is missing`() {
         //given
         val invalidAuditLog = AuditLog(
             entityType = EntityType.TASK,
             entityId = "TASK-001",
             description = "Task moved from TODO to InProgress",
-            userId = "",
+            userName = "",
             createdAt = LocalDateTime.of(2025, 4, 28, 9, 0)
         )
 
@@ -104,7 +104,7 @@ class CreateAuditLogUseCaseTest {
             entityType = EntityType.PROJECT,
             entityId = "PROJ-001",
             description = "Project state changed",
-            userId = "user2",
+            userName = "user2",
             createdAt = LocalDateTime.of(2025, 4, 28, 10, 0)
         )
 
@@ -112,7 +112,7 @@ class CreateAuditLogUseCaseTest {
         // When:
         val result = createAuditLogUseCase.execute(auditLog)
         // Then:
-        assertThat(result).isFalse()
+        assertThat(result.isFailure).isTrue()
         verify(exactly = 1) { auditRepository.createAuditLog(auditLog) }
     }
 }
