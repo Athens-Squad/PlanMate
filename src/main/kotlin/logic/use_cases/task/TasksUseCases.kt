@@ -1,7 +1,7 @@
-package net.thechance.logic.use_cases.task
+package logic.use_cases.task
 
-import com.thechance.logic.usecases.task.DeleteTaskUseCase
-import com.thechance.logic.usecases.task.UpdateTaskUseCase
+import logic.use_cases.task.DeleteTaskUseCase
+import logic.use_cases.task.UpdateTaskUseCase
 
 data class TasksUseCases(
     val createTaskUseCase: CreateTaskUseCase,

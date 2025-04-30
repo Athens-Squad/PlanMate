@@ -1,9 +1,9 @@
-package net.thechance.logic.use_cases.task
+package logic.use_cases.task
 
 import logic.entities.Task
 import logic.repositories.AuditRepository
 import logic.repositories.ProjectsRepository
-import com.thechance.logic.repositories.TasksRepository
+import logic.repositories.TasksRepository
 
 class CreateTaskUseCase(
     private val taskRepository: TasksRepository,
@@ -11,6 +11,7 @@ class CreateTaskUseCase(
     private val auditRepository: AuditRepository
 ) {
     fun execute(task: Task): Boolean {
+
         return false
     }
 }
