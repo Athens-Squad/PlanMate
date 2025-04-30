@@ -3,7 +3,7 @@ package logic.repositories
 import logic.entities.AuditLog
 
 interface AuditRepository {
-    fun createAuditLog(auditLog: AuditLog)
-    fun getAuditLogs(): List<AuditLog>
-    fun clearLog()
+    fun createAuditLog(auditLog: AuditLog): Result<Unit>
+    fun getAuditLogs(): Result<List<AuditLog>>
+    fun clearLog(): Result<Unit>
 }

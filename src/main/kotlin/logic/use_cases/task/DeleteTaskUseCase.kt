@@ -1,7 +1,7 @@
-package com.thechance.logic.usecases.task
+package logic.use_cases.task
 
 import logic.repositories.AuditRepository
-import com.thechance.logic.repositories.TasksRepository
+import logic.repositories.TasksRepository
 
 
 class DeleteTaskUseCase(
