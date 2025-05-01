@@ -5,7 +5,7 @@ import helper.createUser
 import io.mockk.every
 import io.mockk.mockk
 import net.thechance.logic.repositories.AuthenticationRepository
-import net.thechance.logic.use_cases.authentication.HashPasswordUseCase
+import net.thechance.logic.use_cases.authentication.PasswordHashing
 import net.thechance.logic.use_cases.authentication.LoginUseCase
 import net.thechance.logic.use_cases.authentication.exceptions.InvalidCredentialsException
 import org.junit.jupiter.api.BeforeEach
@@ -14,14 +14,14 @@ import kotlin.test.Test
 class LoginUseCaseTest {
 
     private lateinit var authenticationRepository: AuthenticationRepository
-    private lateinit var hashPasswordUseCase: HashPasswordUseCase
+    private lateinit var passwordHashing: PasswordHashing
     private lateinit var loginUseCase: LoginUseCase
 
     @BeforeEach
     fun setup() {
         authenticationRepository = mockk(relaxed = true)
-        hashPasswordUseCase = HashPasswordUseCase()
-        loginUseCase = LoginUseCase(authenticationRepository, hashPasswordUseCase)
+        passwordHashing = PasswordHashing()
+        loginUseCase = LoginUseCase(authenticationRepository, passwordHashing)
 
     }
 
@@ -29,7 +29,7 @@ class LoginUseCaseTest {
     fun `should login successfully when correct username and password are given`() {
         val username = "Malak"
         val password = "123Password"
-        val hashedPassword = hashPasswordUseCase.execute((password))
+        val hashedPassword = passwordHashing.execute((password))
         val expectedUser = createUser()
 
         every { authenticationRepository.login(username = username, password = hashedPassword) } returns Result.success(
@@ -47,7 +47,7 @@ class LoginUseCaseTest {
     fun `login should fail when incorrect password is given`() {
         val username = "Malak"
         val password = "1234Password"
-        val hashedPassword = hashPasswordUseCase.execute((password))
+        val hashedPassword = passwordHashing.execute((password))
 
         every { authenticationRepository.login(username = username, password = hashedPassword) } returns Result.failure(
             InvalidCredentialsException()
@@ -63,7 +63,7 @@ class LoginUseCaseTest {
     fun `login should fail when incorrect username is given (user not found)`() {
         val username = "Malak1"
         val password = "123Password"
-        val hashedPassword = hashPasswordUseCase.execute((password))
+        val hashedPassword = passwordHashing.execute((password))
 
         every { authenticationRepository.login(username = username, password = hashedPassword) } returns Result.failure(
             InvalidCredentialsException()
@@ -79,7 +79,7 @@ class LoginUseCaseTest {
     fun `login should fail when username field is empty`() {
         val username = ""
         val password = "123Password"
-        val hashedPassword = hashPasswordUseCase.execute((password))
+        val hashedPassword = passwordHashing.execute((password))
 
         every { authenticationRepository.login(username = username, password = hashedPassword) } returns Result.failure(
             InvalidCredentialsException()
@@ -95,7 +95,7 @@ class LoginUseCaseTest {
     fun `login should fail when password field is empty`() {
         val username = "Malak"
         val password = ""
-        val hashedPassword = hashPasswordUseCase.execute((password))
+        val hashedPassword = passwordHashing.execute((password))
 
         every { authenticationRepository.login(username = username, password = hashedPassword) } returns Result.failure(
             InvalidCredentialsException()

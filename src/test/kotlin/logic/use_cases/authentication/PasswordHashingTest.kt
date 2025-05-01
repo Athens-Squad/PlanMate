@@ -1,23 +1,23 @@
 package logic.use_cases.authentication
 
 import com.google.common.truth.Truth.assertThat
-import net.thechance.logic.use_cases.authentication.HashPasswordUseCase
+import net.thechance.logic.use_cases.authentication.PasswordHashing
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-class HashPasswordUseCaseTest {
-    private lateinit var hashPasswordUseCase: HashPasswordUseCase
+class PasswordHashingTest {
+    private lateinit var passwordHashing: PasswordHashing
 
     @BeforeEach
     fun setup(){
-        hashPasswordUseCase = HashPasswordUseCase()
+        passwordHashing = PasswordHashing()
     }
 
     @Test
     fun `should not produce the same result as the original password when hashed`(){
         val plainPassword = PASSWORD
 
-        val result = hashPasswordUseCase.execute(plainPassword)
+        val result = passwordHashing.execute(plainPassword)
 
         assertThat(result).isNotEqualTo(plainPassword)
     }
@@ -27,7 +27,7 @@ class HashPasswordUseCaseTest {
         val plainPassword = PASSWORD
         val hashedPassword = "d54b609242c7d758f6daca654bda1d26"
 
-        val result = hashPasswordUseCase.execute(plainPassword)
+        val result = passwordHashing.execute(plainPassword)
 
         assertThat(result).isEqualTo(hashedPassword)
     }
@@ -36,8 +36,8 @@ class HashPasswordUseCaseTest {
     fun `should hash the password correctly for each time the same input is given`(){
         val plainPassword = PASSWORD
 
-        val firstResult = hashPasswordUseCase.execute(plainPassword)
-        val secondResult = hashPasswordUseCase.execute(plainPassword)
+        val firstResult = passwordHashing.execute(plainPassword)
+        val secondResult = passwordHashing.execute(plainPassword)
 
         assertThat(firstResult).isEqualTo(secondResult)
     }
@@ -47,8 +47,8 @@ class HashPasswordUseCaseTest {
         val firstPlainPassword = PASSWORD
         val secondPlainPassword = "Password123"
 
-        val firstResult = hashPasswordUseCase.execute(firstPlainPassword)
-        val secondResult = hashPasswordUseCase.execute(secondPlainPassword)
+        val firstResult = passwordHashing.execute(firstPlainPassword)
+        val secondResult = passwordHashing.execute(secondPlainPassword)
 
         assertThat(firstResult).isNotEqualTo(secondResult)
     }
@@ -58,7 +58,7 @@ class HashPasswordUseCaseTest {
         val emptyPassword = ""
         val hashedPassword = "d41d8cd98f00b204e9800998ecf8427e"
 
-        val result = hashPasswordUseCase.execute(emptyPassword)
+        val result = passwordHashing.execute(emptyPassword)
 
         assertThat(result).isEqualTo(hashedPassword)
     }

@@ -1,14 +1,12 @@
 package net.thechance.logic.use_cases.authentication
 
 import logic.entities.User
-import logic.repositories.AuditRepository
-import logic.repositories.UserRepository
 import net.thechance.logic.repositories.AuthenticationRepository
 import net.thechance.logic.use_cases.authentication.exceptions.InvalidCredentialsException
 
 class LoginUseCase(
     private val authenticationRepository: AuthenticationRepository,
-    private val hashPasswordUseCase: HashPasswordUseCase,
+    private val passwordHashing: PasswordHashing,
 ) {
     fun execute(username: String, password: String): Result<User> {
         return if (
@@ -18,7 +16,7 @@ class LoginUseCase(
             Result.failure(InvalidCredentialsException())
         } else {
             runCatching {
-                val hashedPassword = hashPasswordUseCase.execute(password)
+                val hashedPassword = passwordHashing.execute(password)
                 authenticationRepository.login(username, hashedPassword).getOrThrow()
             }
         }
