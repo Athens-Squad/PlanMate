@@ -1,6 +1,6 @@
 package net.thechance.logic.use_cases.project
 
-import logic.repositories.AuditRepository
+import logic.entities.Project
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
 import net.thechance.logic.use_cases.project.exceptions.ProjectsLogicExceptions.*
@@ -10,37 +10,26 @@ import net.thechance.logic.use_cases.project.validations.checkIfProjectExistInRe
 import net.thechance.logic.use_cases.project.validations.checkIfUserAuthorized
 import net.thechance.logic.use_cases.project.validations.checkIfUserIsProjectOwner
 
-
-class DeleteProjectUseCase(
+class GetAllProjectsByUsernameUseCase(
     private val projectRepository: ProjectsRepository,
-    private val userRepository: UserRepository,
-    private val auditRepository: AuditRepository
+    private val userRepository: UserRepository
 ) {
-    fun execute(username: String, projectId: String): Result<Unit> {
+    fun execute(username: String): Result<List<Project>> {
         return runCatching {
-
             username.apply {
                 checkIfFieldIsValid().takeIf { it } ?: throw InvalidUsernameForProjectException()
                 checkIfUserAuthorized(username) { userRepository.getUserByUsername(it) }
                     .takeIf { it } ?: throw NotAuthorizedUserException()
             }
 
-            projectId.checkIfFieldIsValid().takeIf { it } ?: throw NoProjectFoundException()
-            val project = checkIfProjectExistInRepositoryAndReturn(projectId) { projectRepository.getProjects() }
-                ?: throw NoProjectFoundException()
-
-            checkIfUserIsProjectOwner(username, project.createdBy).takeIf { it }
-                ?: throw NotAuthorizedUserException()
-
-            projectRepository.deleteProject(projectId)
-                .onSuccess {
-                    createLog(
-                        project = project,
-                        logMessage = "Project deleted successfully."
-                    ) {
-                        auditRepository.createAuditLog(it).getOrThrow()
-                    }
-                }
+            projectRepository.getProjects()
+                .fold(
+                    onSuccess = { projects -> projects.filter {  project ->
+                            checkIfUserIsProjectOwner(username, project.createdBy)
+                        }
+                    },
+                    onFailure = { throw NoProjectFoundException() }
+                )
         }
     }
 }
