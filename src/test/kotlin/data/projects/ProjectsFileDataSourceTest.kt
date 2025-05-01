@@ -23,18 +23,15 @@ class ProjectsFileDataSourceTest {
     private val projectFileParser: CsvFileParser<Project> = mockk(relaxed = true)
     private val tasksFileDataSource: TasksDataSource = mockk(relaxed = true)
 
-    private lateinit var mockFile: File
+    private val mockFile = File("src/test/resources/projects.csv")
     private lateinit var projectsFileHandler: CsvFileHandler
 
-    private lateinit var fakeProject: Project
+    private val fakeProject = createProject()
     private lateinit var projectsDataSource: ProjectsDataSource
 
     @BeforeEach
     fun setUp() {
-        mockFile = File("src/test/resources/projects.csv")
         projectsFileHandler = CsvFileHandler(mockFile)
-
-        fakeProject = createProject()
         projectsDataSource = ProjectsFileDataSource(projectsFileHandler, projectFileParser, tasksFileDataSource)
 
         every { tasksFileDataSource.getTasksByProjectId(fakeProject.id) } returns Result.success(emptyList())

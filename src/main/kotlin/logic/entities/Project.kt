@@ -13,9 +13,9 @@ data class Project(
     val id: String = UUID.randomUUID().toString(),
     val name: String,
     val description: String,
-    val states: MutableList<State>,
-    val tasks: MutableList<Task>,
-    val createdBy: String //userId -> Admin
+    val states: MutableList<State> = mutableListOf(),
+    val tasks: MutableList<Task> = mutableListOf(),
+    val createdBy: String
 ) : CsvSerializable {
     override fun toCsvFields(): List<String> = listOf(
         id,
@@ -30,14 +30,8 @@ data class Project(
                 id = fields[ID],
                 name = fields[NAME],
                 description = fields[DESCRIPTION],
-                states = mutableListOf(),
-                tasks = mutableListOf(),
                 createdBy = fields[CREATED_BY]
             )
         }
     }
 }
-//users
-//projects + states
-//tasks
-//AuditLog

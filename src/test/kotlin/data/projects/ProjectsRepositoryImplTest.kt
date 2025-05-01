@@ -14,13 +14,11 @@ class ProjectsRepositoryImplTest {
 
     private val projectsDataSource: ProjectsDataSource = mockk(relaxed = true)
     private lateinit var projectsRepository: ProjectsRepository
-    private lateinit var fakeProject: Project
+    private val fakeProject: Project = createProject()
 
    @BeforeEach
     fun setUp() {
         projectsRepository = ProjectsRepositoryImpl(projectsDataSource)
-        fakeProject = createProject()
-
     }
 
     @Test

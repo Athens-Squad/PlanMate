@@ -5,13 +5,13 @@ import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
 
 
-class GetAllProjectsUseCase(
+class GetProjectByProjectIdUseCase(
     private val projectRepository: ProjectsRepository,
     private val userRepository: UserRepository
 ) {
-    fun execute(username: String): Result<List<Project>> {
+    fun execute(username: String,projectId: String): Result<Project> {
         return runCatching {
-            emptyList()
+            projectRepository.getProjects().getOrThrow().first()
         }
     }
 }

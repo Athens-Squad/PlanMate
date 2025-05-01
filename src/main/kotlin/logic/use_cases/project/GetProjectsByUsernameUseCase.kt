@@ -4,12 +4,11 @@ import logic.entities.Project
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
 
-
-class GetAllProjectsUseCase(
+class GetProjectsByUsernameUseCase(
     private val projectRepository: ProjectsRepository,
     private val userRepository: UserRepository
 ) {
-    fun execute(username: String): Result<List<Project>> {
+    fun execute(username: String, projectCreator: String): Result<List<Project>> {
         return runCatching {
             emptyList()
         }
