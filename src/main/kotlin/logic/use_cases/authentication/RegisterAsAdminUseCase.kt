@@ -1,9 +1,9 @@
-package net.thechance.logic.use_cases.authentication
+package logic.use_cases.authentication
 
 import logic.entities.User
 import logic.repositories.UserRepository
-import net.thechance.data.authentication.utils.PasswordHashing
-import net.thechance.logic.entities.UserType
+import data.authentication.utils.PasswordHashing
+import logic.entities.UserType
 
 class RegisterAsAdminUseCase(
     private val userRepository: UserRepository,
@@ -17,7 +17,7 @@ class RegisterAsAdminUseCase(
             isTypeNotAdmin(adminUser.type) ||
             userNameExist(adminUser.name)
         ) {
-            Result.failure(Exception())
+            Result.failure(Exception("Cannot Register!"))
         } else {
             runCatching {
                 val hashedPassword = passwordHashing.hash(adminUser.password)

@@ -1,11 +1,11 @@
-package net.thechance.logic.use_cases.task.taskvalidations
+package logic.use_cases.task.taskvalidations
 
 import logic.entities.Task
 import logic.repositories.ProjectsRepository
 import logic.repositories.StatesRepository
 import logic.repositories.TasksRepository
-import net.thechance.logic.exceptions.TasksException
-import net.thechance.logic.entities.State
+import logic.exceptions.TasksException
+import logic.entities.State
 
 class TaskValidatorImpl(
     private val tasksRepository: TasksRepository,

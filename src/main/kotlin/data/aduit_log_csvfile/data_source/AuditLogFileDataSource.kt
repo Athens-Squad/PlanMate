@@ -1,8 +1,8 @@
-package net.thechance.data.aduit_log_csvfile.data_source
+package data.aduit_log_csvfile.data_source
 
 import logic.entities.AuditLog
-import net.thechance.data.csv_file_handle.CsvFileHandler
-import net.thechance.data.csv_file_handle.CsvFileParser
+import data.csv_file_handle.CsvFileHandler
+import data.csv_file_handle.CsvFileParser
 
 class AuditLogFileDataSource(
     private val auditLogFileHandler: CsvFileHandler,

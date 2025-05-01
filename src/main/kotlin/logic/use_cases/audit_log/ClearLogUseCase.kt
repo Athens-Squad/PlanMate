@@ -1,4 +1,4 @@
-package net.thechance.logic.use_cases.audit_log
+package logic.use_cases.audit_log
 
 import logic.repositories.AuditRepository
 

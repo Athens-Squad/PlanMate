@@ -1,4 +1,4 @@
-package net.thechance.data.tasks.utils
+package data.tasks.utils
 
 object TaskColumnIndex {
     const val ID = 0

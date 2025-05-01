@@ -1,10 +1,10 @@
-package net.thechance.logic.use_cases.project
+package logic.use_cases.project
 
 import logic.entities.Project
 import logic.entities.User
 import logic.repositories.ProjectsRepository
 import logic.repositories.StatesRepository
-import net.thechance.logic.entities.UserType
+import logic.entities.UserType
 
 
 class GetProjectByIdUseCase(

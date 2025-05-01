@@ -1,8 +1,8 @@
-package net.thechance.data.tasks.data_source
+package data.tasks.data_source
 
 import logic.entities.Task
-import net.thechance.data.csv_file_handle.CsvFileHandler
-import net.thechance.data.csv_file_handle.CsvFileParser
+import data.csv_file_handle.CsvFileHandler
+import data.csv_file_handle.CsvFileParser
 
 class TasksFileDataSource(
     private val tasksFileHandler: CsvFileHandler ,

@@ -1,6 +1,6 @@
 package logic.entities
 
-import net.thechance.logic.entities.State
+import logic.entities.State
 import java.util.UUID
 
 

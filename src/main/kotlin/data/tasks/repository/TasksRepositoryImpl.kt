@@ -1,8 +1,8 @@
-package net.thechance.data.tasks.repository
+package data.tasks.repository
 
 
 import logic.repositories.TasksRepository
-import net.thechance.data.tasks.data_source.TasksDataSource
+import data.tasks.data_source.TasksDataSource
 
 class TasksRepositoryImpl(
     private val tasksDataSource: TasksDataSource

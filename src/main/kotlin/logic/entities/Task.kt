@@ -1,13 +1,12 @@
 package logic.entities
 
-import net.thechance.data.tasks.utils.TaskColumnIndex.CURRENT_STATE_ID
-import net.thechance.data.tasks.utils.TaskColumnIndex.CURRENT_STATE_NAME
-import net.thechance.data.tasks.utils.TaskColumnIndex.DESCRIPTION
-import net.thechance.data.tasks.utils.TaskColumnIndex.ID
-import net.thechance.data.tasks.utils.TaskColumnIndex.PROJECT_ID
-import net.thechance.data.tasks.utils.TaskColumnIndex.TITLE
-import net.thechance.logic.entities.State
-import net.thechance.logic.CsvSerializable
+import data.tasks.utils.TaskColumnIndex.CURRENT_STATE_ID
+import data.tasks.utils.TaskColumnIndex.CURRENT_STATE_NAME
+import data.tasks.utils.TaskColumnIndex.DESCRIPTION
+import data.tasks.utils.TaskColumnIndex.ID
+import data.tasks.utils.TaskColumnIndex.PROJECT_ID
+import data.tasks.utils.TaskColumnIndex.TITLE
+import logic.CsvSerializable
 import java.util.UUID
 
 

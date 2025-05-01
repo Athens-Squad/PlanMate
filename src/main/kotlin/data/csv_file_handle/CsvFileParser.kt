@@ -1,6 +1,6 @@
-package net.thechance.data.csv_file_handle
+package data.csv_file_handle
 
-import net.thechance.logic.CsvSerializable
+import logic.CsvSerializable
 
 class CsvFileParser<T: CsvSerializable> (
     private val factory: (List<String>) -> T

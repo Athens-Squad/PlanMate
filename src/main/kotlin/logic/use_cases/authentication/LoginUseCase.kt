@@ -1,9 +1,9 @@
-package net.thechance.logic.use_cases.authentication
+package logic.use_cases.authentication
 
 import logic.entities.User
-import net.thechance.data.authentication.utils.PasswordHashing
-import net.thechance.logic.repositories.AuthenticationRepository
-import net.thechance.logic.use_cases.authentication.exceptions.InvalidCredentialsException
+import data.authentication.utils.PasswordHashing
+import logic.repositories.AuthenticationRepository
+import logic.use_cases.authentication.exceptions.InvalidCredentialsException
 
 class LoginUseCase(
     private val authenticationRepository: AuthenticationRepository,
