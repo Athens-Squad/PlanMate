@@ -5,7 +5,7 @@ import helper.task_helper.FakeTask.fakeTask
 import io.mockk.every
 import io.mockk.mockk
 import logic.repositories.TasksRepository
-import net.thechance.logic.exceptions.TasksException
+import logic.exceptions.TasksException
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 

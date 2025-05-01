@@ -6,8 +6,8 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.entities.AuditLog
 import logic.repositories.AuditRepository
-import net.thechance.logic.entities.EntityType
-import net.thechance.logic.use_cases.audit_log.GetAuditLogsByTaskIdUseCase
+import logic.entities.EntityType
+import logic.use_cases.audit_log.GetAuditLogsByTaskIdUseCase
 import org.junit.jupiter.api.BeforeEach
 import java.time.LocalDateTime
 import kotlin.test.Test

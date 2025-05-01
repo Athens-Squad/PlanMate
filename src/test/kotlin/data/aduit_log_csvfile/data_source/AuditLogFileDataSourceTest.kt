@@ -4,10 +4,10 @@ import com.google.common.truth.Truth.assertThat
 import data.aduit_log_csvfile.dummyAuditLog
 import io.mockk.*
 import logic.entities.AuditLog
-import net.thechance.data.aduit_log_csvfile.data_source.AuditLogDataSource
-import net.thechance.data.aduit_log_csvfile.data_source.AuditLogFileDataSource
-import net.thechance.data.csv_file_handle.CsvFileHandler
-import net.thechance.data.csv_file_handle.CsvFileParser
+import data.aduit_log_csvfile.data_source.AuditLogDataSource
+import data.aduit_log_csvfile.data_source.AuditLogFileDataSource
+import data.csv_file_handle.CsvFileHandler
+import data.csv_file_handle.CsvFileParser
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test

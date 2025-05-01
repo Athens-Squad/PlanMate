@@ -2,8 +2,8 @@ package helper.task_helper
 
 import logic.entities.AuditLog
 import logic.entities.Task
-import net.thechance.logic.entities.EntityType
-import net.thechance.logic.entities.State
+import logic.entities.EntityType
+import logic.entities.State
 import java.time.LocalDateTime
 
 object FakeTask {

@@ -6,9 +6,9 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.entities.AuditLog
-import net.thechance.data.aduit_log_csvfile.data_source.AuditLogDataSource
-import net.thechance.data.aduit_log_csvfile.repository.AuditLogRepositoryImpl
-import net.thechance.logic.entities.EntityType
+import data.aduit_log_csvfile.data_source.AuditLogDataSource
+import data.aduit_log_csvfile.repository.AuditLogRepositoryImpl
+import logic.entities.EntityType
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

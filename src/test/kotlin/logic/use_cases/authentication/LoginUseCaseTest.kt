@@ -4,10 +4,10 @@ import com.google.common.truth.Truth.assertThat
 import helper.createUser
 import io.mockk.every
 import io.mockk.mockk
-import net.thechance.logic.repositories.AuthenticationRepository
-import net.thechance.data.authentication.utils.PasswordHashing
-import net.thechance.logic.use_cases.authentication.LoginUseCase
-import net.thechance.logic.use_cases.authentication.exceptions.InvalidCredentialsException
+import logic.repositories.AuthenticationRepository
+import data.authentication.utils.PasswordHashing
+import logic.use_cases.authentication.LoginUseCase
+import logic.use_cases.authentication.exceptions.InvalidCredentialsException
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 
