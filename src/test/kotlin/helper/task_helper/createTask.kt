@@ -49,7 +49,7 @@ object FakeTask {
         entityType = entityType,
         entityId = entityId,
         description = description,
-        userId = userName,
+        userName = userName,
         createdAt = createdAt
     )
 

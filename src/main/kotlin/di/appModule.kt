@@ -1,6 +1,9 @@
 package net.thechance.di
 
+import logic.entities.AuditLog
 import logic.entities.Task
+import net.thechance.data.aduit_log_csvfile.data_source.AuditLogDataSource
+import net.thechance.data.aduit_log_csvfile.data_source.AuditLogFileDataSource
 import net.thechance.data.csv_file_handle.CsvFileHandler
 import net.thechance.data.csv_file_handle.CsvFileParser
 import net.thechance.data.tasks.data_source.TasksDataSource
@@ -27,4 +30,17 @@ val appModule = module {
     }
 
     single<TaskValidator> { TaskValidatorImpl(get(), get(), get()) }
+    single(named("auditLogCsvFile")) { File("data_files/audit_log.csv") }
+
+    single(named("AuditLogFileHandler")) { CsvFileHandler(get(named("auditLogCsvFile"))) }
+
+    single(named("AuditLogFileParser")) { CsvFileParser(factory = AuditLog.Companion::fromCsv) }
+
+
+    single<AuditLogDataSource> {
+        AuditLogFileDataSource(
+            auditLogFileHandler = get(named("AuditLogFileHandler")),
+            csvFileParser = get(named("AuditLogFileParser"))
+        )
+    }
 }
