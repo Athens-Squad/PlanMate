@@ -6,10 +6,9 @@ import net.thechance.logic.entities.State
 
 
 class UpdateStateUseCase(
-    private val stateRepository: StatesRepository,
-    private val auditRepository: AuditRepository
+    private val stateRepository: StatesRepository
 ) {
-    fun execute(stateId: String, updatedState: State): Boolean {
+    fun updateState(stateId: String, updatedState: State): Boolean {
         return false
     }
 }

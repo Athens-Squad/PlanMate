@@ -5,7 +5,7 @@ import net.thechance.logic.entities.State
 
 
 class GetStateByIdUseCase(private val stateRepository: StatesRepository) {
-    fun execute(stateId: String): State? {
+    fun getStateById(stateId: String): State? {
         return null
     }
 }

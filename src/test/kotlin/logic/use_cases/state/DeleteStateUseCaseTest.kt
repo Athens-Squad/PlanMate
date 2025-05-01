@@ -1,0 +1,32 @@
+package logic.use_cases.state
+
+import helper.task_helper.createDummyState
+import io.mockk.mockk
+import io.mockk.verify
+import logic.repositories.StatesRepository
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+
+class DeleteStateUseCaseTest {
+
+    lateinit var deleteStateUseCase: DeleteStateUseCase
+    val stateRepository: StatesRepository = mockk(relaxed = true)
+
+
+    @BeforeEach
+    fun setUp() {
+        deleteStateUseCase = DeleteStateUseCase(stateRepository)
+    }
+
+    @Test
+    fun `should call delete State From File function when delete state `() {
+        //given
+        val dummyState = createDummyState.dummyState()
+        //when
+        deleteStateUseCase.deleteState(dummyState.id)
+
+        //then
+        verify { stateRepository.deleteStateFromFile(dummyState.id) }
+
+    }
+}

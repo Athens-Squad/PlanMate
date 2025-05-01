@@ -5,10 +5,9 @@ import logic.repositories.StatesRepository
 import net.thechance.logic.entities.State
 
 class CreateStateUseCase(
-    private val stateRepository: StatesRepository,
-    private val auditRepository: AuditRepository
+    private val stateRepository: StatesRepository
 ) {
-    fun execute(state: State): Boolean {
-        return false
+    fun createNewState(state: State) {
+
     }
 }

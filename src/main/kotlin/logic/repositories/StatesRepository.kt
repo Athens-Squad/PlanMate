@@ -3,8 +3,8 @@ package logic.repositories
 import net.thechance.logic.entities.State
 
 interface StatesRepository {
-    fun createState(state: State): Result<Unit>
-    fun updateState(state: State): Result<Unit>
-    fun deleteState(stateId: String): Result<Unit>
-    fun getStates(): Result<List<State>>
+    fun createStateInFile(state: State): Result<Unit>
+    fun updateStateInFile(state: State): Result<Unit>
+    fun deleteStateFromFile(stateId: String): Result<Unit>
+    fun getStatesFromFile(): Result<List<State>>
 }

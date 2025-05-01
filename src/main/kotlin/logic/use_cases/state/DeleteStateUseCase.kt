@@ -1,13 +1,13 @@
-package com.thechance.logic.usecases.state
+package logic.use_cases.state
 
 import logic.repositories.AuditRepository
 import logic.repositories.StatesRepository
 
 class DeleteStateUseCase(
-    private val stateRepository: StatesRepository,
-    private val auditRepository: AuditRepository
+    private val stateRepository: StatesRepository
+    //private val auditRepository: AuditRepository
 ) {
-    fun execute(stateId: String): Boolean {
-        return false
+    fun deleteState(stateId: String){
+
     }
 }
