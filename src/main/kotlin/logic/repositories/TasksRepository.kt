@@ -5,7 +5,7 @@ import logic.entities.Task
 interface TasksRepository {
     fun createTask(task: Task): Result<Unit>
 
-    fun updateTask(task: Task): Result<Unit>
+    fun updateTask(updatedTask: Task): Result<Unit>
 
     fun deleteTask(taskId: String): Result<Unit>
 
@@ -13,5 +13,5 @@ interface TasksRepository {
 
     fun getTasksByProjectId(projectId: String): Result<List<Task>>
 
-    fun getTasks(): Result<List<Task>>
+    fun getAllTasks(): Result<List<Task>>
 }
