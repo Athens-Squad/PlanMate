@@ -1,4 +1,4 @@
-package audit_log
+package logic.use_cases.audit_log
 
 import io.mockk.*
 import logic.repositories.AuditRepository

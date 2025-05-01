@@ -1,4 +1,4 @@
-package audit_log
+package logic.use_cases.audit_log
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
@@ -9,9 +9,7 @@ import logic.repositories.AuditRepository
 import net.thechance.logic.entities.EntityType
 import net.thechance.logic.use_cases.audit_log.GetAuditLogsByTaskIdUseCase
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import java.time.LocalDateTime
-import kotlin.math.E
 import kotlin.test.Test
 
 class GetAuditLogsByTaskIdUseCaseTest {

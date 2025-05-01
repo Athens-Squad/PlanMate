@@ -2,52 +2,83 @@ package logic.use_cases.task
 
 import com.google.common.truth.Truth.assertThat
 import helper.task_helper.FakeTask
+import helper.task_helper.FakeTask.fakeTask
+import helper.task_helper.FakeTask.fakeUserName
+import io.mockk.Runs
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import logic.entities.Task
 import logic.repositories.AuditRepository
 import logic.repositories.ProjectsRepository
+import logic.repositories.StatesRepository
 import logic.repositories.TasksRepository
+import net.thechance.logic.entities.State
+import net.thechance.logic.exceptions.TasksException
+import net.thechance.logic.use_cases.task.taskvalidations.TaskValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class UpdateTaskUseCaseTest {
     private lateinit var updateTaskUseCase: UpdateTaskUseCase
-    private val projectsRepository = mockk<ProjectsRepository>()
+    private val taskValidator = mockk<TaskValidator>()
     private val tasksRepository = mockk<TasksRepository>()
     private val auditRepository = mockk<AuditRepository>()
 
     @BeforeEach
     fun setup() {
-        updateTaskUseCase = UpdateTaskUseCase(tasksRepository, projectsRepository, auditRepository)
+        updateTaskUseCase = UpdateTaskUseCase(tasksRepository, auditRepository, taskValidator)
     }
 
     @Test
-    fun `should be able to update task if the task already exists then return true`() {
-        every { tasksRepository.updateTask(FakeTask.fakeTask) } returns Result.success(Unit)
+    fun `should be able to update task if the task already exists`() {
+        // Given
+        val fakeUpdatedTask = fakeTask.copy(
+            title = "newTitle"
+        )
 
-        //when
-        val result = updateTaskUseCase.execute(FakeTask.fakeTask)
+        every { taskValidator.doIfTaskExistsOrThrow(any(), any()) } answers {
+            val action = secondArg<(Task) -> Unit>()
+            action(fakeTask)
+        }
+        every { taskValidator.validateTaskBeforeUpdating(fakeTask, fakeUpdatedTask) } just Runs
+        every { tasksRepository.updateTask(fakeUpdatedTask) } returns Result.success(Unit)
+        every { auditRepository.createAuditLog(any()) } returns Result.success(Unit)
 
-        //then
+        // When
+        val result = updateTaskUseCase.execute(fakeUpdatedTask, fakeUserName)
+
+        if (result.isFailure) {
+            println(result.exceptionOrNull())
+        }
+        // Then
+        assertThat(result.isSuccess).isTrue()
     }
 
     @Test
     fun `should not be able to update a task when task does not exist then return false`() {
-        every { tasksRepository.updateTask(FakeTask.fakeTask) } returns Result.failure(NoSuchElementException())
+        //given
+        val fakeUpdatedTask = fakeTask.copy(title = "newTitle")
+        every { taskValidator.doIfTaskExistsOrThrow(fakeUpdatedTask.id, any()) } throws
+                TasksException.CannotCompleteTaskOperationException("Cannot find the task!")
 
-        //when
-        val result = updateTaskUseCase.execute(FakeTask.fakeTask)
+        every { taskValidator.validateTaskBeforeUpdating(fakeTask, fakeUpdatedTask) } just Runs
+        every { tasksRepository.updateTask(fakeUpdatedTask) } returns Result.success(Unit)
+        every { auditRepository.createAuditLog(any()) } returns Result.success(Unit)
 
-        //then
+        // When
+        val result = updateTaskUseCase.execute(fakeUpdatedTask, fakeUserName)
+
+        // Then
+        assertThat(result.isFailure).isTrue()
     }
 
     @Test
-    fun `should not be able to change projectId then return false`() {
-
+    fun `should not be able to change projectId`() {
     }
 
     @Test
-    fun `should not be able to change the taskName to existing taskName then return false` () {
+    fun `should not be able to change the taskTitle to existing taskTitle` () {
 
     }
 }
