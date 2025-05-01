@@ -22,7 +22,6 @@ class CreateTaskUseCase(
                 //create task
                 taskRepository.createTask(task)
                     .onSuccess {
-                        //create log
                         createLog(task, userName)
                     }
 
@@ -36,7 +35,7 @@ class CreateTaskUseCase(
             entityType = EntityType.TASK,
             entityId = task.id,
             description = "Task ${task.title} created successfully.",
-            userId = userName,
+            userName = userName,
             createdAt = LocalDateTime.now()
         )
         auditRepository.createAuditLog(auditLog).getOrThrow()
