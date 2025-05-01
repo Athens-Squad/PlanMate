@@ -39,7 +39,7 @@ class UpdateTaskUseCase(
             entityType = EntityType.TASK,
             entityId = task.id,
             description = "Task ${task.title} updated successfully.",
-            userId = userName,
+            userName = userName,
             createdAt = LocalDateTime.now()
         )
         auditRepository.createAuditLog(auditLog).getOrThrow()

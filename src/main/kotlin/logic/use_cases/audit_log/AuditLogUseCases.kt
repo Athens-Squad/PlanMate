@@ -1,6 +1,6 @@
 package net.thechance.logic.use_cases.audit_log
 
-import com.thechance.logic.usecases.audit.CreateAuditLogUseCase
+import logic.use_cases.audit_log.CreateAuditLogUseCase
 
 data class AuditLogUseCases(
     val clearLogUseCase: ClearLogUseCase,
