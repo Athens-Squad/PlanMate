@@ -5,6 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import logic.entities.User
 import logic.repositories.UserRepository
+import net.thechance.data.authentication.utils.PasswordHashing
 import net.thechance.logic.entities.UserType
 import net.thechance.logic.use_cases.authentication.RegisterAsAdminUseCase
 import org.junit.jupiter.api.BeforeEach
@@ -15,12 +16,14 @@ import kotlin.test.assertTrue
 class RegisterAsAdminUseCaseTest {
 
     private lateinit var userRepository: UserRepository
+    private lateinit var passwordHashing: PasswordHashing
     private lateinit var registerAsAdminUseCase: RegisterAsAdminUseCase
 
     @BeforeEach
     fun setup() {
         userRepository = mockk(relaxed = true)
-        registerAsAdminUseCase = RegisterAsAdminUseCase(userRepository)
+        passwordHashing = PasswordHashing()
+        registerAsAdminUseCase = RegisterAsAdminUseCase(userRepository,passwordHashing)
     }
 
     @Test
@@ -40,7 +43,7 @@ class RegisterAsAdminUseCaseTest {
     fun `throw exception when create user failed and get user by username failed`() {
         //Given
         val user = User(name = "mohamed", password = "ABCabc123@#4", type = UserType.AdminUser)
-        every { userRepository.createUser(user) } returns Result.failure(Exception())
+        every { userRepository.createUser(user.copy(password = passwordHashing.hash(user.password))) } returns Result.failure(Exception())
         every { userRepository.getUserByUsername(user.name) } returns Result.failure(Exception())
         //when
         val execute = registerAsAdminUseCase.execute(user)
