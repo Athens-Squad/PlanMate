@@ -11,12 +11,11 @@ class GetAuditLogsByProjectIdUseCase(private val auditRepository: AuditRepositor
             return Result.success(emptyList())
         }
 
-        return auditRepository.getAuditLogs()
-                .mapCatching { auditLogs ->
-                    auditLogs.filter { it.entityType == EntityType.PROJECT && it.entityId == projectId }
-                }
-                .recoverCatching {
-                    emptyList()
-                }
+        return runCatching {
+            auditRepository.getAuditLogs().getOrThrow()
+                .filter { it.entityType == EntityType.PROJECT && it.entityId == projectId }
+        }.recoverCatching {
+            emptyList()
         }
+    }
     }

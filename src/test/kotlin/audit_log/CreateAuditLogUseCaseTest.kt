@@ -109,7 +109,7 @@ class CreateAuditLogUseCaseTest {
             createdAt = LocalDateTime.of(2025, 4, 28, 10, 0)
         )
 
-        every { auditRepository.createAuditLog(auditLog) } throws RuntimeException("Database failure")
+        every { auditRepository.createAuditLog(auditLog) } throws RuntimeException("Failed to create audit log")
         // When:
         val result = createAuditLogUseCase.execute(auditLog)
         // Then:
