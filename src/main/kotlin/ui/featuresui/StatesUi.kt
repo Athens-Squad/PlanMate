@@ -1,8 +1,6 @@
 package ui.featuresui
 
-import logic.entities.AuditLog
 import logic.use_cases.state.StatesUseCases
-import logic.entities.State
 import ui.io.ConsoleIO
 
 class StatesUi(

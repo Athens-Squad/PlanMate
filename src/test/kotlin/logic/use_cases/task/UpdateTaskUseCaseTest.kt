@@ -1,7 +1,6 @@
 package logic.use_cases.task
 
 import com.google.common.truth.Truth.assertThat
-import helper.task_helper.FakeTask
 import helper.task_helper.FakeTask.fakeTask
 import helper.task_helper.FakeTask.fakeUserName
 import io.mockk.Runs
@@ -10,10 +9,7 @@ import io.mockk.just
 import io.mockk.mockk
 import logic.entities.Task
 import logic.repositories.AuditRepository
-import logic.repositories.ProjectsRepository
-import logic.repositories.StatesRepository
 import logic.repositories.TasksRepository
-import logic.entities.State
 import logic.exceptions.TasksException
 import logic.use_cases.task.taskvalidations.TaskValidator
 import org.junit.jupiter.api.BeforeEach

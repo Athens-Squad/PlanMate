@@ -1,14 +1,14 @@
 package data.states
 
 import logic.repositories.StatesRepository
-import logic.entities.State
+import logic.entities.ProgressionState
 
 class StatesRepositoryImpl: StatesRepository {
-    override fun createState(state: State): Result<Unit> {
+    override fun createState(progressionState: ProgressionState): Result<Unit> {
         TODO("Not yet implemented")
     }
 
-    override fun updateState(state: State): Result<Unit> {
+    override fun updateState(progressionState: ProgressionState): Result<Unit> {
         TODO("Not yet implemented")
     }
 
@@ -16,7 +16,7 @@ class StatesRepositoryImpl: StatesRepository {
         TODO("Not yet implemented")
     }
 
-    override fun getStates(): Result<List<State>> {
+    override fun getStates(): Result<List<ProgressionState>> {
         TODO("Not yet implemented")
     }
 }

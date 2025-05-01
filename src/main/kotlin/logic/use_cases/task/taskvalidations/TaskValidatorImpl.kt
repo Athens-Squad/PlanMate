@@ -5,7 +5,7 @@ import logic.repositories.ProjectsRepository
 import logic.repositories.StatesRepository
 import logic.repositories.TasksRepository
 import logic.exceptions.TasksException
-import logic.entities.State
+import logic.entities.ProgressionState
 
 class TaskValidatorImpl(
     private val tasksRepository: TasksRepository,
@@ -42,7 +42,7 @@ class TaskValidatorImpl(
         validateTaskFieldsIsNotBlankOrThrow(task)
 
         // Validate that the current state belongs to the same project
-        validateTaskState(task.currentState, task.projectId)
+        validateTaskState(task.currentProgressionState, task.projectId)
     }
 
     override fun validateTaskBeforeUpdating(task: Task, updatedTask: Task) {
@@ -56,14 +56,14 @@ class TaskValidatorImpl(
 
         validateTaskFieldsIsNotBlankOrThrow(updatedTask)
 
-        validateTaskState(updatedTask.currentState, updatedTask.projectId)
+        validateTaskState(updatedTask.currentProgressionState, updatedTask.projectId)
     }
 
     private fun validateTaskFieldsIsNotBlankOrThrow(task: Task) {
         // Validate task fields (title, description, currentState)
         if (task.title.isBlank()) throw TasksException.InvalidTaskException("Task title cannot be empty.")
         if (task.description.isBlank()) throw TasksException.InvalidTaskException("Task description cannot be empty.")
-        if (task.currentState.id.isBlank() || task.currentState.name.isBlank())
+        if (task.currentProgressionState.id.isBlank() || task.currentProgressionState.name.isBlank())
             throw TasksException.InvalidTaskException("Task currentState cannot be empty.")
 
     }
@@ -84,10 +84,10 @@ class TaskValidatorImpl(
 
     }
 
-    private fun validateTaskState(currentState: State, projectId: String) {
+    private fun validateTaskState(currentProgressionState: ProgressionState, projectId: String) {
         statesRepository.getStates().getOrNull()
-            ?.find { it.id == currentState.id && it.projectId == projectId }
-            ?: throw TasksException.InvalidTaskException("State '${currentState.name}' is not valid for the given project.")
+            ?.find { it.id == currentProgressionState.id && it.projectId == projectId }
+            ?: throw TasksException.InvalidTaskException("State '${currentProgressionState.name}' is not valid for the given project.")
 
     }
 
