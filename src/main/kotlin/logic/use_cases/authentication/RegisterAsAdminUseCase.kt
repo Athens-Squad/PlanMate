@@ -2,10 +2,12 @@ package net.thechance.logic.use_cases.authentication
 
 import logic.entities.User
 import logic.repositories.UserRepository
+import net.thechance.data.authentication.utils.PasswordHashing
 import net.thechance.logic.entities.UserType
 
 class RegisterAsAdminUseCase(
     private val userRepository: UserRepository,
+    private val passwordHashing: PasswordHashing
 ) {
 
     fun execute(adminUser: User): Result<Unit> {
@@ -18,7 +20,9 @@ class RegisterAsAdminUseCase(
             Result.failure(Exception())
         } else {
             runCatching {
-                userRepository.createUser(adminUser).getOrThrow()
+                val hashedPassword = passwordHashing.hash(adminUser.password)
+                val adminUserWithHashedPassword = adminUser.copy(password = hashedPassword)
+                userRepository.createUser(adminUserWithHashedPassword).getOrThrow()
             }
         }
     }
