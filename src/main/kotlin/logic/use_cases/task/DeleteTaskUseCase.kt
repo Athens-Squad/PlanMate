@@ -31,7 +31,7 @@ class DeleteTaskUseCase(
             entityType = EntityType.TASK,
             entityId = taskId,
             description = "Task with ID $taskId deleted successfully.",
-            userId = userName,
+            userName = userName,
             createdAt = LocalDateTime.now()
         )
         auditRepository.createAuditLog(auditLog).getOrThrow()

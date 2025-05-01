@@ -1,4 +1,4 @@
-package audit_log
+package logic.use_cases.audit_log
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach
 import java.time.LocalDateTime
 import kotlin.test.Test
 import io.mockk.*
-import logic.use_cases.audit_log.CreateAuditLogUseCase
 
 class CreateAuditLogUseCaseTest {
 
