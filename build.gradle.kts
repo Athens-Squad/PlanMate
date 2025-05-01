@@ -38,9 +38,9 @@ kotlin {
 }
 kover.reports.filters.includes {
     packages(
-        "net.thechance.data",
-        "net.thechance.logic",
-        "net.thechance.ui"
+        "data",
+        "logic",
+        "ui"
     )
 }
 kover.reports.verify.rule {

@@ -1,4 +1,4 @@
-package net.thechance.data.aduit_log_csvfile.data_source
+package data.aduit_log_csvfile.data_source
 
 import logic.entities.AuditLog
 

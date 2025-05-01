@@ -1,4 +1,4 @@
-package net.thechance.data.user.data_source
+package data.user.data_source
 
 import logic.entities.User
 

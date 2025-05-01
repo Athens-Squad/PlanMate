@@ -5,12 +5,12 @@ import io.mockk.every
 import io.mockk.mockk
 import logic.entities.AuditLog
 import logic.repositories.AuditRepository
-import net.thechance.logic.entities.EntityType
+import logic.entities.EntityType
 import org.junit.jupiter.api.BeforeEach
 import java.time.LocalDateTime
 import kotlin.test.Test
 import io.mockk.*
-import net.thechance.logic.use_cases.audit_log.GetAuditLogsByProjectIdUseCase
+import logic.use_cases.audit_log.GetAuditLogsByProjectIdUseCase
 
 
 class GetAuditLogsByProjectIdUseCaseTest{

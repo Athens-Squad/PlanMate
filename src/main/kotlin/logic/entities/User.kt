@@ -1,11 +1,11 @@
 package logic.entities
 
-import net.thechance.data.user.utils.UserColumnIndex.ID
-import net.thechance.data.user.utils.UserColumnIndex.PASSWORD
-import net.thechance.data.user.utils.UserColumnIndex.USERNAME
-import net.thechance.data.user.utils.UserColumnIndex.USER_TYPE
-import net.thechance.logic.CsvSerializable
-import net.thechance.logic.entities.UserType
+import data.user.utils.UserColumnIndex.ID
+import data.user.utils.UserColumnIndex.PASSWORD
+import data.user.utils.UserColumnIndex.USERNAME
+import data.user.utils.UserColumnIndex.USER_TYPE
+import logic.CsvSerializable
+import logic.entities.UserType
 import java.util.*
 
 

@@ -2,8 +2,8 @@ package helper.task_helper
 
 import logic.entities.AuditLog
 import logic.entities.Task
-import net.thechance.logic.entities.EntityType
-import net.thechance.logic.entities.State
+import logic.entities.EntityType
+import logic.entities.ProgressionState
 import java.time.LocalDateTime
 
 object FakeTask {
@@ -21,7 +21,7 @@ object FakeTask {
         id = id,
         title = title,
         description = description,
-        currentState = State(
+        currentProgressionState = ProgressionState(
             id = currentStateId,
             name = currentStateName,
             projectId = projectId

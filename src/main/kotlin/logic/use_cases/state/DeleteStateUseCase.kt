@@ -1,4 +1,4 @@
-package com.thechance.logic.usecases.state
+package logic.use_cases.state
 
 import logic.repositories.AuditRepository
 import logic.repositories.StatesRepository

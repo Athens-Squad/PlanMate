@@ -5,7 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import logic.entities.AuditLog
 import logic.repositories.AuditRepository
-import net.thechance.logic.entities.EntityType
+import logic.entities.EntityType
 import org.junit.jupiter.api.BeforeEach
 import java.time.LocalDateTime
 import kotlin.test.Test

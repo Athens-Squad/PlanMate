@@ -1,33 +1,20 @@
 package net.thechance
 
-import logic.entities.Task
-import logic.repositories.TasksRepository
-import net.thechance.di.appModule
-import net.thechance.di.repositoriesModule
-import org.koin.core.context.GlobalContext.get
+
+import di.appModule
+import di.repositoriesModule
+import di.uiModule
+import di.useCasesModule
+import ui.PlanMateCli
 import org.koin.core.context.startKoin
+import org.koin.java.KoinJavaComponent.getKoin
+import java.util.UUID
 
 fun main() {
     startKoin {
-        modules(appModule, repositoriesModule)
+        modules(appModule, repositoriesModule, useCasesModule, uiModule)
     }
-    val repo = get().get<TasksRepository>()
+    val cli = getKoin().get<PlanMateCli>()
+    cli.run()
 
-    val task = Task(
-        title = "Task 1",
-        description = "Description 1",
-        currentState = net.thechance.logic.entities.State(
-            id = "1",
-            name = "State 1",
-            projectId = "p1"
-        ),
-        projectId = "p1"
-    )
-    repo.createTask(task)
-
-    repo.getAllTasks().onSuccess {
-        it.forEach {
-            println(it)
-        }
-    }
 }

@@ -1,4 +1,4 @@
-package net.thechance.logic.use_cases.project
+package logic.use_cases.project
 
 import logic.repositories.StatesRepository
 import logic.repositories.TasksRepository
