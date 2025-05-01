@@ -1,11 +1,10 @@
 package logic.entities
 
-import net.thechance.data.projects.utils.ProjectColumnIndex.CREATED_BY
-import net.thechance.data.projects.utils.ProjectColumnIndex.DESCRIPTION
-import net.thechance.data.projects.utils.ProjectColumnIndex.ID
-import net.thechance.data.projects.utils.ProjectColumnIndex.NAME
-import net.thechance.logic.CsvSerializable
-import net.thechance.logic.entities.State
+import logic.CsvSerializable
+import data.projects.utils.ProjectColumnIndex.CREATED_BY
+import data.projects.utils.ProjectColumnIndex.DESCRIPTION
+import data.projects.utils.ProjectColumnIndex.ID
+import data.projects.utils.ProjectColumnIndex.NAME
 import java.util.*
 
 
@@ -13,7 +12,7 @@ data class Project(
     val id: String = UUID.randomUUID().toString(),
     val name: String,
     val description: String,
-    val states: MutableList<State> = mutableListOf(),
+    val states: MutableList<ProgressionState> = mutableListOf(),
     val tasks: MutableList<Task> = mutableListOf(),
     val createdBy: String
 ) : CsvSerializable {

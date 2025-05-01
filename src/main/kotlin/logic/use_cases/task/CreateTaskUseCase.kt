@@ -4,8 +4,8 @@ import logic.entities.AuditLog
 import logic.entities.Task
 import logic.repositories.AuditRepository
 import logic.repositories.TasksRepository
-import net.thechance.logic.entities.EntityType
-import net.thechance.logic.use_cases.task.taskvalidations.TaskValidator
+import logic.entities.EntityType
+import logic.use_cases.task.taskvalidations.TaskValidator
 import java.time.LocalDateTime
 
 class CreateTaskUseCase(

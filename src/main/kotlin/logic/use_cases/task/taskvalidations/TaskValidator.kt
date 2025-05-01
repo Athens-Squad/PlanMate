@@ -1,4 +1,4 @@
-package net.thechance.logic.use_cases.task.taskvalidations
+package logic.use_cases.task.taskvalidations
 
 import logic.entities.Task
 

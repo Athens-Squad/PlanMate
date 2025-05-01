@@ -1,14 +1,12 @@
-package net.thechance.data.authentication.repository
+package data.authentication.repository
 
+import data.user.data_source.UsersDataSource
 import logic.entities.User
-import net.thechance.data.csv_file_handle.CsvFileHandler
-import net.thechance.data.csv_file_handle.CsvFileParser
-import net.thechance.data.user.data_source.UsersFileDataSource
-import net.thechance.logic.repositories.AuthenticationRepository
-import net.thechance.logic.use_cases.authentication.exceptions.UserNotFoundException
+import logic.repositories.AuthenticationRepository
+import logic.use_cases.authentication.exceptions.UserNotFoundException
 
 class AuthRepositoryImpl(
-   private val usersFileDataSource: UsersFileDataSource
+   private val usersFileDataSource: UsersDataSource
 
 ): AuthenticationRepository {
 

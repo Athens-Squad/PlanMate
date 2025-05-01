@@ -2,7 +2,7 @@ package logic.use_cases.audit_log
 
 import io.mockk.*
 import logic.repositories.AuditRepository
-import net.thechance.logic.use_cases.audit_log.ClearLogUseCase
+import logic.use_cases.audit_log.ClearLogUseCase
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 

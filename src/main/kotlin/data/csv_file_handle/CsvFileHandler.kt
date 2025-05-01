@@ -1,4 +1,4 @@
-package net.thechance.data.csv_file_handle
+package data.csv_file_handle
 
 import java.io.File
 

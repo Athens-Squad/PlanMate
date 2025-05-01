@@ -1,4 +1,4 @@
-package net.thechance.data.projects.utils
+package data.projects.utils
 
 object ProjectColumnIndex {
     const val ID = 0

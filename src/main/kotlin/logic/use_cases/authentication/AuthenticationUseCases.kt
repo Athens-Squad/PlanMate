@@ -1,4 +1,4 @@
-package net.thechance.logic.use_cases.authentication
+package logic.use_cases.authentication
 
 data class AuthenticationUseCases(
     val loginUseCase: LoginUseCase,

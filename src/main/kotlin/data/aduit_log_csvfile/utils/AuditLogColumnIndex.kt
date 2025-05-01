@@ -1,4 +1,4 @@
-package net.thechance.data.aduit_log_csvfile.utils
+package data.aduit_log_csvfile.utils
 
 object AuditLogColumnIndex {
     const val ID = 0

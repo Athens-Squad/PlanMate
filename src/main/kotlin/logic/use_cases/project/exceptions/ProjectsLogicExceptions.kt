@@ -1,4 +1,4 @@
-package net.thechance.logic.use_cases.project.exceptions
+package logic.use_cases.project.exceptions
 
 sealed class ProjectsLogicExceptions(message: String): Exception(message) {
     class NotAuthorizedUserException: ProjectsLogicExceptions("Not authorized user")

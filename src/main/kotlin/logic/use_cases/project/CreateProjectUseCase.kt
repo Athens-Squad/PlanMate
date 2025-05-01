@@ -1,13 +1,13 @@
-package net.thechance.logic.use_cases.project
+package logic.use_cases.project
 
 import logic.entities.Project
 import logic.repositories.*
-import net.thechance.logic.use_cases.project.exceptions.ProjectsLogicExceptions.*
-import net.thechance.logic.use_cases.project.log_builder.createLog
-import net.thechance.logic.use_cases.project.validations.checkIfFieldIsValid
-import net.thechance.logic.use_cases.project.validations.checkIfProjectsStatesValid
-import net.thechance.logic.use_cases.project.validations.checkIfProjectsTasksValid
-import net.thechance.logic.use_cases.project.validations.checkIfUserAuthorized
+import logic.use_cases.project.exceptions.ProjectsLogicExceptions.*
+import logic.use_cases.project.log_builder.createLog
+import logic.use_cases.project.projectValidations.checkIfFieldIsValid
+import logic.use_cases.project.projectValidations.checkIfProjectsStatesValid
+import logic.use_cases.project.projectValidations.checkIfProjectsTasksValid
+import logic.use_cases.project.projectValidations.checkIfUserAuthorized
 
 class CreateProjectUseCase(
     private val projectRepository: ProjectsRepository,

@@ -1,14 +1,12 @@
-package net.thechance.logic.use_cases.project
+package logic.use_cases.project
 
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
-import net.thechance.logic.use_cases.project.exceptions.ProjectsLogicExceptions.*
-import net.thechance.logic.use_cases.project.log_builder.createLog
-import net.thechance.logic.use_cases.project.validations.checkIfFieldIsValid
-import net.thechance.logic.use_cases.project.validations.checkIfProjectExistInRepositoryAndReturn
-import net.thechance.logic.use_cases.project.validations.checkIfUserAuthorized
-import net.thechance.logic.use_cases.project.validations.checkIfUserIsProjectOwner
+import logic.use_cases.project.exceptions.ProjectsLogicExceptions.*
+import logic.use_cases.project.projectValidations.checkIfFieldIsValid
+import logic.use_cases.project.projectValidations.checkIfUserAuthorized
+import logic.use_cases.project.projectValidations.checkIfUserIsProjectOwner
 
 class GetAllProjectsByUsernameUseCase(
     private val projectRepository: ProjectsRepository,

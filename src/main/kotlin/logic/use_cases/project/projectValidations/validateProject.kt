@@ -1,10 +1,6 @@
-package net.thechance.logic.use_cases.project.validations
+package logic.use_cases.project.projectValidations
 
-import logic.entities.Project
-import logic.entities.Task
-import logic.entities.User
-import net.thechance.logic.entities.State
-import net.thechance.logic.entities.UserType
+import logic.entities.*
 
 fun checkIfUserAuthorized(userName: String, action: (username: String) -> Result<User>): Boolean {
     return action(userName).fold(
@@ -19,7 +15,7 @@ fun String.checkIfFieldIsValid(): Boolean {
     return this.isNotBlank()
 }
 
-fun checkIfProjectsStatesValid(projectId: String, action: () -> Result<List<State>>): Boolean {
+fun checkIfProjectsStatesValid(projectId: String, action: () -> Result<List<ProgressionState>>): Boolean {
     return action().fold(
         onSuccess = { states -> states.any { it.projectId == projectId } },
         onFailure = { false }

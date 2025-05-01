@@ -5,8 +5,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
-import net.thechance.data.projects.ProjectsDataSource
-import net.thechance.data.projects.ProjectsRepositoryImpl
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 

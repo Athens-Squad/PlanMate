@@ -1,16 +1,14 @@
 package data.projects
 
 import com.google.common.truth.Truth.assertThat
+import data.csv_file_handle.CsvFileHandler
+import data.csv_file_handle.CsvFileParser
+import data.tasks.data_source.TasksDataSource
 import helper.project_helper.createProject
 import helper.project_helper.validRecordString
 import io.mockk.every
 import io.mockk.mockk
 import logic.entities.Project
-import net.thechance.data.csv_file_handle.CsvFileHandler
-import net.thechance.data.csv_file_handle.CsvFileParser
-import net.thechance.data.projects.ProjectsDataSource
-import net.thechance.data.projects.ProjectsFileDataSource
-import net.thechance.data.tasks.data_source.TasksDataSource
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

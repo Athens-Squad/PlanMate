@@ -1,10 +1,10 @@
-package net.thechance.logic.use_cases.project
+package logic.use_cases.project
 
 import logic.entities.Project
 import logic.repositories.*
-import net.thechance.logic.use_cases.project.exceptions.ProjectsLogicExceptions.*
-import net.thechance.logic.use_cases.project.log_builder.createLog
-import net.thechance.logic.use_cases.project.validations.*
+import logic.use_cases.project.projectValidations.*
+import logic.use_cases.project.exceptions.ProjectsLogicExceptions.*
+import logic.use_cases.project.log_builder.createLog
 
 
 class UpdateProjectUseCase(

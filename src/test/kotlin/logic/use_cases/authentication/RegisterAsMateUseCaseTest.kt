@@ -5,9 +5,9 @@ import io.mockk.every
 import io.mockk.mockk
 import logic.entities.User
 import logic.repositories.UserRepository
-import net.thechance.data.authentication.utils.PasswordHashing
-import net.thechance.logic.entities.UserType
-import net.thechance.logic.use_cases.authentication.RegisterAsMateUseCase
+import data.authentication.utils.PasswordHashing
+import logic.entities.UserType
+import logic.use_cases.authentication.RegisterAsMateUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test

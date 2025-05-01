@@ -2,13 +2,13 @@ package logic.use_cases.state
 
 import logic.repositories.AuditRepository
 import logic.repositories.StatesRepository
-import net.thechance.logic.entities.State
+import logic.entities.ProgressionState
 
 class CreateStateUseCase(
     private val stateRepository: StatesRepository,
     private val auditRepository: AuditRepository
 ) {
-    fun execute(state: State): Boolean {
+    fun execute(progressionState: ProgressionState): Boolean {
         return false
     }
 }

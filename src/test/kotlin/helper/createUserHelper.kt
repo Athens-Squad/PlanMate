@@ -1,7 +1,7 @@
 package helper
 
 import logic.entities.User
-import net.thechance.logic.entities.UserType
+import logic.entities.UserType
 import java.util.UUID
 
 fun createUser(

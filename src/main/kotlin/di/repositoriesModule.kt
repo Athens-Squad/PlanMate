@@ -1,14 +1,21 @@
-package net.thechance.di
+package di
 
-import net.thechance.data.user.repository.UserRepositoryImpl
-import logic.repositories.TasksRepository
-import logic.repositories.UserRepository
-import net.thechance.data.authentication.repository.AuthRepositoryImpl
-import net.thechance.data.tasks.repository.TasksRepositoryImpl
-import net.thechance.logic.repositories.AuthenticationRepository
+import data.aduit_log_csvfile.repository.AuditLogRepositoryImpl
+import data.authentication.repository.AuthRepositoryImpl
+import data.states.StatesRepositoryImpl
+import data.tasks.repository.TasksRepositoryImpl
+import data.user.repository.UserRepositoryImpl
+import logic.repositories.*
+import data.projects.ProjectsRepositoryImpl
 import org.koin.dsl.module
 
 val repositoriesModule = module {
+
+    single<AuditRepository> { AuditLogRepositoryImpl(get()) }
+
+    single<ProjectsRepository> { ProjectsRepositoryImpl(get()) }
+    single<StatesRepository> { StatesRepositoryImpl() }
+
     single<TasksRepository> { TasksRepositoryImpl(get()) }
 
     single<UserRepository> { UserRepositoryImpl(get()) }

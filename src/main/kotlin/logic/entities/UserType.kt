@@ -1,4 +1,4 @@
-package net.thechance.logic.entities
+package logic.entities
 
 
 

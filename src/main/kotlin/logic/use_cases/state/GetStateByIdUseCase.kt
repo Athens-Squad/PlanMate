@@ -1,11 +1,11 @@
 package logic.use_cases.state
 
 import logic.repositories.StatesRepository
-import net.thechance.logic.entities.State
+import logic.entities.ProgressionState
 
 
 class GetStateByIdUseCase(private val stateRepository: StatesRepository) {
-    fun execute(stateId: String): State? {
+    fun execute(stateId: String): ProgressionState? {
         return null
     }
 }

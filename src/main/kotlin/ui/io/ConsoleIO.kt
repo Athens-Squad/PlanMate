@@ -1,4 +1,4 @@
-package net.thechance.ui.io
+package ui.io
 
 data class ConsoleIO (
     val printer: Printer,

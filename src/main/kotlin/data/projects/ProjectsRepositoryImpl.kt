@@ -1,4 +1,4 @@
-package net.thechance.data.projects
+package data.projects
 
 import logic.entities.Project
 import logic.repositories.ProjectsRepository

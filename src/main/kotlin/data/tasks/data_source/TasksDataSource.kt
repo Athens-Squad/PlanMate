@@ -1,4 +1,4 @@
-package net.thechance.data.tasks.data_source
+package data.tasks.data_source
 
 import logic.entities.Task
 

@@ -1,8 +1,8 @@
-package net.thechance.logic.use_cases.project.log_builder
+package logic.use_cases.project.log_builder
 
 import logic.entities.AuditLog
+import logic.entities.EntityType
 import logic.entities.Project
-import net.thechance.logic.entities.EntityType
 import java.time.LocalDateTime
 
 fun createLog(project: Project, logMessage: String, action: (auditLog: AuditLog) -> Unit) {

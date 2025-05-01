@@ -12,8 +12,7 @@ import logic.entities.Project
 import logic.repositories.AuditRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
-import net.thechance.logic.use_cases.project.DeleteProjectUseCase
-import net.thechance.logic.use_cases.project.exceptions.ProjectsLogicExceptions.*
+import logic.use_cases.project.exceptions.ProjectsLogicExceptions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

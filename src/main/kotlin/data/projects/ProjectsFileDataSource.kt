@@ -1,9 +1,9 @@
-package net.thechance.data.projects
+package data.projects
 
+import data.csv_file_handle.CsvFileHandler
+import data.csv_file_handle.CsvFileParser
+import data.tasks.data_source.TasksDataSource
 import logic.entities.Project
-import net.thechance.data.csv_file_handle.CsvFileHandler
-import net.thechance.data.csv_file_handle.CsvFileParser
-import net.thechance.data.tasks.data_source.TasksDataSource
 
 class ProjectsFileDataSource(
     private val projectsFileHandler: CsvFileHandler,

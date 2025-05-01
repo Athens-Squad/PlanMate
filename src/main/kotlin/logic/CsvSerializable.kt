@@ -1,4 +1,4 @@
-package net.thechance.logic
+package logic
 
 
 interface CsvSerializable {

@@ -1,10 +1,10 @@
 package logic.repositories
 
-import net.thechance.logic.entities.State
+import logic.entities.ProgressionState
 
 interface StatesRepository {
-    fun createState(state: State): Result<Unit>
-    fun updateState(state: State): Result<Unit>
+    fun createState(progressionState: ProgressionState): Result<Unit>
+    fun updateState(progressionState: ProgressionState): Result<Unit>
     fun deleteState(stateId: String): Result<Unit>
-    fun getStates(): Result<List<State>>
+    fun getStates(): Result<List<ProgressionState>>
 }
