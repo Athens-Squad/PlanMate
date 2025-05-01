@@ -1,19 +1,26 @@
-package net.thechance.di
+package di
 
+import data.user.data_source.UsersFileDataSource
 import logic.entities.AuditLog
 import logic.entities.Task
 import logic.entities.User
-import net.thechance.data.csv_file_handle.CsvFileHandler
-import net.thechance.data.csv_file_handle.CsvFileParser
-import net.thechance.data.tasks.data_source.TasksDataSource
-import net.thechance.data.tasks.data_source.TasksFileDataSource
-import net.thechance.data.user.data_source.UsersDataSource
-import net.thechance.data.user.data_source.UsersFileDataSource
+import data.aduit_log_csvfile.data_source.AuditLogDataSource
+import data.aduit_log_csvfile.data_source.AuditLogFileDataSource
+import data.authentication.utils.PasswordHashing
+import data.csv_file_handle.CsvFileHandler
+import data.csv_file_handle.CsvFileParser
+import data.tasks.data_source.TasksDataSource
+import data.tasks.data_source.TasksFileDataSource
+import data.user.data_source.UsersDataSource
+import logic.use_cases.task.taskvalidations.TaskValidator
+import logic.use_cases.task.taskvalidations.TaskValidatorImpl
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
 
 val appModule = module {
+
+
     single(named("tasksCsvFile")) { File("data_files/tasks.csv") }
 
     single(named("tasksFileHandler")) { CsvFileHandler(get(named("tasksCsvFile"))) }
@@ -27,6 +34,22 @@ val appModule = module {
             csvFileParser = get(named("tasksFileParser"))
         )
     }
+
+
+    single(named("usersCsvFile")) { File("data_files/users.csv") }
+
+    single(named("usersFileHandler")) { CsvFileHandler(get(named("usersCsvFile"))) }
+
+    single(named("usersFileParser")) { CsvFileParser(factory = User.Companion::fromCsv) }
+
+    single<UsersDataSource> {
+        UsersFileDataSource(
+            userFileHandler = get(named("usersFileHandler")),
+            csvFileParser = get(named("usersFileParser"))
+        )
+    }
+
+
 
     single<TaskValidator> { TaskValidatorImpl(get(), get(), get()) }
     single(named("auditLogCsvFile")) { File("data_files/audit_log.csv") }
@@ -43,16 +66,6 @@ val appModule = module {
         )
     }
 
-    single(named("usersCsvFile")) { File("data_files/users.csv") }
 
-    single(named("usersFileHandler")) { CsvFileHandler(get(named("usersCsvFile"))) }
-
-    single(named("usersFileParser")) { CsvFileParser(factory = User.Companion::fromCsv) }
-
-    single<UsersDataSource> {
-        UsersFileDataSource(
-            userFileHandler = get(named("usersFileHandler")),
-            csvFileParser = get(named("usersFileParser"))
-        )
-    }
+    single { PasswordHashing() }
 }
