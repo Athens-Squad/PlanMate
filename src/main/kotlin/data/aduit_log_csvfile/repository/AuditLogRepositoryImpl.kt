@@ -4,7 +4,8 @@ import logic.entities.AuditLog
 import logic.repositories.AuditRepository
 import net.thechance.data.aduit_log_csvfile.data_source.AuditLogDataSource
 
-class AuditLogRepositoryImpl(val auditLogDataSource: AuditLogDataSource):AuditRepository {
+class AuditLogRepositoryImpl(private val auditLogDataSource: AuditLogDataSource)
+    :AuditRepository {
     override fun createAuditLog(auditLog: AuditLog): Result<Unit> {
         return auditLogDataSource.createAuditLog(auditLog)
     }
