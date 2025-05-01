@@ -27,7 +27,7 @@ class UsersFileDataSource(
         users.find { it.name == userName } ?: throw UserNotFoundException()
     }
 
-    private fun getAllUsers(): List<User> {
+     override fun getAllUsers(): List<User> {
         return userFileHandler.readRecords().map { record ->
             csvFileParser.parseRecord(record)
         }
