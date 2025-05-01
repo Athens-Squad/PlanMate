@@ -25,7 +25,7 @@ fun main() {
     )
     repo.createTask(task)
 
-    repo.getTasks().onSuccess {
+    repo.getAllTasks().onSuccess {
         it.forEach {
             println(it)
         }
