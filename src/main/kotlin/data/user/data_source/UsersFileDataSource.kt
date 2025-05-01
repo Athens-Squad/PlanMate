@@ -1,0 +1,35 @@
+package net.thechance.data.user.data_source
+
+import logic.entities.User
+import net.thechance.data.csv_file_handle.CsvFileHandler
+import net.thechance.data.csv_file_handle.CsvFileParser
+import net.thechance.logic.use_cases.authentication.exceptions.UserAlreadyExistsException
+import net.thechance.logic.use_cases.authentication.exceptions.UserNotFoundException
+
+class UsersFileDataSource(
+    private val userFileHandler: CsvFileHandler,
+    private val csvFileParser: CsvFileParser<User>
+) : UsersDataSource {
+
+    override fun createUser(user: User): Result<Unit> = runCatching {
+        val users = getAllUsers()
+        if (users.any {
+                it.name == user.name
+            }) {
+            throw UserAlreadyExistsException()
+        }
+        val record = csvFileParser.toCsvRecord(user)
+        userFileHandler.appendRecord(record)
+    }
+
+    override fun getUserByUsername(userName: String): Result<User> = runCatching {
+        val users = getAllUsers()
+        users.find { it.name == userName } ?: throw UserNotFoundException()
+    }
+
+    private fun getAllUsers(): List<User> {
+        return userFileHandler.readRecords().map { record ->
+            csvFileParser.parseRecord(record)
+        }
+    }
+}
