@@ -8,6 +8,8 @@ import net.thechance.data.csv_file_handle.CsvFileHandler
 import net.thechance.data.csv_file_handle.CsvFileParser
 import net.thechance.data.tasks.data_source.TasksDataSource
 import net.thechance.data.tasks.data_source.TasksFileDataSource
+import net.thechance.logic.use_cases.task.taskvalidations.TaskValidator
+import net.thechance.logic.use_cases.task.taskvalidations.TaskValidatorImpl
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
