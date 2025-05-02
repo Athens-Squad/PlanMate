@@ -4,6 +4,7 @@ import logic.entities.Project
 import logic.entities.UserType
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.options.AdminOptions
+import net.thechance.ui.options.MateOptions
 import net.thechance.ui.options.project.ProjectOptions
 import ui.featuresui.*
 import ui.io.ConsoleIO
@@ -33,7 +34,19 @@ class PlanMateCli(
     }
 
     private fun showMateOptions() {
-        //
+        do {
+            consoleIO.printer.printOptions(MateOptions.entries)
+
+            val userInput = consoleIO.reader.readNumberFromUser()
+            when (userInput) {
+                MateOptions.SHOW_ALL_PROJECTS.optionNumber -> handleShowAllProjectsOption()
+
+                MateOptions.EXIT.optionNumber -> {
+                    consoleIO.printer.printGoodbyeMessage("We will miss you.")
+                }
+
+            }
+        } while (userInput != AdminOptions.EXIT.optionNumber)
     }
 
     private fun showAdminOptions() {
@@ -99,7 +112,7 @@ class PlanMateCli(
                 .onSuccess { projectId ->
                     projectsUi.getProject(projectId)
                         .onSuccess { project ->
-                            showProjectSwimlanes(project)
+                            handleProject(project)
                         }
                         .onFailure {
                             consoleIO.printer.printError(it.message.toString())
@@ -116,49 +129,91 @@ class PlanMateCli(
 
     }
 
-    private fun showProjectSwimlanes(project: Project) {
-        //TODO show swimlanes
-        do {
-            consoleIO.printer.printTitle("Select Option (1 to 7):")
-            consoleIO.printer.printOptions(ProjectOptions.entries)
+    private fun handleProject(project: Project) {
+        consoleIO.printer.printTitle("Project: ${project.name}")
+        consoleIO.printer.printPlainText("Description: ${project.description}")
+        consoleIO.printer.printDivider()
 
-            val inputProjectOption = consoleIO.reader.readNumberFromUser()
+        showProjectSwimlanes(project)
 
-            when (inputProjectOption) {
-                ProjectOptions.CREATE_TASK.optionNumber -> {
-                    statesUi.getStates(project.id)
-                        .onSuccess {
-                            tasksUi.createTask(it, project.id)
-                        }.onFailure {
-                            consoleIO.printer.printError(it.message.toString())
-                        }
+        if (session.currentUser.type is UserType.AdminUser) {
+            do {
+                consoleIO.printer.printTitle("Select Option (1 to 7):")
+                consoleIO.printer.printOptions(ProjectOptions.entries)
+
+                val inputProjectOption = consoleIO.reader.readNumberFromUser()
+
+                when (inputProjectOption) {
+                    ProjectOptions.CREATE_TASK.optionNumber -> {
+                        statesUi.getStates(project.id)
+                            .onSuccess {
+                                tasksUi.createTask(it, project.id)
+                            }.onFailure {
+                                consoleIO.printer.printError(it.message.toString())
+                            }
+                    }
+
+                    ProjectOptions.EDIT.optionNumber -> projectsUi.editProject(project)
+
+                    ProjectOptions.MANAGE_STATES.optionNumber -> statesUi.manageStates(project.progressionStates)
+
+                    ProjectOptions.MANAGE_TASKS.optionNumber ->
+                        tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
+
+                    ProjectOptions.SHOW_HISTORY.optionNumber -> {
+                        auditLogUi.getProjectHistory(project.id)
+                        auditLogUi.showHistoryOption()
+                    }
+
+                    ProjectOptions.DELETE.optionNumber -> {
+                        projectsUi.deleteProject(project.id)
+                            .onSuccess {
+                                consoleIO.printer.printCorrectOutput("Project Deleted Successfully")
+                            }
+                            .onFailure {
+                                consoleIO.printer.printError(it.message.toString())
+                            }
+
+                    }
+
                 }
-                ProjectOptions.EDIT.optionNumber -> projectsUi.editProject(project)
-                ProjectOptions.MANAGE_STATES.optionNumber -> statesUi.manageStates(project.progressionStates)
-                ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
+            } while (inputProjectOption != ProjectOptions.BACK.optionNumber ||
+                inputProjectOption != ProjectOptions.DELETE.optionNumber
+            )
+        } else {
+            tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
+        }
 
-                ProjectOptions.SHOW_HISTORY.optionNumber -> {
-                    auditLogUi.getProjectHistory(project.id)
-                    auditLogUi.showHistoryOption()
-                }
-
-                ProjectOptions.DELETE.optionNumber -> {
-                    projectsUi.deleteProject(project.id)
-                        .onSuccess {
-                            consoleIO.printer.printCorrectOutput("Project Deleted Successfully")
-                        }
-                        .onFailure {
-                            consoleIO.printer.printError(it.message.toString())
-                        }
-
-                }
-            }
-        } while (inputProjectOption != ProjectOptions.BACK.optionNumber ||
-            inputProjectOption != ProjectOptions.DELETE.optionNumber
-        )
 
     }
 
+    private fun showProjectSwimlanes(project: Project) {
+        val stateToTasksMap = project.progressionStates.associate { state ->
+            val tasks = project.tasks
+                .filter { it.currentProgressionState.id == state.id }
+                .map { it.title }
+            state.name to tasks
+        }
+
+        val maxTasks = stateToTasksMap.values.maxOfOrNull { it.size } ?: 0
+        val normalizedColumns = stateToTasksMap.mapValues { (_, tasks) ->
+            tasks + List(maxTasks - tasks.size) { "" }
+        }
+
+        val headers = normalizedColumns.keys.toList()
+        val colWidth = 25
+        val formatRow: (List<String>) -> String = { row ->
+            row.joinToString(" | ") { it.padEnd(colWidth) }
+        }
+
+        consoleIO.printer.printPlainText(formatRow(headers))
+        consoleIO.printer.printPlainText("-".repeat((colWidth + 3) * headers.size))
+
+        for (i in 0 until maxTasks) {
+            val row = headers.map { header -> normalizedColumns[header]?.get(i) ?: "" }
+            consoleIO.printer.printPlainText(formatRow(row))
+        }
+    }
 
     private fun getProjectId(inputProjectName: String, projects: List<Project>): Result<String> {
         return runCatching {
