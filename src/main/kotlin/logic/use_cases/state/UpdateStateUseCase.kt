@@ -9,7 +9,7 @@ class UpdateStateUseCase(
     private val stateRepository: StatesRepository,
     private val auditRepository: AuditRepository
 ) {
-    fun execute(stateId: String, updatedProgressionState: ProgressionState): Boolean {
-        return false
+    fun execute(state: ProgressionState, updatedState: ProgressionState): Result<Unit> {
+        return Result.success(Unit)
     }
 }

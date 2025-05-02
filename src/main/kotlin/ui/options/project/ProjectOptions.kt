@@ -6,28 +6,34 @@ enum class ProjectOptions(
     override val optionNumber: Int,
     override val optionTitle: String
 ): Option {
-    EDIT(
+    CREATE_TASK(
         1,
+        "Create New Task"
+    ),
+    EDIT(
+        2,
         "Edit Project."
     ),
     MANAGE_STATES(
-        2,
+        3,
         "Manage Project States."
     ),
     MANAGE_TASKS(
-        3,
+        4,
         "Manage Project Tasks."
     ),
     SHOW_HISTORY(
-        4,
+        5,
         "Show Project History."
     ),
     DELETE(
-        5,
+        6,
         "Delete This Project."
     ),
     BACK(
-        6,
+        7,
         "Back."
     )
 }
+
+

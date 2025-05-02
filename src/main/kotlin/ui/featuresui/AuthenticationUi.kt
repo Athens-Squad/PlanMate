@@ -96,6 +96,7 @@ class AuthenticationUi(
                 type = UserType.MateUser(adminId)
             )
         )
+
     }
 
     private fun receiveUserInfo(message: String): String {

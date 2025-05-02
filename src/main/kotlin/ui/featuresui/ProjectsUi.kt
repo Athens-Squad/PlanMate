@@ -29,6 +29,8 @@ class ProjectsUi(
     fun editProject(project: Project): Result<Unit> {
         consoleIO.printer.printTitle("Edit Project")
 
+        consoleIO.printer.printTitle("Select your option (1 or 2) : ")
+
         consoleIO.printer.printOptions(EditProjectOptions.entries)
 
         val inputEditOption = consoleIO.reader.readNumberFromUser()
@@ -65,7 +67,7 @@ class ProjectsUi(
         return projectUseCases.getProjectByIdUseCase.execute(projectId)
     }
 
-    fun getAllProjects(userId: String): Result<List<Project>> {
+    fun getAllUserProjects(userId: String): Result<List<Project>> {
         return projectUseCases.getProjectsByUserIdUseCase.execute(userId)
     }
 

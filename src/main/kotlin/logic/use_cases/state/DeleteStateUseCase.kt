@@ -7,7 +7,7 @@ class DeleteStateUseCase(
     private val stateRepository: StatesRepository,
     private val auditRepository: AuditRepository
 ) {
-    fun execute(stateId: String): Boolean {
-        return false
+    fun execute(stateId: String): Result<Unit> {
+        return Result.success(Unit)
     }
 }

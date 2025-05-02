@@ -21,3 +21,9 @@ enum class AdminOptions(
         "Exit."
     )
 }
+
+
+/* mate
+    show projects -> select project -> create task
+                                    -> select task -> edit/delete/show history of task
+ */

@@ -8,7 +8,7 @@ class CreateStateUseCase(
     private val stateRepository: StatesRepository,
     private val auditRepository: AuditRepository
 ) {
-    fun execute(progressionState: ProgressionState): Boolean {
-        return false
+    fun execute(progressionState: ProgressionState): Result<Unit> {
+        return Result.success(Unit)
     }
 }
