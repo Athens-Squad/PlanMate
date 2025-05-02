@@ -1,33 +1,30 @@
 package net.thechance
 
-import logic.entities.Task
-import logic.repositories.TasksRepository
+
+import logic.repositories.StatesRepository
+import logic.use_cases.state.CreateStateUseCase
+import logic.use_cases.state.GetStateByIdUseCase
 import net.thechance.di.appModule
 import net.thechance.di.repositoriesModule
+import net.thechance.logic.entities.State
 import org.koin.core.context.GlobalContext.get
 import org.koin.core.context.startKoin
+import org.koin.java.KoinJavaComponent.getKoin
 
 fun main() {
     startKoin {
         modules(appModule, repositoriesModule)
     }
-    val repo = get().get<TasksRepository>()
+    val repo = getKoin().get<StatesRepository>()
+    val createStateUseCase : CreateStateUseCase = getKoin().get()
+    val getStateByIdUseCase: GetStateByIdUseCase = getKoin().get()
 
-    val task = Task(
-        title = "Task 1",
-        description = "Description 1",
-        currentState = net.thechance.logic.entities.State(
-            id = "1",
-            name = "State 1",
-            projectId = "p1"
-        ),
+    val state = State(
+        id = "Task 1",
+        name = "Done",
         projectId = "p1"
     )
-    repo.createTask(task)
+    createStateUseCase.execute(state)
+    getStateByIdUseCase.execute(state.id)
 
-    repo.getAllTasks().onSuccess {
-        it.forEach {
-            println(it)
-        }
-    }
 }

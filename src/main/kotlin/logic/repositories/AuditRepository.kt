@@ -7,3 +7,4 @@ interface AuditRepository {
     fun getAuditLogs(): Result<List<AuditLog>>
     fun clearLog(): Result<Unit>
 }
+

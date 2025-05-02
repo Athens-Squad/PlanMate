@@ -1,8 +1,9 @@
-package logic.repositories
+package net.thechance.data.states.data_source
 
 import net.thechance.logic.entities.State
 
-interface StatesRepository {
+interface StatesDataSource {
+
     fun createState(state: State): Result<Unit>
 
     fun updateState(state: State): Result<Unit>
