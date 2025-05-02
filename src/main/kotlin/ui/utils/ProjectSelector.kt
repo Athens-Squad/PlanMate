@@ -1,6 +1,7 @@
-package net.thechance.ui.handlers
+package net.thechance.ui.utils
 
 import logic.entities.Project
+import net.thechance.ui.handlers.ProjectOptionsHandler
 import ui.featuresui.ProjectsUi
 import ui.io.ConsoleIO
 

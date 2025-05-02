@@ -1,6 +1,8 @@
 package di
 
 import net.thechance.ui.handlers.*
+import net.thechance.ui.utils.ProjectSelector
+import net.thechance.ui.utils.ProjectSwimlaneUiPrinter
 import ui.PlanMateCli
 import ui.featuresui.*
 import ui.io.ConsoleIO

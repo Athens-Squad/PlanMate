@@ -3,6 +3,7 @@ package net.thechance.ui.handlers
 import ui.io.ConsoleIO
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.options.AdminOptions
+import net.thechance.ui.utils.ProjectSelector
 import ui.featuresui.*
 
 class AdminOptionsHandler(
