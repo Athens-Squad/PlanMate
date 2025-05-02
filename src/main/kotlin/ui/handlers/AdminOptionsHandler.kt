@@ -8,6 +8,7 @@ import ui.featuresui.*
 class AdminOptionsHandler(
     private val consoleIO: ConsoleIO,
     private val projectsUi: ProjectsUi,
+    private val projectSelector: ProjectSelector,
     private val authenticationUi: AuthenticationUi,
     private val session: UserSession
 ) {
@@ -34,6 +35,7 @@ class AdminOptionsHandler(
                 projects.forEach { project ->
                     consoleIO.printer.printPlainText(project.name)
                 }
+                projectSelector.selectProject(projects)
             }
             .onFailure {
                 consoleIO.printer.printError(it.message.toString())
