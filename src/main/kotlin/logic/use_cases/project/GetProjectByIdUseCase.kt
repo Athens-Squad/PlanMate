@@ -1,18 +1,23 @@
 package logic.use_cases.project
 
 import logic.entities.Project
-import logic.entities.User
 import logic.repositories.ProjectsRepository
-import logic.repositories.StatesRepository
-import logic.entities.UserType
-
+import data.projects.exceptions.ProjectsLogicExceptions
+import data.projects.exceptions.ProjectsLogicExceptions.InvalidProjectNameException
+import logic.use_cases.project.projectValidations.checkIfFieldIsValid
+import logic.use_cases.project.projectValidations.checkIfProjectExistInRepositoryAndReturn
 
 class GetProjectByIdUseCase(
     private val projectRepository: ProjectsRepository,
-    private val taskRepository: ProjectsRepository,
-    private val statesRepository: StatesRepository
 ) {
     fun execute(projectId: String): Result<Project> {
-        return Result.failure(Exception())
+        return runCatching {
+            projectId.apply {
+                checkIfFieldIsValid().takeIf { it } ?: throw InvalidProjectNameException()
+            }
+
+            checkIfProjectExistInRepositoryAndReturn(projectId) { projectRepository.getProjects() }
+                ?: throw ProjectsLogicExceptions.NoProjectFoundException()
+        }
     }
 }

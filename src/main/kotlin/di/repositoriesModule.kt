@@ -1,26 +1,25 @@
 package di
 
-import logic.repositories.*
-import data.user.repository.UserRepositoryImpl
 import data.aduit_log_csvfile.repository.AuditLogRepositoryImpl
 import data.authentication.repository.AuthRepositoryImpl
-import data.projects.ProjectsRepositoryImpl
 import data.states.StatesRepositoryImpl
 import data.tasks.repository.TasksRepositoryImpl
-import logic.repositories.AuthenticationRepository
+import data.user.repository.UserRepositoryImpl
+import logic.repositories.*
+import data.projects.ProjectsRepositoryImpl
 import org.koin.dsl.module
 
 val repositoriesModule = module {
 
     single<AuditRepository> { AuditLogRepositoryImpl(get()) }
 
-    single<ProjectsRepository> { ProjectsRepositoryImpl() }
+    single<ProjectsRepository> { ProjectsRepositoryImpl(get()) }
     single<StatesRepository> { StatesRepositoryImpl() }
 
     single<TasksRepository> { TasksRepositoryImpl(get()) }
 
-
     single<UserRepository> { UserRepositoryImpl(get()) }
-    single<AuthenticationRepository> { AuthRepositoryImpl(get()) }
 
+    single<AuthenticationRepository> { AuthRepositoryImpl(get()) }
+    single<AuditRepository> {AuditLogRepositoryImpl(get()) }
 }

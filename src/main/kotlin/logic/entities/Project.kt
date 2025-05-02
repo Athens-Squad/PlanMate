@@ -10,10 +10,23 @@ data class Project(
     val description: String,
     val progressionStates: MutableList<ProgressionState> = mutableListOf(),
     val tasks: MutableList<Task> = mutableListOf(),
-    val createdBy: String //userName -> Admin
-)
+    val createdBy: String
+) : CsvSerializable {
+    override fun toCsvFields(): List<String> = listOf(
+        id,
+        name,
+        description,
+        createdBy
+    )
 
-//users
-//projects + states
-//tasks
-//AuditLog
+    companion object {
+        fun fromCsv(fields: List<String>): Project {
+            return Project(
+                id = fields[ID],
+                name = fields[NAME],
+                description = fields[DESCRIPTION],
+                createdBy = fields[CREATED_BY]
+            )
+        }
+    }
+}

@@ -1,0 +1,33 @@
+package logic.use_cases.project
+
+import logic.entities.Project
+import logic.repositories.ProjectsRepository
+import logic.repositories.UserRepository
+import data.projects.exceptions.ProjectsLogicExceptions.*
+import logic.use_cases.project.projectValidations.checkIfFieldIsValid
+import logic.use_cases.project.projectValidations.checkIfUserAuthorized
+import logic.use_cases.project.projectValidations.checkIfUserIsProjectOwner
+
+class GetAllProjectsByUsernameUseCase(
+    private val projectRepository: ProjectsRepository,
+    private val userRepository: UserRepository
+) {
+    fun execute(username: String): Result<List<Project>> {
+        return runCatching {
+            username.apply {
+                checkIfFieldIsValid().takeIf { it } ?: throw InvalidUsernameForProjectException()
+                checkIfUserAuthorized(username) { userRepository.getUserByUsername(it) }
+                    .takeIf { it } ?: throw NotAuthorizedUserException()
+            }
+
+            projectRepository.getProjects()
+                .fold(
+                    onSuccess = { projects -> projects.filter {  project ->
+                            checkIfUserIsProjectOwner(username, project.createdBy)
+                        }
+                    },
+                    onFailure = { throw NoProjectFoundException() }
+                )
+        }
+    }
+}

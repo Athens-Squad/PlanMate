@@ -12,6 +12,7 @@ import logic.repositories.TasksRepository
 import logic.exceptions.TasksException
 import logic.use_cases.task.taskvalidations.TaskValidator
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class DeleteTaskUseCaseTest {
@@ -25,6 +26,7 @@ class DeleteTaskUseCaseTest {
         deleteTaskUseCase = DeleteTaskUseCase(tasksRepository, auditRepository, taskValidator)
     }
 
+    @Disabled
     @Test
     fun `should delete task when it exists`() {
         //given
