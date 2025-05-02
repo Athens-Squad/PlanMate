@@ -5,7 +5,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.repositories.StatesRepository
-import net.thechance.logic.entities.State
+import logic.entities.ProgressionState
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -40,7 +40,7 @@ class GetStateByIdUseCaseTest {
  fun `should return state when state ID exists`() {
   // Given
   val stateId = "123"
-  val state = State(id = stateId, name = "Test State" , projectId = "44")
+  val state = ProgressionState(id = stateId, name = "Test State" , projectId = "44")
   every { stateRepository.getStates() } returns Result.success(listOf(state))
 
   // When

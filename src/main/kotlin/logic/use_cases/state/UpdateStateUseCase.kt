@@ -1,16 +1,15 @@
 package logic.use_cases.state
 
-import logic.repositories.AuditRepository
+import logic.entities.ProgressionState
 import logic.repositories.StatesRepository
-import net.thechance.logic.entities.State
-import net.thechance.logic.use_cases.state.stateValidations.StateValidator
+import logic.use_cases.state.stateValidations.StateValidator
 
 
 class UpdateStateUseCase(
     private val stateRepository: StatesRepository,
     private val stateValidator: StateValidator
 ) {
-    fun execute(state: State, updatedState: State) {
+    fun execute(state: ProgressionState, updatedState: ProgressionState) {
 
         stateValidator.stateIsExist(state)
         stateValidator.validateProjectExists(state.id)

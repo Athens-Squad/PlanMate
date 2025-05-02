@@ -1,12 +1,10 @@
 package data.states.data_source
 
-import com.google.common.truth.Truth.assertThat
 import helper.task_helper.createDummyState
 import io.mockk.*
-import net.thechance.data.csv_file_handle.CsvFileHandler
-import net.thechance.data.csv_file_handle.CsvFileParser
-import net.thechance.data.states.data_source.StatesFileDataSource
-import net.thechance.logic.entities.State
+import data.csv_file_handle.CsvFileHandler
+import data.csv_file_handle.CsvFileParser
+import logic.entities.ProgressionState
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
@@ -14,7 +12,7 @@ import kotlin.test.Test
 class StatesFileDataSourceTest{
 
   private val statesFileHandler: CsvFileHandler = mockk(relaxed = true)
-  private val csvFileParser: CsvFileParser<State> = mockk(relaxed = true)
+  private val csvFileParser: CsvFileParser<ProgressionState> = mockk(relaxed = true)
  lateinit var  stateFileDataSource : StatesFileDataSource
 
   @BeforeEach
@@ -44,7 +42,7 @@ fun `updateState should return failure if getStates fails`() {
  every { stateFileDataSource.getStates() } returns Result.failure(Exception("Simulated error"))
 
  // Act
- val result = stateFileDataSource.updateState(State("2", "Updated B","44"))
+ val result = stateFileDataSource.updateState(ProgressionState("2", "Updated B","44"))
 
  // Assert
  assertTrue(result.isFailure)

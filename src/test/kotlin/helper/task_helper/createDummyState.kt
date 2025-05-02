@@ -1,14 +1,14 @@
 package helper.task_helper
 
-import net.thechance.logic.entities.State
+import logic.entities.ProgressionState
 
 object createDummyState {
     fun dummyState(
         id: String = "12",
         name: String = "TODO",
         projectId: String = "2"
-    ): State {
-        return State(
+    ): ProgressionState {
+        return ProgressionState(
             id = id,
             name = name,
             projectId = projectId

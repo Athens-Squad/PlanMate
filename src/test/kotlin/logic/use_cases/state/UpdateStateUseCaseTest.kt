@@ -4,8 +4,7 @@ import helper.task_helper.createDummyState
 import io.mockk.mockk
 import io.mockk.verify
 import logic.repositories.StatesRepository
-import net.thechance.logic.use_cases.state.stateValidations.StateValidator
-import org.junit.jupiter.api.Assertions.*
+import logic.use_cases.state.stateValidations.StateValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 

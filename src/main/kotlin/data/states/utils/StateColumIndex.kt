@@ -1,4 +1,4 @@
-package net.thechance.data.states.Utils
+package data.states.utils
 
 object StateColumIndex {
     const val ID = 0

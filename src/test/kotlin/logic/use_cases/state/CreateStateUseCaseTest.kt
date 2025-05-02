@@ -1,14 +1,12 @@
 package logic.use_cases.state
-import net.thechance.logic.entities.State
 import helper.task_helper.createDummyState
 import io.mockk.mockk
 import io.mockk.verify
 import junit.framework.TestCase.assertEquals
 import logic.repositories.StatesRepository
-import net.thechance.logic.use_cases.state.stateValidations.StateValidator
+import logic.use_cases.state.stateValidations.StateValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 class CreateStateUseCaseTest{
 

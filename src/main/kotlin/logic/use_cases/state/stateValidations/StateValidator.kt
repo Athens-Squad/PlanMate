@@ -1,12 +1,12 @@
-package net.thechance.logic.use_cases.state.stateValidations
+package logic.use_cases.state.stateValidations
 
-import logic.entities.Task
-import net.thechance.logic.entities.State
+
+import logic.entities.ProgressionState
 
 interface StateValidator {
     fun validateProjectExists(projectId: String)
-    fun stateIsExist (state: State)
-    fun validateStateFieldsIsNotBlankOrThrow(state : State)
+    fun stateIsExist (state: ProgressionState)
+    fun validateStateFieldsIsNotBlankOrThrow(state : ProgressionState)
 
 
 }

@@ -1,14 +1,14 @@
-package net.thechance.data.states.data_source
+package data.states.data_source
 
-import net.thechance.logic.entities.State
+import logic.entities.ProgressionState
 
 interface StatesDataSource {
 
-    fun createState(state: State): Result<Unit>
+    fun createState(state: ProgressionState): Result<Unit>
 
-    fun updateState(state: State): Result<Unit>
+    fun updateState(state: ProgressionState): Result<Unit>
 
     fun deleteState(stateId: String): Result<Unit>
 
-    fun getStates(): Result<List<State>>
+    fun getStates(): Result<List<ProgressionState>>
 }

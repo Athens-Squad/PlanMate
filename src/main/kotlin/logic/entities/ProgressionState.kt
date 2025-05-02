@@ -1,16 +1,11 @@
 package logic.entities
 
 
-import logic.entities.Task
-import net.thechance.data.states.Utils.StateColumIndex.NAME
-import net.thechance.data.tasks.utils.TaskColumnIndex.CURRENT_STATE_ID
-import net.thechance.data.tasks.utils.TaskColumnIndex.CURRENT_STATE_NAME
-import net.thechance.data.tasks.utils.TaskColumnIndex.DESCRIPTION
-import net.thechance.data.tasks.utils.TaskColumnIndex.ID
-import net.thechance.data.tasks.utils.TaskColumnIndex.PROJECT_ID
-import net.thechance.data.tasks.utils.TaskColumnIndex.TITLE
-import net.thechance.logic.CsvSerializable
-import java.util.UUID
+import data.states.utils.StateColumIndex.NAME
+import data.tasks.utils.TaskColumnIndex.ID
+import data.tasks.utils.TaskColumnIndex.PROJECT_ID
+import logic.CsvSerializable
+import java.util.*
 
 
 data class ProgressionState( // rename to ProgressionState
@@ -25,8 +20,8 @@ data class ProgressionState( // rename to ProgressionState
     )
 
     companion object {
-        fun fromCsv(fields: List<String>): State {
-            return State(
+        fun fromCsv(fields: List<String>): ProgressionState {
+            return ProgressionState(
                 id = fields[ID],
                 name = fields[NAME],
                 projectId = fields[PROJECT_ID]
