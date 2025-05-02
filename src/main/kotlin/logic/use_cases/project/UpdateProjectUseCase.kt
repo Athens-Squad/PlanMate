@@ -3,7 +3,7 @@ package logic.use_cases.project
 import logic.entities.Project
 import logic.repositories.*
 import logic.use_cases.project.projectValidations.*
-import logic.use_cases.project.exceptions.ProjectsLogicExceptions.*
+import data.projects.exceptions.ProjectsLogicExceptions.*
 import logic.use_cases.project.log_builder.createLog
 
 

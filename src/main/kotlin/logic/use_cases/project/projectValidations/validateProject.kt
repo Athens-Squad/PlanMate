@@ -19,6 +19,12 @@ fun checkIfUserIsProjectOwner(username: String, projectOwner: String): Boolean {
     return username == projectOwner
 }
 
+fun checkIfProjectAlreadyExistInRepository(projectId: String, action: (projectId: String) -> Result<List<Project>>): Boolean {
+    return action(projectId).fold(
+        onSuccess = { projects -> projects.none { it.id == projectId } },
+        onFailure = { false }
+    )
+}
 fun checkIfProjectExistInRepositoryAndReturn(projectId: String, action: (projectId: String) -> Result<List<Project>>): Project? {
     return action(projectId).fold(
         onSuccess = { projects -> projects.firstOrNull { it.id == projectId } },

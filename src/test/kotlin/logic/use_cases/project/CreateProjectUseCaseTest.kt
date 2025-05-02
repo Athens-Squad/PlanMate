@@ -11,7 +11,7 @@ import logic.entities.UserType
 import logic.repositories.AuditRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
-import logic.use_cases.project.exceptions.ProjectsLogicExceptions.*
+import data.projects.exceptions.ProjectsLogicExceptions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -38,7 +38,10 @@ class CreateProjectUseCaseTest {
     @Test
     fun `should create project successfully, when project is valid`() {
         every { userRepository.getUserByUsername(fakeProject.createdBy) } returns Result.success(adminUser)
-
+        every { projectRepository.getProjects() } returns Result.success(listOf(
+                createProject(id = "dummy1", name = "dummyProject")
+            )
+        )
         every { projectRepository.createProject(fakeProject) } returns Result.success(Unit)
         every { auditRepository.createAuditLog(any()) } returns Result.success(Unit)
 
@@ -46,8 +49,23 @@ class CreateProjectUseCaseTest {
 
         assertThat(result.isSuccess).isTrue()
         verify(exactly = 1) { projectRepository.createProject(fakeProject) }
+        verify(exactly = 1) { projectRepository.getProjects() }
         verify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdBy) }
         verify(exactly = 1) { auditRepository.createAuditLog(any()) }
+    }
+
+    @Test
+    fun `should create project failed, when project is already exists`() {
+        every { userRepository.getUserByUsername(fakeProject.createdBy) } returns Result.success(adminUser)
+        every { projectRepository.getProjects() } returns Result.success(listOf(fakeProject))
+        every { projectRepository.createProject(fakeProject) } returns Result.success(Unit)
+
+        val result = createProjectUseCase.execute(fakeProject)
+
+        assertThat(result.exceptionOrNull()).isInstanceOf(ProjectAlreadyExistException::class.java)
+        verify(exactly = 0) { projectRepository.createProject(fakeProject) }
+        verify(exactly = 1) { projectRepository.getProjects() }
+        verify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdBy) }
     }
 
     @Test

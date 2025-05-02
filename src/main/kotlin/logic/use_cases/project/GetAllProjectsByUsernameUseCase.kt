@@ -3,7 +3,7 @@ package logic.use_cases.project
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
-import logic.use_cases.project.exceptions.ProjectsLogicExceptions.*
+import data.projects.exceptions.ProjectsLogicExceptions.*
 import logic.use_cases.project.projectValidations.checkIfFieldIsValid
 import logic.use_cases.project.projectValidations.checkIfUserAuthorized
 import logic.use_cases.project.projectValidations.checkIfUserIsProjectOwner

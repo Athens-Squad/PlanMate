@@ -4,9 +4,11 @@ import logic.entities.Project
 import logic.repositories.AuditRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
-import logic.use_cases.project.exceptions.ProjectsLogicExceptions.*
+import data.projects.exceptions.ProjectsLogicExceptions.*
 import logic.use_cases.project.log_builder.createLog
 import logic.use_cases.project.projectValidations.checkIfFieldIsValid
+import logic.use_cases.project.projectValidations.checkIfProjectAlreadyExistInRepository
+import logic.use_cases.project.projectValidations.checkIfProjectExistInRepositoryAndReturn
 import logic.use_cases.project.projectValidations.checkIfUserAuthorized
 
 class CreateProjectUseCase(
@@ -23,6 +25,9 @@ class CreateProjectUseCase(
 
                 checkIfUserAuthorized(createdBy) { userRepository.getUserByUsername(createdBy) }
                     .takeIf { it } ?: throw NotAuthorizedUserException()
+
+                checkIfProjectAlreadyExistInRepository(id) { projectRepository.getProjects() }
+                    .takeIf { it } ?: throw ProjectAlreadyExistException()
             }
 
             projectRepository.createProject(project)
