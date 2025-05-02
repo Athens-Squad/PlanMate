@@ -9,11 +9,12 @@ class UpdateStateUseCase(
     private val stateRepository: StatesRepository,
     private val stateValidator: StateValidator
 ) {
-    fun execute(state: ProgressionState, updatedState: ProgressionState) {
-
-        stateValidator.stateIsExist(state)
-        stateValidator.validateProjectExists(state.id)
-        stateRepository.updateState(updatedState)
+    fun execute(state: ProgressionState, updatedState: ProgressionState): Result<Unit> {
+        return runCatching {
+            stateValidator.stateIsExist(state)
+            stateValidator.validateProjectExists(state.id)
+            stateRepository.updateState(updatedState)
+        }
 
     }
 

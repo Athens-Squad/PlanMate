@@ -9,11 +9,11 @@ class DeleteStateUseCase(
     private val stateRepository: StatesRepository,
     private val stateValidator: StateValidator
 ) {
-    fun execute(state:ProgressionState)
-    {
-        stateValidator.stateIsExist(state)
-        stateRepository.deleteState(state.id)
-
+    fun execute(state: ProgressionState): Result<Unit> {
+        return runCatching {
+            stateValidator.stateIsExist(state)
+            stateRepository.deleteState(state.id)
+        }
     }
 
 }
