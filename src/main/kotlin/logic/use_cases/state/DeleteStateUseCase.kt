@@ -1,13 +1,19 @@
 package logic.use_cases.state
 
-import logic.repositories.AuditRepository
+
 import logic.repositories.StatesRepository
+import logic.entities.ProgressionState
+import logic.use_cases.state.stateValidations.StateValidator
 
 class DeleteStateUseCase(
     private val stateRepository: StatesRepository,
-    private val auditRepository: AuditRepository
+    private val stateValidator: StateValidator
 ) {
-    fun execute(stateId: String): Boolean {
-        return false
+    fun execute(state: ProgressionState): Result<Unit> {
+        return runCatching {
+            stateValidator.stateIsExist(state)
+            stateRepository.deleteState(state.id)
+        }
     }
+
 }
