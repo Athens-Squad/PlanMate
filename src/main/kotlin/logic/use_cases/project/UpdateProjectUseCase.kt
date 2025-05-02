@@ -1,25 +1,43 @@
 package logic.use_cases.project
 
 import logic.entities.Project
-import logic.repositories.AuditRepository
-import logic.repositories.StatesRepository
-import logic.repositories.TasksRepository
-import logic.repositories.ProjectsRepository
+import logic.repositories.*
+import logic.use_cases.project.projectValidations.*
+import data.projects.exceptions.ProjectsLogicExceptions.*
+import logic.use_cases.project.log_builder.createLog
 
 
 class UpdateProjectUseCase(
     private val projectRepository: ProjectsRepository,
-    private val tasksRepository: TasksRepository,
-    private val statesRepository: StatesRepository,
+    private val userRepository: UserRepository,
     private val auditRepository: AuditRepository
 ) {
-    fun execute(projectId: String, updatedProject: Project): Boolean {
+    fun execute(updatedProject: Project): Result<Unit> {
+        return runCatching{
 
+            updatedProject.apply {
+                createdBy.checkIfFieldIsValid().takeIf { it } ?: throw InvalidUsernameForProjectException()
+                name.checkIfFieldIsValid().takeIf { it } ?: throw InvalidProjectNameException()
 
-        return false
+                checkIfUserAuthorized(createdBy) { userRepository.getUserByUsername(it) }
+                    .takeIf { it } ?: throw NotAuthorizedUserException()
+
+                val project = checkIfProjectExistInRepositoryAndReturn(updatedProject.id) { projectRepository.getProjects() }
+                    ?: throw NoProjectFoundException()
+
+                checkIfUserIsProjectOwner(project.createdBy, updatedProject.createdBy).takeIf { it }
+                    ?: throw NotAuthorizedUserException()
+            }
+
+            projectRepository.updateProject(updatedProject)
+                .onSuccess {
+                    createLog(
+                        project = updatedProject,
+                        logMessage = "Project updated successfully."
+                    ) {
+                        auditRepository.createAuditLog(it).getOrThrow()
+                    }
+                }
+            }
     }
 }
-
-//for example: user abc changed task XYZ-001 from InProgress to InDevReview at 2025/05/24 8:00 PM
-//- Admins should be able to create users of type mate.
-
