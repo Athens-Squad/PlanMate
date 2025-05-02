@@ -1,7 +1,7 @@
-package net.thechance.ui
+package net.thechance.data.authentication
 
 import logic.entities.User
 
-object UserSession {
+class UserSession {
     var currentUser: User? = null
 }

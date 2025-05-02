@@ -3,12 +3,13 @@ package ui.featuresui
 import logic.entities.User
 import logic.use_cases.authentication.AuthenticationUseCases
 import logic.entities.UserType
-import net.thechance.ui.UserSession.currentUser
+import net.thechance.data.authentication.UserSession
 import ui.io.ConsoleIO
 
 class AuthenticationUi(
     private val consoleIO: ConsoleIO,
-    private val authenticationUseCases: AuthenticationUseCases
+    private val authenticationUseCases: AuthenticationUseCases,
+    private val userSession: UserSession
 ) {
 
     fun runAuthenticationUi(navigateAfterLoggedInSuccessfully: () -> Unit) {
@@ -21,8 +22,8 @@ class AuthenticationUi(
             1 -> {
                 login()
                     .onSuccess {
-                        currentUser = it
-                        consoleIO.printer.printCorrectOutput(currentUser.toString())
+                        userSession.currentUser = it
+                        consoleIO.printer.printCorrectOutput(userSession.currentUser.toString())
                         navigateAfterLoggedInSuccessfully()
                     }
                     .onFailure {
@@ -36,8 +37,8 @@ class AuthenticationUi(
                         consoleIO.printer.printCorrectOutput("Registered Successfully.")
                         login()
                             .onSuccess {
-                                currentUser = it
-                                consoleIO.printer.printCorrectOutput(currentUser.toString())
+                                userSession.currentUser = it
+                                consoleIO.printer.printCorrectOutput(userSession.currentUser.toString())
                                 navigateAfterLoggedInSuccessfully()
                             }
                             .onFailure {
