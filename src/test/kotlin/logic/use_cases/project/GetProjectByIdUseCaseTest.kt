@@ -24,7 +24,7 @@ class GetProjectByIdUseCaseTest {
     fun setUp() {
         fakeProject = createProject().copy(
             id = "1",
-            states = FakeProjectData.states,
+            progressionStates = FakeProjectData.states,
             tasks = FakeProjectData.tasks
         )
 

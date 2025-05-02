@@ -4,9 +4,9 @@ import logic.entities.ProgressionState
 
 interface StatesDataSource {
 
-    fun createState(state: ProgressionState): Result<Unit>
+    fun createState(progressionState: ProgressionState): Result<Unit>
 
-    fun updateState(state: ProgressionState): Result<Unit>
+    fun updateState(progressionState: ProgressionState): Result<Unit>
 
     fun deleteState(stateId: String): Result<Unit>
 

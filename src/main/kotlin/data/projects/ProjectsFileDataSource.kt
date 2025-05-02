@@ -2,6 +2,8 @@ package data.projects
 
 import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
+import data.states.data_source.StatesDataSource
+import data.states.data_source.StatesFileDataSource
 import data.tasks.data_source.TasksDataSource
 import logic.entities.Project
 
@@ -9,6 +11,7 @@ class ProjectsFileDataSource(
     private val projectsFileHandler: CsvFileHandler,
     private val csvFileParser: CsvFileParser<Project>,
     private val tasksFileDataSource: TasksDataSource,
+    private val statesFileDataSource: StatesDataSource
 ) : ProjectsDataSource {
 
     override fun saveProjectInCsvFile(project: Project): Result<Unit> {
@@ -45,7 +48,13 @@ class ProjectsFileDataSource(
             projectsFileHandler.readRecords().map { record ->
                 csvFileParser.parseRecord(record).also { project ->
                     val tasks = tasksFileDataSource.getTasksByProjectId(project.id).getOrThrow().toMutableList()
-                    project.copy(tasks = tasks)
+                    val states = statesFileDataSource.getStates().getOrThrow()
+                        .filter { it.projectId == project.id }
+                        .toMutableList()
+                    project.copy(
+                        tasks = tasks,
+                        progressionStates = states
+                    )
                 }
             }
         }

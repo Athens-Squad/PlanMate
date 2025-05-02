@@ -6,14 +6,13 @@ import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
 import data.projects.ProjectsDataSource
 import data.projects.ProjectsFileDataSource
+import data.states.data_source.StatesDataSource
+import data.states.data_source.StatesFileDataSource
 import data.tasks.data_source.TasksDataSource
 import data.tasks.data_source.TasksFileDataSource
 import data.user.data_source.UsersDataSource
 import data.user.data_source.UsersFileDataSource
-import logic.entities.AuditLog
-import logic.entities.Project
-import logic.entities.Task
-import logic.entities.User
+import logic.entities.*
 import net.thechance.data.authentication.UserSession
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -58,7 +57,18 @@ val dataSourceModule  = module {
         ProjectsFileDataSource(
             projectsFileHandler = get(named("projectsFileHandler")),
             csvFileParser = get(named("projectsFileParser")),
-            tasksFileDataSource = get()
+            tasksFileDataSource = get(),
+            statesFileDataSource = get()
+        )
+    }
+
+    single(named("stateCsvFile")) { File("data_files/states.csv") }
+    single(named("statesFileHandler")) { CsvFileHandler(get(named("stateCsvFile"))) }
+    single(named("statesFileParser")) { CsvFileParser(factory = ProgressionState.Companion::fromCsv) }
+    single<StatesDataSource> {
+        StatesFileDataSource(
+            statesFileHandler = get(named("statesFileHandler")),
+            csvFileParser = get(named("statesFileParser"))
         )
     }
 }

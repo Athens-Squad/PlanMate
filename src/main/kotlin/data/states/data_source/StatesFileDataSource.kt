@@ -8,19 +8,19 @@ class StatesFileDataSource(
     private val statesFileHandler: CsvFileHandler,
     private val csvFileParser: CsvFileParser<ProgressionState>
 ) : StatesDataSource {
-    override fun createState(state: ProgressionState): Result<Unit> {
+    override fun createState(progressionState: ProgressionState): Result<Unit> {
         return runCatching {
 
-            val record = csvFileParser.toCsvRecord(state)
+            val record = csvFileParser.toCsvRecord(progressionState)
             statesFileHandler.appendRecord(record)
         }
     }
 
-    override fun updateState(state: ProgressionState): Result<Unit> {
+    override fun updateState(progressionState: ProgressionState): Result<Unit> {
         return runCatching {
             val updateState = getStates()
                 .getOrThrow()
-                .map { if (it.id == state.id) state else it }
+                .map { if (it.id == progressionState.id) progressionState else it }
             val updatedRecords = updateState.map { csvFileParser.toCsvRecord(it) }
             statesFileHandler.writeRecords(updatedRecords)
 
@@ -40,7 +40,9 @@ class StatesFileDataSource(
     override fun getStates(): Result<List<ProgressionState>> {
         return runCatching {
             statesFileHandler.readRecords()
-                .map { csvFileParser.parseRecord(it) }
+                .map {
+                    csvFileParser.parseRecord(it)
+                }
         }
     }
 }

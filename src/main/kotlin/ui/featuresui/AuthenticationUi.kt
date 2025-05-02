@@ -24,7 +24,7 @@ class AuthenticationUi(
                 login()
                     .onSuccess {
                         userSession.currentUser = it
-                        consoleIO.printer.printCorrectOutput(userSession.currentUser.toString())
+                        consoleIO.printer.printCorrectOutput("Logged in Successfully.")
                         navigateAfterLoggedInSuccessfully()
                     }
                     .onFailure {

@@ -5,7 +5,7 @@ import logic.entities.ProgressionState
 
 interface StateValidator {
     fun validateProjectExists(projectId: String)
-    fun stateIsExist (state: ProgressionState)
+    fun stateIsExist (stateId: String)
     fun validateStateFieldsIsNotBlankOrThrow(state : ProgressionState)
 
 

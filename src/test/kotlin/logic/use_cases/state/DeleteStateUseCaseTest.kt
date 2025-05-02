@@ -25,7 +25,7 @@ class DeleteStateUseCaseTest {
   //given
   val dummyState = createDummyState.dummyState()
   //when
-  deleteStateUseCase.execute(dummyState)
+  deleteStateUseCase.execute(dummyState.id)
 
   //then
   verify { stateRepository.deleteState(dummyState.id) }
@@ -36,10 +36,10 @@ class DeleteStateUseCaseTest {
   //given
   val dummyState = createDummyState.dummyState()
   //when
-  deleteStateUseCase.execute(dummyState)
+  deleteStateUseCase.execute(dummyState.id)
 
   //then
-  verify { stateValidator.stateIsExist(dummyState) }
+  verify { stateValidator.stateIsExist(dummyState.id) }
  }
 }
 

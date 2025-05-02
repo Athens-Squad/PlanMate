@@ -2,8 +2,8 @@ package logic.entities
 
 
 import data.states.utils.StateColumIndex.NAME
-import data.tasks.utils.TaskColumnIndex.ID
-import data.tasks.utils.TaskColumnIndex.PROJECT_ID
+import data.states.utils.StateColumIndex.ID
+import data.states.utils.StateColumIndex.PROJECT_ID
 import logic.CsvSerializable
 import java.util.*
 

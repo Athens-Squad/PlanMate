@@ -16,7 +16,7 @@ class DeleteProjectUseCase(
     private val userRepository: UserRepository,
     private val auditRepository: AuditRepository
 ) {
-    fun execute(username: String, projectId: String): Result<Unit> {
+    fun execute(projectId: String, username: String): Result<Unit> {
         return runCatching {
 
             username.apply {

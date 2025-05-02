@@ -26,7 +26,7 @@ class ProjectOptionsHandler(
             when (option) {
                 ProjectOptions.CREATE_TASK.optionNumber -> createTask()
                 ProjectOptions.EDIT.optionNumber -> projectsUi.editProject(project)
-                ProjectOptions.MANAGE_STATES.optionNumber -> statesUi.manageStates(project.progressionStates)
+                ProjectOptions.MANAGE_STATES.optionNumber -> statesUi.manageStates(project.progressionStates, project.id)
                 ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
                 ProjectOptions.SHOW_HISTORY.optionNumber -> showHistory()
                 ProjectOptions.DELETE.optionNumber -> deleteProject()
@@ -37,7 +37,9 @@ class ProjectOptionsHandler(
     private fun createTask() {
         statesUi.getStates(project.id)
             .onSuccess { tasksUi.createTask(it, project.id) }
-            .onFailure { consoleIO.printer.printError(it.message.toString()) }
+            .onFailure {
+                consoleIO.printer.printError(it.message.toString())
+            }
     }
 
     private fun showHistory() {

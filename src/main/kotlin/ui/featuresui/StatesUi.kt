@@ -11,14 +11,14 @@ class StatesUi(
     private val consoleIO: ConsoleIO,
     private val statesUseCases: StatesUseCases
 ) {
-    fun manageStates(states: List<ProgressionState>) {
+    fun manageStates(states: List<ProgressionState>, projectId: String) {
         do {
             consoleIO.printer.printTitle("Select Option (1 to 4):")
             consoleIO.printer.printOptions(StateOptions.entries)
             val inputStateOption = consoleIO.reader.readNumberFromUser()
 
             when (inputStateOption) {
-                StateOptions.CREATE.optionNumber -> createState(states[0].projectId)
+                StateOptions.CREATE.optionNumber -> createState(projectId)
                 StateOptions.EDIT.optionNumber -> editState(states)
 
                 StateOptions.DELETE.optionNumber -> {
@@ -31,7 +31,7 @@ class StatesUi(
                         }
                 }
             }
-        } while (inputStateOption != StateOptions.BACK.optionNumber ||
+        } while (inputStateOption != StateOptions.BACK.optionNumber &&
             inputStateOption != StateOptions.DELETE.optionNumber
         )
     }
@@ -62,9 +62,8 @@ class StatesUi(
 
         consoleIO.printer.printTitle("Select your option (1) : ")
 
-        consoleIO.printer.printOptions(EditProjectOptions.entries)
+        consoleIO.printer.printOptions(EditStateOptions.entries)
         val inputEditOption = consoleIO.reader.readNumberFromUser()
-
 
         val currentState = getState(inputState, states).getOrThrow()
 

@@ -47,7 +47,7 @@ class CreateStateUseCaseTest{
   //given
   val state = createDummyState.dummyState()
   //when
-  stateValidator.stateIsExist(state)
+  stateValidator.stateIsExist(state.id)
   //then
   val result = createStateUseCase.execute(state)
 

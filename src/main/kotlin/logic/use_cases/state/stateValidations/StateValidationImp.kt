@@ -19,10 +19,10 @@ class StateValidationImp(
         }
     }
 
-    override fun stateIsExist(state: ProgressionState) {
-        val stateExist = statesRepository.getStates().getOrNull()?.find { it.id == state.id } != null
+    override fun stateIsExist(stateId: String) {
+        val stateExist = statesRepository.getStates().getOrNull()?.find { it.id == stateId } != null
         if (stateExist) {
-            throw IllegalArgumentException("State with ID '${state.id}' already exists.")
+            throw IllegalArgumentException("State with ID '${stateId}' already exists.")
         }
     }
 
