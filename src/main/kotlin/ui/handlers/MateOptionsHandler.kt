@@ -26,7 +26,7 @@ class MateOptionsHandler(
     }
 
     private fun showAllProjects() {
-        projectsUi.getAllUserProjects(session.currentUser.id)
+        projectsUi.getAllUserProjects(session.currentUser.name)
             .onSuccess {
                 it.forEach { project ->
                     consoleIO.printer.printPlainText(project.name)

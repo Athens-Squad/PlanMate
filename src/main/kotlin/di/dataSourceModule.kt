@@ -4,11 +4,14 @@ import data.aduit_log_csvfile.data_source.AuditLogDataSource
 import data.aduit_log_csvfile.data_source.AuditLogFileDataSource
 import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
+import data.projects.ProjectsDataSource
+import data.projects.ProjectsFileDataSource
 import data.tasks.data_source.TasksDataSource
 import data.tasks.data_source.TasksFileDataSource
 import data.user.data_source.UsersDataSource
 import data.user.data_source.UsersFileDataSource
 import logic.entities.AuditLog
+import logic.entities.Project
 import logic.entities.Task
 import logic.entities.User
 import net.thechance.data.authentication.UserSession
@@ -48,4 +51,14 @@ val dataSourceModule  = module {
         )
     }
 
+    single(named("projectsCsvFile")) { File("data_files/projects.csv") }
+    single(named("projectsFileHandler")) { CsvFileHandler(get(named("projectsCsvFile"))) }
+    single(named("projectsFileParser")) { CsvFileParser(factory = Project.Companion::fromCsv) }
+    single<ProjectsDataSource> {
+        ProjectsFileDataSource(
+            projectsFileHandler = get(named("projectsFileHandler")),
+            csvFileParser = get(named("projectsFileParser")),
+            tasksFileDataSource = get()
+        )
+    }
 }

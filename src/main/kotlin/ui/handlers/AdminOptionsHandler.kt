@@ -31,7 +31,7 @@ class AdminOptionsHandler(
     }
 
     private fun showAllProjects() {
-        projectsUi.getAllUserProjects(session.currentUser.id)
+        projectsUi.getAllUserProjects(session.currentUser.name)
             .onSuccess { projects ->
                 projects.forEach { project ->
                     consoleIO.printer.printPlainText(project.name)

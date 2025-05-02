@@ -67,8 +67,8 @@ class ProjectsUi(
         return projectUseCases.getProjectByIdUseCase.execute(projectId)
     }
 
-    fun getAllUserProjects(userId: String): Result<List<Project>> {
-        return projectUseCases.getProjectsByUserIdUseCase.execute(userId)
+    fun getAllUserProjects(userName: String): Result<List<Project>> {
+        return projectUseCases.getAllProjectsByUsernameUseCase.execute(userName)
     }
 
     private fun receiveStringInput(message: String): String {

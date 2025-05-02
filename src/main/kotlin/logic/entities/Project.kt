@@ -1,5 +1,10 @@
 package logic.entities
 
+import data.projects.utils.ProjectColumnIndex.NAME
+import data.projects.utils.ProjectColumnIndex.ID
+import data.projects.utils.ProjectColumnIndex.DESCRIPTION
+import data.projects.utils.ProjectColumnIndex.CREATED_BY
+import logic.CsvSerializable
 import java.util.UUID
 
 
