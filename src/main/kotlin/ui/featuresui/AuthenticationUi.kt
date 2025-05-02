@@ -3,7 +3,7 @@ package ui.featuresui
 import logic.entities.User
 import logic.use_cases.authentication.AuthenticationUseCases
 import logic.entities.UserType
-import net.thechance.ui.UserSession.currentUser
+import ui.UserSession.currentUser
 import ui.io.ConsoleIO
 
 class AuthenticationUi(

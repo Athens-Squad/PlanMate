@@ -7,6 +7,7 @@ import logic.use_cases.project.*
 import logic.use_cases.authentication.*
 import logic.use_cases.audit_log.*
 import logic.use_cases.state.StatesUseCases
+import logic.use_cases.project.GetAllProjectsByUsernameUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -26,9 +27,8 @@ val useCasesModule = module {
     singleOf(::CreateProjectUseCase)
     singleOf(::DeleteProjectUseCase)
     singleOf(::UpdateProjectUseCase)
-    singleOf(::GetAllProjectsUseCase)
     singleOf(::GetProjectByIdUseCase)
-    singleOf(::GetProjectsByUserIdUseCase)
+    singleOf(::GetAllProjectsByUsernameUseCase)
     singleOf(::ProjectUseCases)
 
     singleOf(::CreateStateUseCase)

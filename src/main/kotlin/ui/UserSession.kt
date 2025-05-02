@@ -1,4 +1,4 @@
-package net.thechance.ui
+package ui
 
 import logic.entities.User
 
