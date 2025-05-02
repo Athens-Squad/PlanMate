@@ -1,4 +1,4 @@
-package net.thechance.logic.entities
+package logic.entities
 
 
 import logic.entities.Task
@@ -13,7 +13,7 @@ import net.thechance.logic.CsvSerializable
 import java.util.UUID
 
 
-data class State(
+data class ProgressionState( // rename to ProgressionState
     val id: String = UUID.randomUUID().toString(),
     val name: String,
     val projectId: String,

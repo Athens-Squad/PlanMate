@@ -1,4 +1,4 @@
-package net.thechance.logic.repositories
+package logic.repositories
 
 import logic.entities.User
 

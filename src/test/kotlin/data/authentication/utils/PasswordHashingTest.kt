@@ -1,7 +1,7 @@
 package data.authentication.utils
 
 import com.google.common.truth.Truth.assertThat
-import net.thechance.data.authentication.utils.PasswordHashing
+import data.authentication.utils.PasswordHashing
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 

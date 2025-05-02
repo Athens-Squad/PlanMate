@@ -1,4 +1,4 @@
-package net.thechance.data.authentication.utils
+package data.authentication.utils
 
 import java.security.MessageDigest
 

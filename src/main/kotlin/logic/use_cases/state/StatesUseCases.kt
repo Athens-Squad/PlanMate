@@ -1,4 +1,4 @@
-package net.thechance.logic.use_cases.state
+package logic.use_cases.state
 
 import logic.use_cases.state.*
 
