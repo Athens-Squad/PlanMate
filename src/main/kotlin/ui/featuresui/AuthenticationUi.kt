@@ -89,7 +89,7 @@ class AuthenticationUi(
         val userName = receiveUserInfo("Enter Mate's Username : ")
         val password = receiveUserInfo("Enter Mate's Password : ")
 
-        return authenticationUseCases.registerAsAdminUseCase.execute(
+        return authenticationUseCases.registerAsMateUseCase.execute(
             User(
                 name = userName,
                 password = password,
