@@ -4,6 +4,7 @@ import logic.entities.Project
 import logic.entities.UserType
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.options.AdminOptions
+import net.thechance.ui.options.audit_log.AuditLogOptions
 import net.thechance.ui.options.project.ProjectOptions
 import ui.featuresui.*
 import ui.io.ConsoleIO
@@ -22,7 +23,6 @@ class PlanMateCli(
         authenticationUi.runAuthenticationUi { navigateToUserFeatures() }
 
     }
-
 
 
     private fun navigateToUserFeatures() {
@@ -46,7 +46,7 @@ class PlanMateCli(
             when(userInput) {
                 AdminOptions.SHOW_ALL_PROJECTS.optionNumber -> handleShowAllProjectsOption()
                 AdminOptions.CREATE_PROJECT.optionNumber -> projectsUi.createProject()
-                AdminOptions.CREATE_MATE.optionNumber -> {}
+                AdminOptions.CREATE_MATE.optionNumber -> authenticationUi.createMate(session.currentUser.id)
                 AdminOptions.EXIT.optionNumber -> {
                     consoleIO.printer.printGoodbyeMessage("We will miss you.")
                 }
@@ -60,15 +60,15 @@ class PlanMateCli(
         // options:
         //------------mate -> option 2 only------------
 
-            // 2 -> manage project tasks
-                    //select task
-                        // edit(title, current state, description), delete, create, show task history
+            // 2 -> manage project tasks  /*In progress() */
+            //select task
+            //      edit(title, current state, description), delete, create, show task history
             // 3 -> manage project state
-                    // select state
-                        // edit(name), delete, create
-            // 4 -> show project history
-            // 5 -> delete project -> showAdminOptions()
-        // 3 -> create mate -> showAdminOptions()
+            //      select state
+            //      edit(name), delete, create
+            // 4 -> show project history  /*DONE*/
+            // 5 -> delete project -> showAdminOptions()  /*DONE*/
+        // 3 -> create mate -> showAdminOptions()  /*DONE*/
 
     }
 
@@ -118,11 +118,15 @@ class PlanMateCli(
 
             val inputProjectOption = consoleIO.reader.readNumberFromUser()
 
-            when(inputProjectOption) {
+            when (inputProjectOption) {
                 ProjectOptions.EDIT.optionNumber -> projectsUi.editProject(project)
                 ProjectOptions.MANAGE_STATES.optionNumber -> statesUi.manageStates(project.progressionStates)
                 ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(project.tasks)
-                ProjectOptions.SHOW_HISTORY.optionNumber -> auditLogUi.getProjectHistory(project.id)
+                ProjectOptions.SHOW_HISTORY.optionNumber -> {
+                    auditLogUi.getProjectHistory(project.id)
+                    showHistoryOption()
+                }
+
                 ProjectOptions.DELETE.optionNumber -> {
                     projectsUi.deleteProject(project.id)
                         .onSuccess {
@@ -140,6 +144,27 @@ class PlanMateCli(
 
     }
 
+    private fun showHistoryOption() { //TODO() call from task history
+        consoleIO.printer.printTitle("Select Option (1)")
+        consoleIO.printer.printOptions(AuditLogOptions.entries)
+        val inputHistoryOption = consoleIO.reader.readNumberFromUser()
+
+        when (inputHistoryOption) {
+            AuditLogOptions.CLEAR_LOG.optionNumber ->{
+                auditLogUi.clearLog()
+                    .onSuccess {
+                        consoleIO.printer.printCorrectOutput("History Deleted Successfully.")
+                    }
+                    .onFailure {
+                        consoleIO.printer.printError(it.message.toString())
+                    }
+            }
+        }
+
+    }
+
+    private fun getProject(inputProjectName: String, projects: List<Project>): Project {
+        return projects.first { it.name == inputProjectName }
     private fun getProjectId(inputProjectName: String, projects: List<Project>): Result<String> {
         return runCatching {
             projects.first { it.name == inputProjectName }.id
