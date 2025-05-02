@@ -52,6 +52,8 @@ class AuthenticationUi(
                         runAuthenticationUi(navigateAfterLoggedInSuccessfully)
                     }
             }
+            else -> consoleIO.printer.printError("Invalid Input")
+
         }
     }
 

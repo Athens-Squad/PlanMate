@@ -86,16 +86,28 @@ class PlanMateCli(
     }
 
     private fun selectProject(projects: List<Project>) {
-        consoleIO.printer.printTitle("Select A Project :")
-        val inputProjectName = consoleIO.reader.readStringFromUser()
-        projectsUi.getProject(getProject(inputProjectName, projects).id)
-            .onSuccess {
-                showProjectSwimlanes(it)
-            }
-            .onFailure {
-                consoleIO.printer.printError(it.message.toString())
-                handleShowAllProjectsOption()
-            }
+        do {
+            consoleIO.printer.printTitle("Select A Project :")
+            var inputProjectName = consoleIO.reader.readStringFromUser()
+            getProjectId(inputProjectName, projects)
+                .onSuccess { projectId ->
+                    projectsUi.getProject(projectId)
+                        .onSuccess { project ->
+                            showProjectSwimlanes(project)
+                        }
+                        .onFailure {
+                            consoleIO.printer.printError(it.message.toString())
+                            handleShowAllProjectsOption()
+                        }
+                }
+                .onFailure {
+                    consoleIO.printer.printError(it.message.toString())
+                }
+            consoleIO.printer.printOption("0 : Back")
+            inputProjectName = consoleIO.reader.readStringFromUser()
+
+        }while (inputProjectName != "0")
+
     }
 
     private fun showProjectSwimlanes(project: Project) {
@@ -128,8 +140,10 @@ class PlanMateCli(
 
     }
 
-    private fun getProject(inputProjectName: String, projects: List<Project>): Project {
-        return projects.first { it.name == inputProjectName }
+    private fun getProjectId(inputProjectName: String, projects: List<Project>): Result<String> {
+        return runCatching {
+            projects.first { it.name == inputProjectName }.id
+        }
     }
 
 
