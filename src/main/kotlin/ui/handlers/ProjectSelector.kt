@@ -6,19 +6,23 @@ import ui.io.ConsoleIO
 
 class ProjectSelector(
     private val consoleIO: ConsoleIO,
-    private val projectsUi: ProjectsUi
+    private val projectsUi: ProjectsUi,
+    private val projectOptionsHandler: ProjectOptionsHandler,
+    private val projectSwimlaneUiPrinter: ProjectSwimlaneUiPrinter
 ) {
 
-    fun selectProject(projects: List<Project>, onProjectSelected: (Project) -> Unit) {
+    fun selectProject(projects: List<Project>) {
         do {
             consoleIO.printer.printTitle("Select A Project :")
             val inputProjectName = consoleIO.reader.readStringFromUser()
 
-            val result = getProjectId(inputProjectName, projects)
-            result
+            getProjectId(inputProjectName, projects)
                 .onSuccess { projectId ->
                     projectsUi.getProject(projectId)
-                        .onSuccess(onProjectSelected)
+                        .onSuccess { project ->
+                            printProjectInfo(project)
+                            projectOptionsHandler.handle(project)
+                        }
                         .onFailure {
                             consoleIO.printer.printError(it.message.toString())
                         }
@@ -36,5 +40,13 @@ class ProjectSelector(
         return runCatching {
             projects.first { it.name == inputProjectName }.id
         }
+    }
+
+    private fun printProjectInfo(project: Project) {
+        consoleIO.printer.printTitle("Project: ${project.name}")
+        consoleIO.printer.printPlainText("Description: ${project.description}")
+        consoleIO.printer.printDivider()
+
+        projectSwimlaneUiPrinter.printSwimlanes(project)
     }
 }

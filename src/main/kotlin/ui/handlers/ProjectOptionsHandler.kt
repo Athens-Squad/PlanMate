@@ -12,9 +12,11 @@ class ProjectOptionsHandler(
     private val statesUi: StatesUi,
     private val tasksUi: TasksUi,
     private val auditLogUi: AuditLogUi,
-    private val project: Project
 ) {
-    fun handle() {
+    private lateinit var project: Project
+    fun handle(project: Project) {
+        this.project = project
+
         do {
             consoleIO.printer.printTitle("Select Option (1 to 7):")
             consoleIO.printer.printOptions(ProjectOptions.entries)
