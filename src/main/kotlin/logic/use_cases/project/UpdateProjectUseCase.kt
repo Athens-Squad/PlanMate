@@ -9,8 +9,6 @@ import logic.use_cases.project.log_builder.createLog
 
 class UpdateProjectUseCase(
     private val projectRepository: ProjectsRepository,
-    private val statesRepository: StatesRepository,
-    private val tasksRepository: TasksRepository,
     private val userRepository: UserRepository,
     private val auditRepository: AuditRepository
 ) {
@@ -23,12 +21,6 @@ class UpdateProjectUseCase(
 
                 checkIfUserAuthorized(createdBy) { userRepository.getUserByUsername(it) }
                     .takeIf { it } ?: throw NotAuthorizedUserException()
-
-                checkIfProjectsStatesValid(id) { statesRepository.getStates() }
-                    .takeIf { it } ?: throw NoStatesFoundForProjectException()
-
-                checkIfProjectsTasksValid(id) { tasksRepository.getTasksByProjectId(it) }
-                    .takeIf { it } ?: throw NoTasksFoundForProjectException()
 
                 val project = checkIfProjectExistInRepositoryAndReturn(updatedProject.id) { projectRepository.getProjects() }
                     ?: throw NoProjectFoundException()

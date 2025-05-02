@@ -27,6 +27,7 @@ val useCasesModule = module {
     singleOf(::CreateProjectUseCase)
     singleOf(::DeleteProjectUseCase)
     singleOf(::UpdateProjectUseCase)
+    singleOf(::GetProjectByIdUseCase)
     singleOf(::GetAllProjectsByUsernameUseCase)
     singleOf(::ProjectUseCases)
 

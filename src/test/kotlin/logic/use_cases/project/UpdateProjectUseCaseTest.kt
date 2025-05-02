@@ -19,8 +19,6 @@ class UpdateProjectUseCaseTest {
 
     private val projectRepository: ProjectsRepository = mockk(relaxed = true)
     private val userRepository: UserRepository = mockk(relaxed = true)
-    private val statesRepository: StatesRepository = mockk(relaxed = true)
-    private val tasksRepository: TasksRepository = mockk(relaxed = true)
 
     private val auditRepository: AuditRepository = mockk(relaxed = true)
     private lateinit var fakeProject: Project
@@ -40,14 +38,12 @@ class UpdateProjectUseCaseTest {
         )
 
         updateProjectUseCase =
-            UpdateProjectUseCase(projectRepository, statesRepository, tasksRepository, userRepository, auditRepository)
+            UpdateProjectUseCase(projectRepository, userRepository, auditRepository)
     }
 
     @Test
     fun `should update project successfully, when update is valid`() {
         every { userRepository.getUserByUsername(updatedProject.createdBy) } returns Result.success(adminUser)
-        every { tasksRepository.getTasksByProjectId(fakeProject.id) } returns Result.success(FakeProjectData.tasks)
-        every { statesRepository.getStates() } returns Result.success(FakeProjectData.states)
         every { projectRepository.getProjects() } returns Result.success(listOf(fakeProject))
         every { projectRepository.updateProject(updatedProject) } returns Result.success(Unit)
         every { auditRepository.createAuditLog(any()) } returns Result.success(Unit)
@@ -76,8 +72,6 @@ class UpdateProjectUseCaseTest {
     fun `should update project failed and throw exception, when project is not found for updated project`() {
         val newUpdatedProject = updatedProject.copy(id = "project2")
         every { userRepository.getUserByUsername(newUpdatedProject.createdBy) } returns Result.success(adminUser)
-        every { tasksRepository.getTasksByProjectId(newUpdatedProject.id) } returns Result.success(FakeProjectData.tasks)
-        every { statesRepository.getStates() } returns Result.success(FakeProjectData.newUpdatedStates)
         every { projectRepository.getProjects() } returns Result.success(listOf(fakeProject, updatedProject))
 
         val result = updateProjectUseCase.execute(newUpdatedProject)
@@ -114,39 +108,5 @@ class UpdateProjectUseCaseTest {
 
         assertThat(result.exceptionOrNull()).isInstanceOf(InvalidProjectNameException::class.java)
         verify(exactly = 0) { projectRepository.updateProject(updatedProjectWithInvalidName) }
-    }
-
-    @Test
-    fun `should update project failed and throw exception, when updated project states are invalid`() {
-        val updatedProjectWithInvalidStates = fakeProject.copy(states = mutableListOf())
-        every { tasksRepository.getTasksByProjectId(updatedProjectWithInvalidStates.id) } returns Result.success(
-            FakeProjectData.tasks
-        )
-        every { statesRepository.getStates() } returns Result.failure(Exception())
-        every { userRepository.getUserByUsername(updatedProjectWithInvalidStates.createdBy) } returns Result.success(
-            adminUser
-        )
-
-        assertThrows<NoStatesFoundForProjectException> {
-            updateProjectUseCase.execute(updatedProjectWithInvalidStates).getOrThrow()
-        }
-        verify(exactly = 0) { projectRepository.updateProject(updatedProjectWithInvalidStates) }
-        verify(exactly = 1) { statesRepository.getStates() }
-    }
-
-    @Test
-    fun `should update project failed and throw exception, when  updated project tasks are invalid`() {
-        val updatedProjectWithInvalidTasks = fakeProject.copy(id = "1", tasks = mutableListOf())
-        every { statesRepository.getStates() } returns Result.success(FakeProjectData.states)
-        every { tasksRepository.getTasksByProjectId(updatedProjectWithInvalidTasks.id) } returns Result.failure(Exception())
-        every { userRepository.getUserByUsername(updatedProjectWithInvalidTasks.createdBy) } returns Result.success(
-            adminUser
-        )
-
-        assertThrows<NoTasksFoundForProjectException> {
-            updateProjectUseCase.execute(updatedProjectWithInvalidTasks).getOrThrow()
-        }
-        verify(exactly = 0) { projectRepository.createProject(updatedProjectWithInvalidTasks) }
-        verify(exactly = 1) { tasksRepository.getTasksByProjectId(updatedProjectWithInvalidTasks.id) }
     }
 }

@@ -15,20 +15,6 @@ fun String.checkIfFieldIsValid(): Boolean {
     return this.isNotBlank()
 }
 
-fun checkIfProjectsStatesValid(projectId: String, action: () -> Result<List<ProgressionState>>): Boolean {
-    return action().fold(
-        onSuccess = { states -> states.any { it.projectId == projectId } },
-        onFailure = { false }
-    )
-}
-
-fun checkIfProjectsTasksValid(projectId: String, action: (projectId: String) -> Result<List<Task>>): Boolean {
-    return action(projectId).fold(
-        onSuccess = { it.isNotEmpty() },
-        onFailure = { false }
-    )
-}
-
 fun checkIfUserIsProjectOwner(username: String, projectOwner: String): Boolean {
     return username == projectOwner
 }
