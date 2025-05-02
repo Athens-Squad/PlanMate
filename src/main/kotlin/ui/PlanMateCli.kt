@@ -1,210 +1,29 @@
 package ui
 
-import logic.entities.Project
 import logic.entities.UserType
 import net.thechance.data.authentication.UserSession
-import net.thechance.ui.options.AdminOptions
-import net.thechance.ui.options.MateOptions
-import net.thechance.ui.options.project.ProjectOptions
+import net.thechance.ui.handlers.AdminOptionsHandler
+import net.thechance.ui.handlers.MateOptionsHandler
 import ui.featuresui.*
 import ui.io.ConsoleIO
 
 class PlanMateCli(
     private val consoleIO: ConsoleIO,
-    private val authenticationUi: AuthenticationUi,
     private val session: UserSession,
-    private val projectsUi: ProjectsUi,
-    private val tasksUi: TasksUi,
-    private val statesUi: StatesUi,
-    private val auditLogUi: AuditLogUi
+    private val authenticationUi: AuthenticationUi,
+    private val adminOptionsHandler: AdminOptionsHandler,
+    private val mateOptionsHandler: MateOptionsHandler
 ) {
     fun run() {
         consoleIO.printer.printWelcomeMessage("Welcome to Athens Plan Mate...")
-        authenticationUi.runAuthenticationUi { navigateToUserFeatures() }
+        authenticationUi.runAuthenticationUi { startAuthenticationUi() }
     }
 
-
-    private fun navigateToUserFeatures() {
+    private fun startAuthenticationUi() {
         when (session.currentUser.type) {
-            UserType.AdminUser -> showAdminOptions()
-            is UserType.MateUser -> showMateOptions()
-        }
-
-    }
-
-    private fun showMateOptions() {
-        do {
-            consoleIO.printer.printOptions(MateOptions.entries)
-
-            val userInput = consoleIO.reader.readNumberFromUser()
-            when (userInput) {
-                MateOptions.SHOW_ALL_PROJECTS.optionNumber -> handleShowAllProjectsOption()
-
-                MateOptions.EXIT.optionNumber -> {
-                    consoleIO.printer.printGoodbyeMessage("We will miss you.")
-                }
-
-            }
-        } while (userInput != MateOptions.EXIT.optionNumber)
-    }
-
-    private fun showAdminOptions() {
-        //-----------nate -> option 1 only-------------
-        do {
-            consoleIO.printer.printOptions(AdminOptions.entries)
-
-            val userInput = consoleIO.reader.readNumberFromUser()
-            when (userInput) {
-                AdminOptions.SHOW_ALL_PROJECTS.optionNumber -> handleShowAllProjectsOption()
-                AdminOptions.CREATE_PROJECT.optionNumber -> projectsUi.createProject()
-                AdminOptions.CREATE_MATE.optionNumber -> {
-                    authenticationUi.createMate(session.currentUser.id)
-                        .onSuccess {
-                            consoleIO.printer.printCorrectOutput("Mate Created Successfully!")
-                        }
-                        .onFailure {
-                            consoleIO.printer.printError(it.message.toString())
-                        }
-                }
-
-                AdminOptions.EXIT.optionNumber -> {
-                    consoleIO.printer.printGoodbyeMessage("We will miss you.")
-                }
-
-            }
-        } while (userInput != AdminOptions.EXIT.optionNumber)
-
-    }
-
-    private fun handleShowAllProjectsOption() {
-        projectsUi.getAllUserProjects(session.currentUser.id)
-            .onSuccess { projects ->
-                projects.forEach { project ->
-                    consoleIO.printer.printPlainText(project.name)
-                }
-                selectProject(projects)
-            }
-            .onFailure {
-                consoleIO.printer.printError(it.message.toString())
-            }
-    }
-
-    private fun selectProject(projects: List<Project>) {
-        do {
-            consoleIO.printer.printTitle("Select A Project :")
-            var inputProjectName = consoleIO.reader.readStringFromUser()
-            getProjectId(inputProjectName, projects)
-                .onSuccess { projectId ->
-                    projectsUi.getProject(projectId)
-                        .onSuccess { project ->
-                            handleProject(project)
-                        }
-                        .onFailure {
-                            consoleIO.printer.printError(it.message.toString())
-                            handleShowAllProjectsOption()
-                        }
-                }
-                .onFailure {
-                    consoleIO.printer.printError(it.message.toString())
-                }
-            consoleIO.printer.printOption("0 : Back")
-            inputProjectName = consoleIO.reader.readStringFromUser()
-
-        } while (inputProjectName != "0")
-
-    }
-
-    private fun handleProject(project: Project) {
-        consoleIO.printer.printTitle("Project: ${project.name}")
-        consoleIO.printer.printPlainText("Description: ${project.description}")
-        consoleIO.printer.printDivider()
-
-        showProjectSwimlanes(project)
-
-        if (session.currentUser.type is UserType.AdminUser) {
-            do {
-                consoleIO.printer.printTitle("Select Option (1 to 7):")
-                consoleIO.printer.printOptions(ProjectOptions.entries)
-
-                val inputProjectOption = consoleIO.reader.readNumberFromUser()
-
-                when (inputProjectOption) {
-                    ProjectOptions.CREATE_TASK.optionNumber -> {
-                        statesUi.getStates(project.id)
-                            .onSuccess {
-                                tasksUi.createTask(it, project.id)
-                            }.onFailure {
-                                consoleIO.printer.printError(it.message.toString())
-                            }
-                    }
-
-                    ProjectOptions.EDIT.optionNumber -> projectsUi.editProject(project)
-
-                    ProjectOptions.MANAGE_STATES.optionNumber -> statesUi.manageStates(project.progressionStates)
-
-                    ProjectOptions.MANAGE_TASKS.optionNumber ->
-                        tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
-
-                    ProjectOptions.SHOW_HISTORY.optionNumber -> {
-                        auditLogUi.getProjectHistory(project.id)
-                        auditLogUi.showHistoryOption()
-                    }
-
-                    ProjectOptions.DELETE.optionNumber -> {
-                        projectsUi.deleteProject(project.id)
-                            .onSuccess {
-                                consoleIO.printer.printCorrectOutput("Project Deleted Successfully")
-                            }
-                            .onFailure {
-                                consoleIO.printer.printError(it.message.toString())
-                            }
-
-                    }
-
-                }
-            } while (inputProjectOption != ProjectOptions.BACK.optionNumber ||
-                inputProjectOption != ProjectOptions.DELETE.optionNumber
-            )
-        } else {
-            tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
-        }
-
-
-    }
-
-    private fun showProjectSwimlanes(project: Project) {
-        val stateToTasksMap = project.progressionStates.associate { state ->
-            val tasks = project.tasks
-                .filter { it.currentProgressionState.id == state.id }
-                .map { it.title }
-            state.name to tasks
-        }
-
-        val maxTasks = stateToTasksMap.values.maxOfOrNull { it.size } ?: 0
-        val normalizedColumns = stateToTasksMap.mapValues { (_, tasks) ->
-            tasks + List(maxTasks - tasks.size) { "" }
-        }
-
-        val headers = normalizedColumns.keys.toList()
-        val colWidth = 25
-        val formatRow: (List<String>) -> String = { row ->
-            row.joinToString(" | ") { it.padEnd(colWidth) }
-        }
-
-        consoleIO.printer.printPlainText(formatRow(headers))
-        consoleIO.printer.printPlainText("-".repeat((colWidth + 3) * headers.size))
-
-        for (i in 0 until maxTasks) {
-            val row = headers.map { header -> normalizedColumns[header]?.get(i) ?: "" }
-            consoleIO.printer.printPlainText(formatRow(row))
+            UserType.AdminUser -> adminOptionsHandler.handle()
+            is UserType.MateUser -> mateOptionsHandler.handle()
         }
     }
-
-    private fun getProjectId(inputProjectName: String, projects: List<Project>): Result<String> {
-        return runCatching {
-            projects.first { it.name == inputProjectName }.id
-        }
-    }
-
 
 }
