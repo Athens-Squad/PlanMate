@@ -21,7 +21,6 @@ class PlanMateCli(
     fun run() {
         consoleIO.printer.printWelcomeMessage("Welcome to Athens Plan Mate...")
         authenticationUi.runAuthenticationUi { navigateToUserFeatures() }
-
     }
 
 
@@ -46,7 +45,7 @@ class PlanMateCli(
                 }
 
             }
-        } while (userInput != AdminOptions.EXIT.optionNumber)
+        } while (userInput != MateOptions.EXIT.optionNumber)
     }
 
     private fun showAdminOptions() {
@@ -74,20 +73,6 @@ class PlanMateCli(
 
             }
         } while (userInput != AdminOptions.EXIT.optionNumber)
-        //1 -> show all projects
-        // user selects a project
-        // show project with tasks swimlanes
-        // options:
-        //------------mate -> option 2 only------------
-
-        // 2 -> manage project tasks  /*In progress() */
-        //select task
-        //      edit(title, current state, description), delete, create, show task history
-        // 3 -> manage project state
-        //      edit(name), delete, create
-        // 4 -> show project history  /*DONE*/
-        // 5 -> delete project -> showAdminOptions()  /*DONE*/
-        // 3 -> create mate -> showAdminOptions()  /*DONE*/
 
     }
 
