@@ -1,5 +1,7 @@
 package ui.io
 
+import net.thechance.ui.options.AuthenticationOptions
+import net.thechance.ui.options.Option
 import ui.utils.Colors
 
 class Printer(
@@ -122,6 +124,14 @@ class Printer(
             println(coloredText)
         } else {
             print(coloredText)
+        }
+    }
+
+    fun printOptions(
+        options: List<Option>
+    ) {
+        options.forEach { option ->
+            printOption("${option.optionNumber} : ${option.optionTitle}")
         }
     }
 

@@ -10,8 +10,8 @@ class GetProjectsByUserIdUseCase(
     private val tasksRepository: TasksRepository,
     private val statesRepository: StatesRepository,
 ) {
-    fun execute(userName: String): List<Project> {
+    fun execute(userId: String): Result<List<Project>> {
 
-        return emptyList()
+        return Result.success(emptyList())
     }
 }

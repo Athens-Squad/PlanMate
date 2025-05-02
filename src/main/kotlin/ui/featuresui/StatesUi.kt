@@ -1,25 +1,30 @@
 package ui.featuresui
 
+import logic.entities.ProgressionState
 import logic.use_cases.state.StatesUseCases
 import ui.io.ConsoleIO
 
 class StatesUi(
     private val consoleIO: ConsoleIO,
     private val statesUseCases: StatesUseCases
-) {/*
-    fun createState(state: State): Result<Unit> {
+) {
+    fun manageStates(states: List<ProgressionState>) {
 
     }
 
-    fun editState(editedState: State): Result<Unit> {
+    fun createState(state: ProgressionState): Result<Unit> {
 
     }
 
-    fun deleteState(state: State): Result<Unit> {
+    fun editState(editedState: ProgressionState): Result<Unit> {
 
     }
 
-    fun getStates(projectName: String): Result<List<State>> {
+    fun deleteState(state: ProgressionState): Result<Unit> {
 
-    }*/
+    }
+
+    fun getStates(projectName: String): Result<List<ProgressionState>> {
+
+    }
 }

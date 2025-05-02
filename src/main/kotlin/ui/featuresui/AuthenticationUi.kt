@@ -4,7 +4,9 @@ import logic.entities.User
 import logic.use_cases.authentication.AuthenticationUseCases
 import logic.entities.UserType
 import net.thechance.data.authentication.UserSession
+import net.thechance.ui.options.AuthenticationOptions
 import ui.io.ConsoleIO
+
 
 class AuthenticationUi(
     private val consoleIO: ConsoleIO,
@@ -14,12 +16,11 @@ class AuthenticationUi(
 
     fun runAuthenticationUi(navigateAfterLoggedInSuccessfully: () -> Unit) {
         consoleIO.printer.printTitle("Select your option (1 or 2) : ")
-        consoleIO.printer.printOption("1 : Login")
-        consoleIO.printer.printOption("2 : Register as Admin")
+        consoleIO.printer.printOptions(AuthenticationOptions.entries)
 
         val userInput = consoleIO.reader.readNumberFromUser()
         when(userInput) {
-            1 -> {
+            AuthenticationOptions.LOGIN.optionNumber -> {
                 login()
                     .onSuccess {
                         userSession.currentUser = it
@@ -31,7 +32,7 @@ class AuthenticationUi(
                         runAuthenticationUi(navigateAfterLoggedInSuccessfully)
                     }
             }
-            2 -> {
+            AuthenticationOptions.REGISTER_AS_ADMIN.optionNumber -> {
                 registerAdmin()
                     .onSuccess {
                         consoleIO.printer.printCorrectOutput("Registered Successfully.")
@@ -53,6 +54,7 @@ class AuthenticationUi(
             }
         }
     }
+
 
     private fun handleException(exception: Throwable) {
         consoleIO.printer.printError(exception.message.toString())
@@ -95,7 +97,7 @@ class AuthenticationUi(
     }
 
     private fun receiveUserInfo(message: String): String {
-        consoleIO.printer.printInfoLine(message)
+        consoleIO.printer.printOption(message)
         return consoleIO.reader.readStringFromUser()
     }
 }

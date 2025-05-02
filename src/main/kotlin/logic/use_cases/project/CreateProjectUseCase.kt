@@ -12,7 +12,7 @@ class CreateProjectUseCase(
     private val statesRepository: StatesRepository,
     private val auditRepository: AuditRepository
 ) {
-    fun execute(project: Project): Boolean {
-        return false
+    fun execute(project: Project): Result<Unit> {
+        return Result.success(Unit)
     }
 }

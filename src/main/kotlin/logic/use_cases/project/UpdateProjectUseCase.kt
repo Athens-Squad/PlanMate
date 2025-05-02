@@ -13,8 +13,8 @@ class UpdateProjectUseCase(
     private val statesRepository: StatesRepository,
     private val auditRepository: AuditRepository
 ) {
-    fun execute(projectId: String, updatedProject: Project): Boolean {
-        return false
+    fun execute(updatedProject: Project): Result<Unit> {
+        return Result.failure(Exception())
     }
 }
 

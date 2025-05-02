@@ -8,9 +8,9 @@ data class Project(
     val id: String = UUID.randomUUID().toString(),
     val name: String,
     val description: String,
-    val progressionStates: MutableList<ProgressionState>,
-    val tasks: MutableList<Task>,
-    val createdBy: String //userId -> Admin
+    val progressionStates: MutableList<ProgressionState> = mutableListOf(),
+    val tasks: MutableList<Task> = mutableListOf(),
+    val createdBy: String //userName -> Admin
 )
 
 //users

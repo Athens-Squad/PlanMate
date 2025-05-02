@@ -12,7 +12,7 @@ class GetProjectByIdUseCase(
     private val taskRepository: ProjectsRepository,
     private val statesRepository: StatesRepository
 ) {
-    fun execute(projectId: String): Project? {
-        return null
+    fun execute(projectId: String): Result<Project> {
+        return Result.failure(Exception())
     }
 }

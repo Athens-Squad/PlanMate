@@ -12,7 +12,7 @@ class DeleteProjectUseCase(
     private val statesRepository: StatesRepository,
     private val auditRepository: AuditRepository
 ) {
-    fun execute(projectId: String): Boolean {
-        return false
+    fun execute(projectId: String, userName: String): Result<Unit> {
+        return Result.success(Unit)
     }
 }
