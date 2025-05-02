@@ -9,15 +9,17 @@ class AuditLogUi(
     private val auditLogUseCases: AuditLogUseCases
 ) {
     fun getTaskHistory(taskId: String): Result<List<AuditLog>> {
-        return Result.success(listOf())
+        consoleIO.printer.printTitle("Here is The History of Your Task")
+        return auditLogUseCases.getAuditLogsByTaskIdUseCase.execute(taskId)
     }
 
     fun getProjectHistory(projectId: String): Result<List<AuditLog>> {
-
-        return Result.success(listOf())
+        consoleIO.printer.printTitle("Here is The History of Your Project")
+        return auditLogUseCases.getAuditLogsByProjectIdUseCase.execute(projectId)
     }
 
     fun clearLog(): Result<Unit> {
-return Result.success(Unit)
+        return auditLogUseCases.clearLogUseCase.execute()
+
     }
 }
