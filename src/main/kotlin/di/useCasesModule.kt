@@ -8,7 +8,6 @@ import logic.use_cases.authentication.*
 import logic.use_cases.audit_log.*
 import logic.use_cases.state.StatesUseCases
 import logic.use_cases.project.GetAllProjectsByUsernameUseCase
-import net.thechance.logic.use_cases.user.GetUserByUsernameUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -18,14 +17,11 @@ val useCasesModule = module {
     singleOf(::RegisterAsAdminUseCase)
     singleOf(::AuthenticationUseCases)
 
-    singleOf(::GetUserByUsernameUseCase)
-
     singleOf(::ClearLogUseCase)
     singleOf(::GetAuditLogsByTaskIdUseCase)
     singleOf(::GetAuditLogsByProjectIdUseCase)
     singleOf(::CreateAuditLogUseCase)
     singleOf(::AuditLogUseCases)
-
 
     singleOf(::CreateProjectUseCase)
     singleOf(::DeleteProjectUseCase)

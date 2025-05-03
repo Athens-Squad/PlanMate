@@ -3,14 +3,14 @@ package net.thechance.ui.handlers
 import logic.entities.UserType
 import ui.io.ConsoleIO
 import net.thechance.data.authentication.UserSession
-import net.thechance.logic.use_cases.user.GetUserByUsernameUseCase
 import net.thechance.ui.options.MateOptions
+import net.thechance.ui.utils.ProjectSelector
 import ui.featuresui.*
 
 class MateOptionsHandler(
     private val consoleIO: ConsoleIO,
     private val projectsUi: ProjectsUi,
-    private val getUserByUsernameUseCase: GetUserByUsernameUseCase,
+    private val projectSelector: ProjectSelector,
     private val session: UserSession
 ) {
     fun handle() {
@@ -29,19 +29,14 @@ class MateOptionsHandler(
     }
 
     private fun showAllProjects() {
-        val adminId = (session.currentUser.type as UserType.MateUser).adminId
+        val adminName = (session.currentUser.type as UserType.MateUser).adminName
 
-        getUserByUsernameUseCase.execute(adminId)
-            .onSuccess { admin ->
-                projectsUi.getAllUserProjects(admin.name)
-                    .onSuccess {
-                        it.forEach { project ->
-                            consoleIO.printer.printPlainText(project.name)
-                        }
-                    }
-                    .onFailure {
-                        consoleIO.printer.printError(it.message.toString())
-                    }
+        projectsUi.getAllUserProjects(adminName)
+            .onSuccess { projects ->
+                projects.forEach { project ->
+                    consoleIO.printer.printPlainText(project.name)
+                }
+                projectSelector.selectProject(projects)
             }
             .onFailure {
                 consoleIO.printer.printError(it.message.toString())

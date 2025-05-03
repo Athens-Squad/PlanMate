@@ -26,7 +26,7 @@ data class User(
                 type = if (fields[USER_TYPE] == "AdminUser") {
                     UserType.AdminUser
                 } else {
-                    UserType.MateUser(fields[USER_TYPE].substring(17, fields[USER_TYPE].length - 1))
+                    UserType.MateUser(fields[USER_TYPE].substring(19, fields[USER_TYPE].length - 1))
                 }
             )
         }

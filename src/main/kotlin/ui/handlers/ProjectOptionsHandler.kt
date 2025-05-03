@@ -2,6 +2,7 @@ package net.thechance.ui.handlers
 
 
 import logic.entities.Project
+import net.thechance.ui.options.project.ProjectMateOptions
 import ui.io.ConsoleIO
 import net.thechance.ui.options.project.ProjectOptions
 import ui.featuresui.*
@@ -14,7 +15,7 @@ class ProjectOptionsHandler(
     private val auditLogUi: AuditLogUi,
 ) {
     private lateinit var project: Project
-    fun handle(project: Project) {
+    fun handleAdmin(project: Project) {
         this.project = project
 
         do {
@@ -32,6 +33,23 @@ class ProjectOptionsHandler(
                 ProjectOptions.DELETE.optionNumber -> deleteProject()
             }
         } while (option != ProjectOptions.BACK.optionNumber)
+    }
+
+    fun handleMate(project: Project) {
+        this.project = project
+
+        do {
+            consoleIO.printer.printTitle("Select Option (1 to 4):")
+            consoleIO.printer.printOptions(ProjectMateOptions.entries)
+
+            val option = consoleIO.reader.readNumberFromUser()
+
+            when (option) {
+                ProjectMateOptions.CREATE_TASK.optionNumber -> createTask()
+                ProjectMateOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
+                ProjectMateOptions.SHOW_HISTORY.optionNumber -> showHistory()
+            }
+        } while (option != ProjectMateOptions.BACK.optionNumber)
     }
 
     private fun createTask() {

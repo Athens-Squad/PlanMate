@@ -44,7 +44,7 @@ class AdminOptionsHandler(
     }
 
     private fun createMate() {
-        authenticationUi.createMate(session.currentUser.id)
+        authenticationUi.createMate(session.currentUser.name)
             .onSuccess {
                 consoleIO.printer.printCorrectOutput("Mate Created Successfully!")
             }

@@ -1,15 +1,20 @@
 package net.thechance.ui.utils
 
 import logic.entities.Project
+import logic.entities.UserType
+import net.thechance.data.authentication.UserSession
 import net.thechance.ui.handlers.ProjectOptionsHandler
 import ui.featuresui.ProjectsUi
+import ui.featuresui.TasksUi
 import ui.io.ConsoleIO
 
 class ProjectSelector(
     private val consoleIO: ConsoleIO,
     private val projectsUi: ProjectsUi,
+    private val tasksUi: TasksUi,
     private val projectOptionsHandler: ProjectOptionsHandler,
-    private val showProjectSwimlanes: ShowProjectSwimlanes
+    private val showProjectSwimlanes: ShowProjectSwimlanes,
+    private val session: UserSession
 ) {
 
     fun selectProject(projects: List<Project>) {
@@ -22,7 +27,14 @@ class ProjectSelector(
                     projectsUi.getProject(projectId)
                         .onSuccess { project ->
                             printProjectInfo(project)
-                            projectOptionsHandler.handle(project)
+
+                            if (session.currentUser.type is UserType.AdminUser) {
+                                projectOptionsHandler.handleAdmin(project)
+                            }
+
+                            if (session.currentUser.type is UserType.MateUser) {
+                                projectOptionsHandler.handleMate(project)
+                            }
                         }
                         .onFailure {
                             consoleIO.printer.printError(it.message.toString())

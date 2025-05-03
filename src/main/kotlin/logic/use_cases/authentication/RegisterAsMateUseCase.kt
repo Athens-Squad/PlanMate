@@ -30,7 +30,7 @@ class RegisterAsMateUseCase(
 
     private fun isUsernameNotValid(userName: String) = userName.isEmpty() || userName.trim().isEmpty()
 
-    private fun isMateAdminIdNotValid(type: UserType) =  (type as UserType.MateUser).adminId.trim().isEmpty()
+    private fun isMateAdminIdNotValid(type: UserType) =  (type as UserType.MateUser).adminName.trim().isEmpty()
 
     private fun isPasswordNotValid(password: String) = password.length < 8 || password.length > 20
 

@@ -91,7 +91,7 @@ class AuthenticationUi(
         )
     }
 
-    fun createMate(adminId: String): Result<Unit> {
+    fun createMate(adminName: String): Result<Unit> {
         consoleIO.printer.printTitle("Create Mate Account, Please Enter Mate's Info : ")
         val userName = receiveUserInfo("Enter Mate's Username : ")
         val password = receiveUserInfo("Enter Mate's Password : ")
@@ -100,7 +100,7 @@ class AuthenticationUi(
             User(
                 name = userName,
                 password = password,
-                type = UserType.MateUser(adminId)
+                type = UserType.MateUser(adminName)
             )
         )
 
