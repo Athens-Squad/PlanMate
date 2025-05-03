@@ -27,12 +27,12 @@ class ProjectOptionsHandler(
             when (option) {
                 ProjectOptions.CREATE_TASK.optionNumber -> createTask()
                 ProjectOptions.EDIT.optionNumber -> projectsUi.editProject(project)
-                ProjectOptions.MANAGE_STATES.optionNumber -> statesUi.manageStates(project.progressionStates, project.id)
+                ProjectOptions.MANAGE_STATES.optionNumber -> statesUi.manageStates( project.id)
                 ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
                 ProjectOptions.SHOW_HISTORY.optionNumber -> showHistory()
                 ProjectOptions.DELETE.optionNumber -> deleteProject()
             }
-        } while (option != ProjectOptions.BACK.optionNumber)
+        } while (option != ProjectOptions.BACK.optionNumber && option != ProjectOptions.DELETE.optionNumber)
     }
 
     fun handleMate(project: Project) {
@@ -54,8 +54,12 @@ class ProjectOptionsHandler(
 
     private fun createTask() {
         statesUi.getStates(project.id)
-            .onSuccess {
-                tasksUi.createTask(it, project.id)
+            .onSuccess {states ->
+                if(states.isEmpty()){
+                    consoleIO.printer.printError("please create state first")
+                    return
+                }
+                tasksUi.createTask(states, project.id)
                     .onSuccess {
                         consoleIO.printer.printCorrectOutput("Task Created Successfully.")
                     }
@@ -67,7 +71,19 @@ class ProjectOptionsHandler(
     }
 
     private fun showHistory() {
-        auditLogUi.getProjectHistory(project.id)
+        auditLogUi.getProjectHistory(project.id).onSuccess { history ->
+            if(history.isEmpty()){
+                consoleIO.printer.printError("no history found")
+                return
+            }
+            history.forEach { log->
+                consoleIO.printer.printInfoLine(log.toString())
+            }
+        }
+            .onFailure {
+                consoleIO.printer.printError(it.message.toString())
+                return
+            }
         auditLogUi.showHistoryOption()
     }
 

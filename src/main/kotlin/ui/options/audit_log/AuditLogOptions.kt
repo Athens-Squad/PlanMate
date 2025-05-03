@@ -9,5 +9,9 @@ enum class AuditLogOptions(
     CLEAR_LOG (
         1,
         "Clear History"
+    ),
+    BACK (
+    2,
+    "Back"
     )
 }

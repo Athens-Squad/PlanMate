@@ -18,6 +18,10 @@ class ProjectSelector(
 ) {
 
     fun selectProject(projects: List<Project>) {
+        if(projects.isEmpty()){
+            consoleIO.printer.printError("No projects")
+            return
+        }
         do {
             consoleIO.printer.printTitle("Select A Project :")
             val inputProjectName = consoleIO.reader.readStringFromUser()
@@ -43,8 +47,6 @@ class ProjectSelector(
                 .onFailure {
                     consoleIO.printer.printError(it.message.toString())
                 }
-
-            consoleIO.printer.printOption("0 : Back")
 
         } while (inputProjectName == "0")
     }
