@@ -40,7 +40,6 @@ class AuthenticationUi(
                             login()
                                 .onSuccess {
                                     userSession.currentUser = it
-                                    consoleIO.printer.printCorrectOutput(userSession.currentUser.toString())
                                     navigateAfterLoggedInSuccessfully()
                                 }
                                 .onFailure {
