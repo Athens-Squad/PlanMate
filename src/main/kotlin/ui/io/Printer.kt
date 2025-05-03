@@ -136,7 +136,7 @@ class Printer(
     }
 
     fun printDivider() {
-        println("-------------------------------------------------")
+        println("-".repeat(25))
     }
 
 

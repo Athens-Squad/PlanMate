@@ -36,7 +36,13 @@ class ProjectOptionsHandler(
 
     private fun createTask() {
         statesUi.getStates(project.id)
-            .onSuccess { tasksUi.createTask(it, project.id) }
+            .onSuccess {
+                tasksUi.createTask(it, project.id)
+                    .onSuccess {
+                        consoleIO.printer.printCorrectOutput("Task Created Successfully.")
+                    }
+                    .onFailure { consoleIO.printer.printError("Cannot Create the Task!") }
+            }
             .onFailure {
                 consoleIO.printer.printError(it.message.toString())
             }

@@ -18,42 +18,49 @@ class AuthenticationUi(
         consoleIO.printer.printTitle("Select your option (1 or 2) : ")
         consoleIO.printer.printOptions(AuthenticationOptions.entries)
 
-        val userInput = consoleIO.reader.readNumberFromUser()
-        when(userInput) {
-            AuthenticationOptions.LOGIN.optionNumber -> {
-                login()
-                    .onSuccess {
-                        userSession.currentUser = it
-                        consoleIO.printer.printCorrectOutput("Logged in Successfully.")
-                        navigateAfterLoggedInSuccessfully()
-                    }
-                    .onFailure {
-                        handleException(it)
-                        runAuthenticationUi(navigateAfterLoggedInSuccessfully)
-                    }
+        try {
+            val userInput = consoleIO.reader.readNumberFromUser()
+            when(userInput) {
+                AuthenticationOptions.LOGIN.optionNumber -> {
+                    login()
+                        .onSuccess {
+                            userSession.currentUser = it
+                            consoleIO.printer.printCorrectOutput("Logged in Successfully.")
+                            navigateAfterLoggedInSuccessfully()
+                        }
+                        .onFailure {
+                            handleException(it)
+                            runAuthenticationUi(navigateAfterLoggedInSuccessfully)
+                        }
+                }
+                AuthenticationOptions.REGISTER_AS_ADMIN.optionNumber -> {
+                    registerAdmin()
+                        .onSuccess {
+                            consoleIO.printer.printCorrectOutput("Registered Successfully.")
+                            login()
+                                .onSuccess {
+                                    userSession.currentUser = it
+                                    consoleIO.printer.printCorrectOutput(userSession.currentUser.toString())
+                                    navigateAfterLoggedInSuccessfully()
+                                }
+                                .onFailure {
+                                    handleException(it)
+                                    runAuthenticationUi(navigateAfterLoggedInSuccessfully)
+                                }
+                        }
+                        .onFailure {
+                            handleException(it)
+                            runAuthenticationUi(navigateAfterLoggedInSuccessfully)
+                        }
+                }
+                else -> {
+                    consoleIO.printer.printError("Invalid Input, Please Try Again!")
+                    runAuthenticationUi { navigateAfterLoggedInSuccessfully() }
+                }
             }
-            AuthenticationOptions.REGISTER_AS_ADMIN.optionNumber -> {
-                registerAdmin()
-                    .onSuccess {
-                        consoleIO.printer.printCorrectOutput("Registered Successfully.")
-                        login()
-                            .onSuccess {
-                                userSession.currentUser = it
-                                consoleIO.printer.printCorrectOutput(userSession.currentUser.toString())
-                                navigateAfterLoggedInSuccessfully()
-                            }
-                            .onFailure {
-                                handleException(it)
-                                runAuthenticationUi(navigateAfterLoggedInSuccessfully)
-                            }
-                    }
-                    .onFailure {
-                        handleException(it)
-                        runAuthenticationUi(navigateAfterLoggedInSuccessfully)
-                    }
-            }
-            else -> consoleIO.printer.printError("Invalid Input")
-
+        } catch (invalidInputException: Exception) {
+            consoleIO.printer.printError("Invalid Input, Please Try Again!")
+            runAuthenticationUi { navigateAfterLoggedInSuccessfully() }
         }
     }
 

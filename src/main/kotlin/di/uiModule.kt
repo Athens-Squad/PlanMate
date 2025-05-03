@@ -2,7 +2,7 @@ package di
 
 import net.thechance.ui.handlers.*
 import net.thechance.ui.utils.ProjectSelector
-import net.thechance.ui.utils.ProjectSwimlaneUiPrinter
+import net.thechance.ui.utils.ShowProjectSwimlanes
 import ui.PlanMateCli
 import ui.featuresui.*
 import ui.io.ConsoleIO
@@ -26,7 +26,7 @@ val uiModule = module {
     singleOf(::TasksUi)
     singleOf(::AuthenticationUi)
 
-    singleOf(::ProjectSwimlaneUiPrinter)
+    singleOf(::ShowProjectSwimlanes)
     singleOf(::ProjectSelector)
 
 

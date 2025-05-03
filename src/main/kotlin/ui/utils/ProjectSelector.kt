@@ -9,7 +9,7 @@ class ProjectSelector(
     private val consoleIO: ConsoleIO,
     private val projectsUi: ProjectsUi,
     private val projectOptionsHandler: ProjectOptionsHandler,
-    private val projectSwimlaneUiPrinter: ProjectSwimlaneUiPrinter
+    private val showProjectSwimlanes: ShowProjectSwimlanes
 ) {
 
     fun selectProject(projects: List<Project>) {
@@ -44,10 +44,6 @@ class ProjectSelector(
     }
 
     private fun printProjectInfo(project: Project) {
-        consoleIO.printer.printTitle("Project: ${project.name}")
-        consoleIO.printer.printPlainText("Description: ${project.description}")
-        consoleIO.printer.printDivider()
-
-        projectSwimlaneUiPrinter.printSwimlanes(project)
+        showProjectSwimlanes(project)
     }
 }
