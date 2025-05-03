@@ -46,16 +46,17 @@ class ProjectsFileDataSource(
     override fun getProjectsFromCsvFile(): Result<List<Project>> {
         return runCatching {
             projectsFileHandler.readRecords().map { record ->
-                csvFileParser.parseRecord(record).also { project ->
-                    val tasks = tasksFileDataSource.getTasksByProjectId(project.id).getOrThrow().toMutableList()
-                    val states = statesFileDataSource.getStates().getOrThrow()
-                        .filter { it.projectId == project.id }
-                        .toMutableList()
-                    project.copy(
-                        tasks = tasks,
-                        progressionStates = states
-                    )
-                }
+                val project = csvFileParser.parseRecord(record)
+
+                val tasks = tasksFileDataSource.getTasksByProjectId(project.id).getOrThrow().toMutableList()
+                val states = statesFileDataSource.getStates().getOrThrow()
+                    .filter { it.projectId == project.id }
+                    .toMutableList()
+
+                project.copy(
+                    tasks = tasks,
+                    progressionStates = states
+                )
             }
         }
     }
