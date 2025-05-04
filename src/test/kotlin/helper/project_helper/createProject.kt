@@ -17,7 +17,7 @@ fun createProject(
     id = id,
     name = name,
     description = description,
-    states = states,
+    progressionStates = states,
     tasks = tasks,
     createdBy = createdBy
 )

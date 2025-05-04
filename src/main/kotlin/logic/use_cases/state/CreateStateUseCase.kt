@@ -12,7 +12,7 @@ class CreateStateUseCase(
         return runCatching {
 
             stateValidator.validateProjectExists(state.projectId)
-            stateValidator.stateIsExist(state)
+            stateValidator.stateIsExist(state.id)
             stateValidator.validateStateFieldsIsNotBlankOrThrow(state)
             stateRepository.createState(state)
 

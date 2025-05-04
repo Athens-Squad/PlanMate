@@ -23,7 +23,6 @@ val useCasesModule = module {
     singleOf(::CreateAuditLogUseCase)
     singleOf(::AuditLogUseCases)
 
-
     singleOf(::CreateProjectUseCase)
     singleOf(::DeleteProjectUseCase)
     singleOf(::UpdateProjectUseCase)

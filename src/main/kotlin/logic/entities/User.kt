@@ -3,6 +3,7 @@ package logic.entities
 import data.user.utils.UserColumnIndex.ID
 import data.user.utils.UserColumnIndex.PASSWORD
 import data.user.utils.UserColumnIndex.USERNAME
+import data.user.utils.UserColumnIndex.USER_NAME_STARTING_INDEX
 import data.user.utils.UserColumnIndex.USER_TYPE
 import logic.CsvSerializable
 import logic.entities.UserType
@@ -26,7 +27,7 @@ data class User(
                 type = if (fields[USER_TYPE] == "AdminUser") {
                     UserType.AdminUser
                 } else {
-                    UserType.MateUser(fields[USER_TYPE].substring(17, fields[USER_TYPE].length - 1))
+                    UserType.MateUser(fields[USER_TYPE].substring(USER_NAME_STARTING_INDEX, fields[USER_TYPE].length - 1))
                 }
             )
         }

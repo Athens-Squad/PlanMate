@@ -1,18 +1,19 @@
 package logic.entities
 
-import logic.CsvSerializable
-import data.projects.utils.ProjectColumnIndex.CREATED_BY
-import data.projects.utils.ProjectColumnIndex.DESCRIPTION
-import data.projects.utils.ProjectColumnIndex.ID
 import data.projects.utils.ProjectColumnIndex.NAME
-import java.util.*
+import data.projects.utils.ProjectColumnIndex.ID
+import data.projects.utils.ProjectColumnIndex.DESCRIPTION
+import data.projects.utils.ProjectColumnIndex.CREATED_BY
+import logic.CsvSerializable
+import java.util.UUID
+
 
 
 data class Project(
     val id: String = UUID.randomUUID().toString(),
     val name: String,
     val description: String,
-    val states: MutableList<ProgressionState> = mutableListOf(),
+    val progressionStates: MutableList<ProgressionState> = mutableListOf(),
     val tasks: MutableList<Task> = mutableListOf(),
     val createdBy: String
 ) : CsvSerializable {

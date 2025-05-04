@@ -7,7 +7,9 @@ fun checkIfUserAuthorized(userName: String, action: (username: String) -> Result
         onSuccess = { user ->
             user.type == UserType.AdminUser
         },
-        onFailure = { false }
+        onFailure = {
+            false
+        }
     )
 }
 

@@ -44,7 +44,7 @@ class GetStateByIdUseCaseTest {
   every { stateRepository.getStates() } returns Result.success(listOf(state))
 
   // When
-  val result = getStateByIdUseCase.execute(stateId)
+  val result = getStateByIdUseCase.execute(stateId).getOrThrow()
 
   // Then
   assertEquals(state, result)

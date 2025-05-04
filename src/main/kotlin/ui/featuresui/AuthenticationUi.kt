@@ -3,55 +3,66 @@ package ui.featuresui
 import logic.entities.User
 import logic.use_cases.authentication.AuthenticationUseCases
 import logic.entities.UserType
-import ui.UserSession.currentUser
+import net.thechance.data.authentication.UserSession
+import net.thechance.ui.options.AuthenticationOptions
 import ui.io.ConsoleIO
+
 
 class AuthenticationUi(
     private val consoleIO: ConsoleIO,
-    private val authenticationUseCases: AuthenticationUseCases
+    private val authenticationUseCases: AuthenticationUseCases,
+    private val userSession: UserSession
 ) {
 
     fun runAuthenticationUi(navigateAfterLoggedInSuccessfully: () -> Unit) {
         consoleIO.printer.printTitle("Select your option (1 or 2) : ")
-        consoleIO.printer.printOption("1 : Login")
-        consoleIO.printer.printOption("2 : Register as Admin")
+        consoleIO.printer.printOptions(AuthenticationOptions.entries)
 
-        val userInput = consoleIO.reader.readNumberFromUser()
-        when(userInput) {
-            1 -> {
-                login()
-                    .onSuccess {
-                        currentUser = it
-                        consoleIO.printer.printCorrectOutput(currentUser.toString())
-                        navigateAfterLoggedInSuccessfully()
-                    }
-                    .onFailure {
-                        handleException(it)
-                        runAuthenticationUi(navigateAfterLoggedInSuccessfully)
-                    }
+        try {
+            val userInput = consoleIO.reader.readNumberFromUser()
+            when(userInput) {
+                AuthenticationOptions.LOGIN.optionNumber -> {
+                    login()
+                        .onSuccess {
+                            userSession.currentUser = it
+                            consoleIO.printer.printCorrectOutput("Logged in Successfully.")
+                            navigateAfterLoggedInSuccessfully()
+                        }
+                        .onFailure {
+                            handleException(it)
+                            runAuthenticationUi(navigateAfterLoggedInSuccessfully)
+                        }
+                }
+                AuthenticationOptions.REGISTER_AS_ADMIN.optionNumber -> {
+                    registerAdmin()
+                        .onSuccess {
+                            consoleIO.printer.printCorrectOutput("Registered Successfully.")
+                            login()
+                                .onSuccess {
+                                    userSession.currentUser = it
+                                    navigateAfterLoggedInSuccessfully()
+                                }
+                                .onFailure {
+                                    handleException(it)
+                                    runAuthenticationUi(navigateAfterLoggedInSuccessfully)
+                                }
+                        }
+                        .onFailure {
+                            handleException(it)
+                            runAuthenticationUi(navigateAfterLoggedInSuccessfully)
+                        }
+                }
+                else -> {
+                    consoleIO.printer.printError("Invalid Input, Please Try Again!")
+                    runAuthenticationUi { navigateAfterLoggedInSuccessfully() }
+                }
             }
-            2 -> {
-                registerAdmin()
-                    .onSuccess {
-                        consoleIO.printer.printCorrectOutput("Registered Successfully.")
-                        login()
-                            .onSuccess {
-                                currentUser = it
-                                consoleIO.printer.printCorrectOutput(currentUser.toString())
-                                navigateAfterLoggedInSuccessfully()
-                            }
-                            .onFailure {
-                                handleException(it)
-                                runAuthenticationUi(navigateAfterLoggedInSuccessfully)
-                            }
-                    }
-                    .onFailure {
-                        handleException(it)
-                        runAuthenticationUi(navigateAfterLoggedInSuccessfully)
-                    }
-            }
+        } catch (invalidInputException: Exception) {
+            consoleIO.printer.printError("Invalid Input, Please Try Again!")
+            runAuthenticationUi { navigateAfterLoggedInSuccessfully() }
         }
     }
+
 
     private fun handleException(exception: Throwable) {
         consoleIO.printer.printError(exception.message.toString())
@@ -79,22 +90,23 @@ class AuthenticationUi(
         )
     }
 
-    private fun createMate(adminId: String): Result<Unit> {
+    fun createMate(adminName: String): Result<Unit> {
         consoleIO.printer.printTitle("Create Mate Account, Please Enter Mate's Info : ")
         val userName = receiveUserInfo("Enter Mate's Username : ")
         val password = receiveUserInfo("Enter Mate's Password : ")
 
-        return authenticationUseCases.registerAsAdminUseCase.execute(
+        return authenticationUseCases.registerAsMateUseCase.execute(
             User(
                 name = userName,
                 password = password,
-                type = UserType.MateUser(adminId)
+                type = UserType.MateUser(adminName)
             )
         )
+
     }
 
     private fun receiveUserInfo(message: String): String {
-        consoleIO.printer.printInfoLine(message)
+        consoleIO.printer.printOption(message)
         return consoleIO.reader.readStringFromUser()
     }
 }

@@ -11,7 +11,7 @@ class UpdateStateUseCase(
 ) {
     fun execute(state: ProgressionState, updatedState: ProgressionState): Result<Unit> {
         return runCatching {
-            stateValidator.stateIsExist(state)
+            stateValidator.stateIsExist(state.id)
             stateValidator.validateProjectExists(state.id)
             stateRepository.updateState(updatedState)
         }

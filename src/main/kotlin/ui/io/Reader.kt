@@ -5,7 +5,6 @@ class Reader {
         return readlnOrNull().toString()
     }
 
-
     fun readNumberFromUser(): Int {
         val input = readlnOrNull()
         return input?.toIntOrNull() ?: throw Exception("$input")

@@ -31,7 +31,7 @@ class GetAllProjectsByUsernameUseCaseTest {
     fun setUp() {
         adminUserProject = createProject().copy(
             id = "1",
-            states = FakeProjectData.states,
+            progressionStates = FakeProjectData.states,
             tasks = FakeProjectData.tasks,
             createdBy = adminUser.name
         )
@@ -42,7 +42,7 @@ class GetAllProjectsByUsernameUseCaseTest {
         )
 
         alexAdminUserProject = createProject().copy(
-            states = FakeProjectData.states,
+            progressionStates = FakeProjectData.states,
             tasks = FakeProjectData.tasks,
             createdBy = alexAdminUser.name
         )

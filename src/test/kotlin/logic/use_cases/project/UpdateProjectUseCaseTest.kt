@@ -29,7 +29,7 @@ class UpdateProjectUseCaseTest {
     fun setUp() {
         fakeProject = createProject().copy(
             id = "1",
-            states = FakeProjectData.states,
+            progressionStates = FakeProjectData.states,
             tasks = FakeProjectData.tasks,
         )
         updatedProject = fakeProject.copy(

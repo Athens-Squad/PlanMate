@@ -31,10 +31,10 @@ class GetStatesByProjectIdUseCaseTest {
         every { statesRepository.getStates() } returns Result.success(states)
 
         // When
-        val result = getStatesByProjectId.execute(projectId)
+        val result = getStatesByProjectId.execute(projectId).getOrThrow()
 
         // Then
-        assertEquals(2, result?.size)
+        assertEquals(2, result.size)
 
     }
 

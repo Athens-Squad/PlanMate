@@ -1,5 +1,8 @@
 package di
 
+import net.thechance.ui.handlers.*
+import net.thechance.ui.utils.ProjectSelector
+import net.thechance.ui.utils.ShowProjectSwimlanes
 import ui.PlanMateCli
 import ui.featuresui.*
 import ui.io.ConsoleIO
@@ -22,6 +25,14 @@ val uiModule = module {
     singleOf(::StatesUi)
     singleOf(::TasksUi)
     singleOf(::AuthenticationUi)
+
+    singleOf(::ShowProjectSwimlanes)
+    singleOf(::ProjectSelector)
+
+
+    singleOf(::ProjectOptionsHandler)
+    singleOf(::AdminOptionsHandler)
+    singleOf(::MateOptionsHandler)
 
     singleOf(::PlanMateCli)
 }
