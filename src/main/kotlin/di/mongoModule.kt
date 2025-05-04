@@ -6,7 +6,7 @@ import org.koin.dsl.module
 
 val mongoModule = module {
     single<MongoClient> {
-        MongoClient.create("mongodb+srv://athens:<athensplanmate>@planmatecluster.caw6br8.mongodb.net/?retryWrites=true&w=majority&appName=PlanMateCluster")
+        MongoClient.create("mongodb+srv://athens:<athensplanmate>@planmatecluster.2ygvgob.mongodb.net/?retryWrites=true&w=majority&appName=PlanMateCluster")
     }
 
     single<MongoDatabase> {
