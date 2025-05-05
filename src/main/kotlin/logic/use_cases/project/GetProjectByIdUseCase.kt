@@ -12,14 +12,12 @@ class GetProjectByIdUseCase(
     private val projectRepository: ProjectsRepository,
 
 ) {
-    fun execute(projectId: String): Result<Project> {
-        return runCatching {
-            projectId.apply {
-                checkIfFieldIsValid().takeIf { it } ?: throw InvalidProjectNameException()
-            }
-
-            checkIfProjectExistInRepositoryAndReturn(projectId) { projectRepository.getProjects() }
-                ?: throw ProjectsLogicExceptions.NoProjectFoundException()
+    suspend fun execute(projectId: String): Project {
+        projectId.apply {
+            checkIfFieldIsValid().takeIf { it } ?: throw InvalidProjectNameException()
         }
+
+        return checkIfProjectExistInRepositoryAndReturn(projectId) { projectRepository.getProjects() }
+            ?: throw ProjectsLogicExceptions.NoProjectFoundException()
     }
 }
