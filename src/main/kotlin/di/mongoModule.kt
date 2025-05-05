@@ -2,11 +2,12 @@ package net.thechance.di
 
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import net.thechance.data.utils.loadEnvironmentVariable
 import org.koin.dsl.module
 
 val mongoModule = module {
     single<MongoClient> {
-        MongoClient.create("mongodb+srv://athens:<athensplanmate>@planmatecluster.2ygvgob.mongodb.net/?retryWrites=true&w=majority&appName=PlanMateCluster")
+        MongoClient.create(loadEnvironmentVariable("MONGODB_URI"))
     }
 
     single<MongoDatabase> {
