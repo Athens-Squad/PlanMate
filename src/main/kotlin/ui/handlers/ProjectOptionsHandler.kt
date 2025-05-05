@@ -1,6 +1,6 @@
 package net.thechance.ui.handlers
 
-
+import kotlinx.coroutines.*
 import logic.entities.Project
 import net.thechance.ui.options.project.ProjectMateOptions
 import ui.io.ConsoleIO
@@ -12,10 +12,12 @@ class ProjectOptionsHandler(
     private val projectsUi: ProjectsUi,
     private val statesUi: StatesUi,
     private val tasksUi: TasksUi,
-    private val auditLogUi: AuditLogUi,
+    private val auditLogUi: AuditLogUi
 ) {
     private lateinit var project: Project
-    fun handleAdmin(project: Project) {
+
+
+    suspend fun handleAdmin(project: Project) {
         this.project = project
 
         do {
@@ -26,16 +28,23 @@ class ProjectOptionsHandler(
 
             when (option) {
                 ProjectOptions.CREATE_TASK.optionNumber -> createTask()
+
                 ProjectOptions.EDIT.optionNumber -> projectsUi.editProject(project)
+
                 ProjectOptions.MANAGE_STATES.optionNumber -> statesUi.manageStates( project.id)
-                ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
+
+                ProjectOptions.MANAGE_TASKS.optionNumber ->
+                    tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
+
                 ProjectOptions.SHOW_HISTORY.optionNumber -> showHistory()
+
                 ProjectOptions.DELETE.optionNumber -> deleteProject()
             }
         } while (option != ProjectOptions.BACK.optionNumber && option != ProjectOptions.DELETE.optionNumber)
+
     }
 
-    fun handleMate(project: Project) {
+    suspend fun handleMate(project: Project) {
         this.project = project
 
         do {
@@ -52,25 +61,18 @@ class ProjectOptionsHandler(
         } while (option != ProjectMateOptions.BACK.optionNumber)
     }
 
-    private fun createTask() {
-        statesUi.getStates(project.id)
-            .onSuccess {states ->
-                if(states.isEmpty()){
-                    consoleIO.printer.printError("please create state first")
-                    return
-                }
-                tasksUi.createTask(states, project.id)
-                    .onSuccess {
-                        consoleIO.printer.printCorrectOutput("Task Created Successfully.")
-                    }
-                    .onFailure { consoleIO.printer.printError("Cannot Create the Task!") }
-            }
-            .onFailure {
-                consoleIO.printer.printError(it.message.toString())
-            }
+    private suspend fun createTask() {
+        val states = statesUi.getStates(project.id)
+        if(states.isEmpty()){
+            consoleIO.printer.printError("please create state first")
+            return
+        }
+        tasksUi.createTask(states, project.id)
+
+        consoleIO.printer.printCorrectOutput("Task Created Successfully.")
     }
 
-    private fun showHistory() {
+    private suspend fun showHistory() {
         auditLogUi.getProjectHistory(project.id).onSuccess { history ->
             if(history.isEmpty()){
                 consoleIO.printer.printError("no history found")
@@ -89,7 +91,6 @@ class ProjectOptionsHandler(
 
     private fun deleteProject() {
         projectsUi.deleteProject(project.id)
-            .onSuccess { consoleIO.printer.printCorrectOutput("Project Deleted Successfully") }
-            .onFailure { consoleIO.printer.printError(it.message.toString()) }
+        consoleIO.printer.printCorrectOutput("Project Deleted Successfully")
     }
 }
