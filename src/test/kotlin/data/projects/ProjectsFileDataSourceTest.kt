@@ -9,6 +9,8 @@ import helper.project_helper.validRecordString
 import io.mockk.every
 import io.mockk.mockk
 import logic.entities.Project
+import net.thechance.data.projects.datasource.ProjectsDataSource
+import net.thechance.data.projects.datasource.localcsvfile.ProjectsFileDataSource
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -46,7 +48,7 @@ class ProjectsFileDataSourceTest {
     @Test
     fun `should insert project in file, when saveProjectInCsvFile called`(){
         // When
-        projectsDataSource.saveProjectInCsvFile(fakeProject)
+        projectsDataSource.createProject(fakeProject)
 
         // Then
         assertThat(mockFile.readLines()).containsExactly(validRecordString)
@@ -72,8 +74,8 @@ class ProjectsFileDataSourceTest {
         every { projectFileParser.toCsvRecord(updatedProject) } returns updatedRecordString
 
         // When
-        projectsDataSource.saveProjectInCsvFile(fakeProject)
-        projectsDataSource.updateProjectFromCsvFile(updatedProject)
+        projectsDataSource.createProject(fakeProject)
+        projectsDataSource.updateProject(updatedProject)
         val projectNameInFile = mockFile.readLines().first().split(",")[1].trim()
 
         // Then
@@ -92,8 +94,8 @@ class ProjectsFileDataSourceTest {
         every { projectFileParser.toCsvRecord(updatedProject) } returns updatedRecordString
 
         // When
-        projectsDataSource.saveProjectInCsvFile(fakeProject)
-        projectsDataSource.updateProjectFromCsvFile(updatedProject)
+        projectsDataSource.createProject(fakeProject)
+        projectsDataSource.updateProject(updatedProject)
 
         // Then
         assertThat(mockFile.readLines()).contains(updatedRecordString)
@@ -102,8 +104,8 @@ class ProjectsFileDataSourceTest {
     @Test
     fun `should delete project in file, when deleteProjectFromCsvFile called`(){
        // When
-        projectsDataSource.saveProjectInCsvFile(fakeProject)
-        projectsDataSource.deleteProjectFromCsvFile(fakeProject.id)
+        projectsDataSource.createProject(fakeProject)
+        projectsDataSource.deleteProject(fakeProject.id)
 
         // Then
         assertThat(mockFile.readLines()).isEmpty()
@@ -112,10 +114,10 @@ class ProjectsFileDataSourceTest {
     @Test
     fun `should get projects from file, when getProjectsFromCsvFile called`(){
         // Given
-        projectsDataSource.saveProjectInCsvFile(fakeProject)
+        projectsDataSource.createProject(fakeProject)
 
         // When
-        val projects = projectsDataSource.getProjectsFromCsvFile()
+        val projects = projectsDataSource.getProjects()
 
         // Then
         assertThat(projects.getOrDefault(emptyList())).isNotEmpty()

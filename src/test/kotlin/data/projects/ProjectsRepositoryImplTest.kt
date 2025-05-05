@@ -5,6 +5,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
+import net.thechance.data.projects.datasource.ProjectsDataSource
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -25,7 +26,7 @@ class ProjectsRepositoryImplTest {
         projectsRepository.getProjects()
 
         // Then
-        verify(exactly = 1) { projectsDataSource.getProjectsFromCsvFile() }
+        verify(exactly = 1) { projectsDataSource.getProjects() }
     }
 
     @Test
@@ -34,7 +35,7 @@ class ProjectsRepositoryImplTest {
         projectsRepository.createProject(fakeProject)
 
         // Then
-        verify(exactly = 1) { projectsDataSource.saveProjectInCsvFile(fakeProject) }
+        verify(exactly = 1) { projectsDataSource.createProject(fakeProject) }
     }
 
     @Test
@@ -50,7 +51,7 @@ class ProjectsRepositoryImplTest {
         projectsRepository.updateProject(newFakeProject)
 
         // Then
-        verify(exactly = 1) { projectsDataSource.updateProjectFromCsvFile(newFakeProject) }
+        verify(exactly = 1) { projectsDataSource.updateProject(newFakeProject) }
     }
 
     @Test
@@ -59,7 +60,7 @@ class ProjectsRepositoryImplTest {
         projectsRepository.deleteProject(fakeProject.id)
 
         // Then
-        verify(exactly = 1) { projectsDataSource.deleteProjectFromCsvFile(fakeProject.id) }
+        verify(exactly = 1) { projectsDataSource.deleteProject(fakeProject.id) }
     }
 
 }

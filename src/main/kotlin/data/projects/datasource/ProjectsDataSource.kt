@@ -1,8 +1,8 @@
-package logic.repositories
+package net.thechance.data.projects.datasource
 
 import logic.entities.Project
 
-interface ProjectsRepository {
+interface ProjectsDataSource {
     suspend fun createProject(project: Project)
     suspend fun updateProject(project: Project)
     suspend fun deleteProject(projectId: String)

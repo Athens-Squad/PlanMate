@@ -2,23 +2,24 @@ package data.projects
 
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
+import net.thechance.data.projects.datasource.ProjectsDataSource
 
 class ProjectsRepositoryImpl(
     private val projectsDataSource: ProjectsDataSource
 ) : ProjectsRepository {
-    override fun createProject(project: Project): Result<Unit> {
-        return projectsDataSource.saveProjectInCsvFile(project)
+    override suspend fun createProject(project: Project) {
+        projectsDataSource.createProject(project)
     }
 
-    override fun updateProject(project: Project): Result<Unit> {
-        return projectsDataSource.updateProjectFromCsvFile(project)
+    override suspend fun updateProject(project: Project) {
+        projectsDataSource.updateProject(project)
     }
 
-    override fun deleteProject(projectId: String): Result<Unit> {
-        return projectsDataSource.deleteProjectFromCsvFile(projectId)
+    override suspend fun deleteProject(projectId: String) {
+        projectsDataSource.deleteProject(projectId)
     }
 
-    override fun getProjects(): Result<List<Project>> {
-        return projectsDataSource.getProjectsFromCsvFile()
+    override suspend fun getProjects(): List<Project> {
+       return projectsDataSource.getProjects()
     }
 }
