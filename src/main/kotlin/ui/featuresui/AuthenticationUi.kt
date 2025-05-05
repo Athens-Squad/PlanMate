@@ -20,38 +20,42 @@ class AuthenticationUi(
 
         try {
             val userInput = consoleIO.reader.readNumberFromUser()
-            when(userInput) {
+            when (userInput) {
                 AuthenticationOptions.LOGIN.optionNumber -> {
-                    login()
-                        .onSuccess {
-                            userSession.currentUser = it
-                            consoleIO.printer.printCorrectOutput("Logged in Successfully.")
-                            navigateAfterLoggedInSuccessfully()
-                        }
-                        .onFailure {
-                            handleException(it)
-                            runAuthenticationUi(navigateAfterLoggedInSuccessfully)
-                        }
+
+                    try {
+                        val user = login()
+
+                        userSession.currentUser = user
+                        consoleIO.printer.printCorrectOutput("Logged in Successfully.")
+                        navigateAfterLoggedInSuccessfully()
+                    } catch (e: Exception) {
+                        handleException(e)
+                        runAuthenticationUi(navigateAfterLoggedInSuccessfully)
+                    }
                 }
+
                 AuthenticationOptions.REGISTER_AS_ADMIN.optionNumber -> {
-                    registerAdmin()
-                        .onSuccess {
-                            consoleIO.printer.printCorrectOutput("Registered Successfully.")
-                            login()
-                                .onSuccess {
-                                    userSession.currentUser = it
-                                    navigateAfterLoggedInSuccessfully()
-                                }
-                                .onFailure {
-                                    handleException(it)
-                                    runAuthenticationUi(navigateAfterLoggedInSuccessfully)
-                                }
-                        }
-                        .onFailure {
-                            handleException(it)
+
+                    try {
+                        registerAdmin()
+                        consoleIO.printer.printCorrectOutput("Registered Successfully.")
+
+                        try {
+                            val user = login()
+
+                            userSession.currentUser = user
+                            navigateAfterLoggedInSuccessfully()
+                        } catch (e: Exception) {
+                            handleException(e)
                             runAuthenticationUi(navigateAfterLoggedInSuccessfully)
                         }
+                    } catch (e: Exception) {
+                        handleException(e)
+                        runAuthenticationUi(navigateAfterLoggedInSuccessfully)
+                    }
                 }
+
                 else -> {
                     consoleIO.printer.printError("Invalid Input, Please Try Again!")
                     runAuthenticationUi { navigateAfterLoggedInSuccessfully() }
@@ -68,15 +72,15 @@ class AuthenticationUi(
         consoleIO.printer.printError(exception.message.toString())
     }
 
-    private fun login(): Result<User> {
+    private fun login(): User {
         consoleIO.printer.printTitle("Login, Please Enter Your Info : ")
         val userName = receiveUserInfo("Enter Your Username : ")
         val password = receiveUserInfo("Enter Your Password : ")
 
-        return  authenticationUseCases.loginUseCase.execute(userName, password)
+        return authenticationUseCases.loginUseCase.execute(userName, password)
     }
 
-    private fun registerAdmin(): Result<Unit> {
+    private fun registerAdmin() {
         consoleIO.printer.printTitle("Signup, Please Enter Your Info : ")
         val userName = receiveUserInfo("Enter Your Username : ")
         val password = receiveUserInfo("Enter Your Password : ")
@@ -90,7 +94,7 @@ class AuthenticationUi(
         )
     }
 
-    fun createMate(adminName: String): Result<Unit> {
+    fun createMate(adminName: String) {
         consoleIO.printer.printTitle("Create Mate Account, Please Enter Mate's Info : ")
         val userName = receiveUserInfo("Enter Mate's Username : ")
         val password = receiveUserInfo("Enter Mate's Password : ")
