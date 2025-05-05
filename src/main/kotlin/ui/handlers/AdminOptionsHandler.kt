@@ -44,12 +44,12 @@ class AdminOptionsHandler(
     }
 
     private fun createMate() {
-        authenticationUi.createMate(session.currentUser.name)
-            .onSuccess {
+              try {
+               authenticationUi.createMate(session.currentUser.name)
                 consoleIO.printer.printCorrectOutput("Mate Created Successfully!")
             }
-            .onFailure {
-                consoleIO.printer.printError(it.message.toString())
+            catch (e:Exception) {
+                consoleIO.printer.printError(e.message.toString())
             }
     }
 

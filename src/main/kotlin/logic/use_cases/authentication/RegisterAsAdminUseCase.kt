@@ -4,34 +4,31 @@ import logic.entities.User
 import logic.repositories.UserRepository
 import data.authentication.utils.PasswordHashing
 import logic.entities.UserType
+import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
 
 class RegisterAsAdminUseCase(
     private val userRepository: UserRepository,
-    private val passwordHashing: PasswordHashing
+    private val passwordHashing: PasswordHashing,
+    private val userValidator: UserValidator
+
 ) {
 
-    fun execute(adminUser: User): Result<Unit> {
-        return if (
-            isUsernameNotValid(adminUser.name) ||
-            isPasswordNotValid(adminUser.password) ||
-            isTypeNotAdmin(adminUser.type) ||
-            userNameExist(adminUser.name)
+    fun execute(adminUser: User) {
+         if (
+            userValidator. isUsernameNotValid(adminUser.name) ||
+            userValidator. isPasswordNotValid(adminUser.password) ||
+            userValidator.isTypeNotAdmin(adminUser.type) ||
+            userValidator.userNameExist(adminUser.name)
         ) {
-            Result.failure(Exception("Cannot Register!"))
-        } else {
-            runCatching {
-                val hashedPassword = passwordHashing.hash(adminUser.password)
-                val adminUserWithHashedPassword = adminUser.copy(password = hashedPassword)
-                userRepository.createUser(adminUserWithHashedPassword).getOrThrow()
-            }
+            throw Exception("Cannot Register!")
         }
+
+        val hashedPassword = passwordHashing.hash(adminUser.password)
+        val adminUserWithHashedPassword = adminUser.copy(password = hashedPassword)
+
+        userRepository.createUser(adminUserWithHashedPassword)
+
     }
 
-    private fun isUsernameNotValid(userName: String) = userName.isEmpty() || userName.trim().isEmpty()
 
-    private fun isPasswordNotValid(password: String) = password.length < 8 || password.length > 20
-
-    private fun isTypeNotAdmin(userType: UserType) = userType is UserType.MateUser
-
-    private fun userNameExist(userName: String) = userRepository.getUserByUsername(userName).isSuccess
 }
