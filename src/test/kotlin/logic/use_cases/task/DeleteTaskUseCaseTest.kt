@@ -9,7 +9,7 @@ import io.mockk.mockk
 import logic.entities.Task
 import logic.repositories.AuditRepository
 import logic.repositories.TasksRepository
-import logic.exceptions.TasksException
+
 import logic.use_cases.task.taskvalidations.TaskValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
@@ -47,7 +47,7 @@ class DeleteTaskUseCaseTest {
     fun `should not be able to delete when task does not exist then return false`() {
         //given
         every { taskValidator.doIfTaskExistsOrThrow(fakeTask.id, any()) } throws
-                TasksException.CannotCompleteTaskOperationException("Cannot find the task!")
+                CannotCompleteTaskOperationException("Cannot find the task!")
 
         every { tasksRepository.deleteTask(fakeTask.id) } returns Result.success(Unit)
         every { auditRepository.createAuditLog(any()) } returns Result.success(Unit)

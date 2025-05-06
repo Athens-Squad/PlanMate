@@ -3,6 +3,6 @@ package logic.repositories
 import logic.entities.User
 
 interface UserRepository {
-    fun createUser(user: User)
-    fun getUserByUsername(userName: String): User
+   suspend fun createUser(user: User)
+   suspend fun getUserByUsername(userName: String): User
 }

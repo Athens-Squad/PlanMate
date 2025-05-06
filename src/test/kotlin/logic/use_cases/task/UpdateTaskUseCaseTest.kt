@@ -10,7 +10,7 @@ import io.mockk.mockk
 import logic.entities.Task
 import logic.repositories.AuditRepository
 import logic.repositories.TasksRepository
-import logic.exceptions.TasksException
+
 import logic.use_cases.task.taskvalidations.TaskValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -56,7 +56,7 @@ class UpdateTaskUseCaseTest {
         //given
         val fakeUpdatedTask = fakeTask.copy(title = "newTitle")
         every { taskValidator.doIfTaskExistsOrThrow(fakeUpdatedTask.id, any()) } throws
-                TasksException.CannotCompleteTaskOperationException("Cannot find the task!")
+                CannotCompleteTaskOperationException("Cannot find the task!")
 
         every { taskValidator.validateTaskBeforeUpdating(fakeTask, fakeUpdatedTask) } just Runs
         every { tasksRepository.updateTask(fakeUpdatedTask) } returns Result.success(Unit)

@@ -1,13 +1,13 @@
 package logic.use_cases.audit_log
 
 import com.google.common.truth.Truth.assertThat
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import logic.entities.AuditLog
-import logic.repositories.AuditRepository
 import logic.entities.EntityType
-import logic.use_cases.audit_log.GetAuditLogsByTaskIdUseCase
+import logic.repositories.AuditRepository
 import org.junit.jupiter.api.BeforeEach
 import java.time.LocalDateTime
 import kotlin.test.Test
@@ -24,8 +24,7 @@ class GetAuditLogsByTaskIdUseCaseTest {
     }
 
     @Test
-    fun ` getAuditLogs() return audit logs for given task id`() {
-          //given
+    fun `getAuditLogs returns audit logs for given task id`() = runTest {
         val taskId = "TASK-001"
         val expected = listOf(
             AuditLog(
@@ -44,76 +43,50 @@ class GetAuditLogsByTaskIdUseCaseTest {
             )
         )
 
-        every { auditRepository.getAuditLogs() }  returns expected
-
-        //when
+        coEvery { auditRepository.getAuditLogs() } returns expected
 
         val result = getAuditLogsByTaskIdUseCase.execute(taskId)
 
-        //then
-        verify(exactly = 1) { auditRepository.getAuditLogs() }
-
-
+        assertThat(result).isEqualTo(expected)
+        coVerify(exactly = 1) { auditRepository.getAuditLogs() }
     }
 
-
-
     @Test
-    fun `getAuditLogs() return empty list when an invalid TaskId Given`() {
-        // given
+    fun `getAuditLogs returns empty list when invalid task id is given`() = runTest {
         val invalidTaskId = "TASK-XYZ123"
+        coEvery { auditRepository.getAuditLogs() } returns emptyList()
 
-
-        every { auditRepository.getAuditLogs() } returns emptyList()
-
-        //when
         val result = getAuditLogsByTaskIdUseCase.execute(invalidTaskId)
 
-        //then
         assertThat(result).isEmpty()
-        verify(exactly = 1) { auditRepository.getAuditLogs() }
+        coVerify(exactly = 1) { auditRepository.getAuditLogs() }
     }
 
     @Test
-    fun `getAuditLogs return empty list when TaskId is blank`() {
-        // Given
+    fun `getAuditLogs returns empty list when task id is blank`() = runTest {
         val blankTaskId = ""
 
-
-        // When
         val result = getAuditLogsByTaskIdUseCase.execute(blankTaskId)
 
-        // Then
         assertThat(result).isEmpty()
-        verify(exactly = 0) { auditRepository.getAuditLogs() }
-
-
+        coVerify(exactly = 0) { auditRepository.getAuditLogs() }
     }
 
-
-
-
-
     @Test
-    fun `getAuditLogs() return empty list when repository throws exception`() {
-        // Given
-        val taskId = "Task-001"
+    fun `getAuditLogs returns empty list when repository throws exception`() = runTest {
+        val taskId = "TASK-001"
+        coEvery { auditRepository.getAuditLogs() } throws Exception("error")
 
-
-        every { auditRepository.getAuditLogs() } throws  Exception("error")
-
-        // When
         val result = getAuditLogsByTaskIdUseCase.execute(taskId)
 
-        // Then
         assertThat(result).isEmpty()
-        verify(exactly = 1) { auditRepository.getAuditLogs() }
+        coVerify(exactly = 1) { auditRepository.getAuditLogs() }
     }
+
     @Test
-    fun ` getAuditLogs() return empty list when no logs match the task id`() {
-        // Given
+    fun `getAuditLogs returns empty list when no logs match task id`() = runTest {
         val taskId = "TASK-001"
-        val noMatchingLogs = listOf(
+        val unrelatedLogs = listOf(
             AuditLog(
                 entityType = EntityType.PROJECT,
                 entityId = "PROJECT-001",
@@ -123,17 +96,11 @@ class GetAuditLogsByTaskIdUseCaseTest {
             )
         )
 
-        every { auditRepository.getAuditLogs() } returns noMatchingLogs
+        coEvery { auditRepository.getAuditLogs() } returns unrelatedLogs
 
-        // When
         val result = getAuditLogsByTaskIdUseCase.execute(taskId)
 
-        // Then
         assertThat(result).isEmpty()
-        verify(exactly = 1) { auditRepository.getAuditLogs() }
+        coVerify(exactly = 1) { auditRepository.getAuditLogs() }
     }
-
-
-
-
 }

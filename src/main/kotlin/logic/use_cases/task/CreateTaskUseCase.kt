@@ -7,6 +7,7 @@ import logic.repositories.TasksRepository
 import logic.entities.EntityType
 import logic.use_cases.task.taskvalidations.TaskValidator
 import java.time.LocalDateTime
+import logic.use_cases.project.log_builder.createLog
 
 class CreateTaskUseCase(
     private val taskRepository: TasksRepository,
@@ -26,7 +27,7 @@ class CreateTaskUseCase(
     }
 
 
-private fun createLog(task: Task, userName: String) {
+private suspend fun createLog(task: Task, userName: String) {
     val auditLog = AuditLog(
         entityType = EntityType.TASK,
         entityId = task.id,

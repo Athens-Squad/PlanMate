@@ -2,7 +2,7 @@ package di
 
 import logic.repositories.*
 import data.user.repository.UserRepositoryImpl
-import data.aduit_log_csvfile.repository.AuditLogRepositoryImpl
+import net.thechance.data.aduit_log.repository.AuditLogRepositoryImpl
 import data.authentication.repository.AuthRepositoryImpl
 import data.projects.ProjectsRepositoryImpl
 import data.progression_state.repository.ProgressionStateRepositoryImpl

@@ -3,7 +3,7 @@ package data.user.data_source
 import logic.entities.User
 
 interface UsersDataSource {
-    fun createUser(user: User): Unit
-    fun getUserByUsername(userName: String): User
-    fun getAllUsers(): List<User>
+   suspend fun createUser(user: User): Unit
+   suspend fun getUserByUsername(userName: String): User
+    suspend fun getAllUsers(): List<User>
 }

@@ -4,11 +4,11 @@ import logic.entities.UserType
 
 interface UserValidator {
 
-    fun isUsernameNotValid(username: String): Boolean
-    fun isPasswordNotValid(password: String): Boolean
-    fun isTypeNotAdmin(userType: UserType): Boolean
-    fun isTypeNotMate(userType: UserType): Boolean
-    fun isMateAdminIdNotValid(userType: UserType): Boolean
-    fun userNameExist(username: String): Boolean
+    suspend fun isUsernameNotValid(username: String): Boolean
+   suspend fun isPasswordNotValid(password: String): Boolean
+   suspend fun isTypeNotAdmin(userType: UserType): Boolean
+   suspend fun isTypeNotMate(userType: UserType): Boolean
+    suspend fun isMateAdminIdNotValid(userType: UserType): Boolean
+   suspend fun userNameExist(username: String): Boolean
 
 }

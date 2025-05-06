@@ -5,11 +5,15 @@ import data.aduit_log_csvfile.dummyAuditLog
 import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
 import io.mockk.*
+import kotlinx.coroutines.test.runTest
 import logic.entities.AuditLog
+import net.thechance.data.aduit_log.data_source.AuditLogDataSource
+import net.thechance.data.aduit_log.data_source.AuditLogFileDataSource
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 
 class AuditLogFileDataSourceTest {
+
     private lateinit var dataSource: AuditLogDataSource
     private val fileHandler = mockk<CsvFileHandler>()
     private val parser = mockk<CsvFileParser<AuditLog>>()
@@ -20,38 +24,32 @@ class AuditLogFileDataSourceTest {
     }
 
     @Test
-    fun `createAuditLog converts and appends record`() {
-        //given
+    fun `createAuditLog converts and appends record`() = runTest {
+        // given
         val log = dummyAuditLog()
         every { parser.toCsvRecord(log) } returns "csv_string"
         every { fileHandler.appendRecord("csv_string") } just Runs
 
-        //when
+        // when
         dataSource.createAuditLog(log)
 
-        //then
+        // then
         verify { fileHandler.appendRecord("csv_string") }
-
-
     }
 
-
     @Test
-    fun `getAuditLogs reads and parses records`() {
-        //given
+    fun `getAuditLogs reads and parses records`() = runTest {
+        // given
         val record = "some,csv,line"
         val log = dummyAuditLog()
 
         every { fileHandler.readRecords() } returns listOf(record)
         every { parser.parseRecord(record) } returns log
 
-
-        //when
+        // when
         val result = dataSource.getAuditLogs()
-        //then
+
+        // then
         assertThat(result).containsExactly(log)
-
     }
-
-
 }

@@ -8,9 +8,10 @@ import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import logic.exceptions.*
 import logic.repositories.AuditRepository
 import logic.repositories.TasksRepository
-import logic.exceptions.TasksException
+
 import logic.use_cases.task.taskvalidations.TaskValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -85,7 +86,7 @@ class CreateTaskUseCaseTest {
     @Test
     fun `should not create Task when there is already Task with the same id`() {
         every { fakeTaskValidator.doIfTaskNotExistsOrThrow(fakeTask, any()) } throws
-                TasksException.CannotCompleteTaskOperationException("There is existing fakeTask with same id")
+                CannotCompleteTaskOperationException("There is existing fakeTask with same id")
 
         // When
         val result = createTaskUseCase.execute(fakeTask, fakeUserName)
@@ -98,7 +99,7 @@ class CreateTaskUseCaseTest {
     @Test
     fun `should not be able to create Task with non existing projectId`() {
         every { fakeTaskValidator.doIfTaskNotExistsOrThrow(fakeTask, any()) } throws
-                TasksException.InvalidTaskException("Project with ID ${fakeTask.projectId} does not exist.")
+                InvalidTaskException("Project with ID ${fakeTask.projectId} does not exist.")
 
         // When
         val result = createTaskUseCase.execute(fakeTask, fakeUserName)
@@ -110,7 +111,7 @@ class CreateTaskUseCaseTest {
     @Test
     fun `should not be able to create Task with the same title within the same projectId`() {
         every { fakeTaskValidator.doIfTaskNotExistsOrThrow(fakeTask, any()) } throws
-                TasksException.InvalidTaskException("Task with the same title already exist in this project.")
+                InvalidTaskException("Task with the same title already exist in this project.")
 
         // When
         val result = createTaskUseCase.execute(fakeTask, fakeUserName)
