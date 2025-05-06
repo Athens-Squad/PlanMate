@@ -12,7 +12,7 @@ class LoginUseCase(
     private val userValidator: UserValidator,
 
 ) {
-    fun execute(username: String, password: String): User{
+   suspend fun execute(username: String, password: String): User{
        if (
           userValidator. isUsernameNotValid(username) ||
             userValidator.isPasswordNotValid(password)

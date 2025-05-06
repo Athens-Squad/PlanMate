@@ -1,63 +1,60 @@
 package logic.use_cases.audit_log
 
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import logic.repositories.AuditRepository
-import logic.use_cases.audit_log.ClearLogUseCase
-import org.junit.jupiter.api.BeforeEach
+import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 
-class ClearLogUseCaseTest{
+class ClearLogUseCaseTest {
 
-  private lateinit var auditRepository: AuditRepository
-  private lateinit var clearLogUseCase: ClearLogUseCase
+    private lateinit var auditRepository: AuditRepository
+    private lateinit var clearLogUseCase: ClearLogUseCase
 
-  @BeforeEach
-  fun setUp(){
-   auditRepository= mockk()
-   clearLogUseCase=ClearLogUseCase(auditRepository)
-  }
- @Test
- fun `should clear all audit logs`() {
-  //given
-  every {  auditRepository.clearLog()  } just runs
- //when
-  clearLogUseCase.execute()
-  //then
-  verify { auditRepository.clearLog() }
-
-
- }
-
+    @BeforeTest
+    fun setUp() {
+        auditRepository = mockk()
+        clearLogUseCase = ClearLogUseCase(auditRepository)
+    }
 
     @Test
-    fun ` handle  when there are no logs to clear`() {
-        // Given:
-        every { auditRepository.clearLog() } just runs
+    fun `should clear all audit logs`() = runTest {
+        // Given
+        coEvery { auditRepository.clearLog() } returns Unit
 
         // When
         clearLogUseCase.execute()
 
         // Then
-        verify { auditRepository.clearLog() }
+        coVerify { auditRepository.clearLog() }
     }
-
 
     @Test
-    fun ` handle failure when clearLog fails`() {
-        // Given
-        every { auditRepository.clearLog() } throws Exception("Failed to clear logs")
+    fun `handle when there are no logs to clear`() = runTest {
+        // Given: Same behavior, still calls clear
+        coEvery { auditRepository.clearLog() } returns Unit
 
-        // When & Then
-        try {
-            clearLogUseCase.execute()
-        } catch (e: Exception) {
+        // When
+        clearLogUseCase.execute()
 
-            assert(e.message == "Failed to clear logs")
-        }
-
-        verify { auditRepository.clearLog() }
+        // Then
+        coVerify { auditRepository.clearLog() }
     }
 
+    @Test
+    fun `handle failure when clearLog fails`() = runTest {
+        // Given
+        coEvery { auditRepository.clearLog() } throws Exception("Failed to clear logs")
 
+        // When & Then
+        val exception = assertFailsWith<Exception> {
+            clearLogUseCase.execute()
+        }
+        assert(exception.message == "Failed to clear logs")
 
+        coVerify { auditRepository.clearLog() }
+    }
 }

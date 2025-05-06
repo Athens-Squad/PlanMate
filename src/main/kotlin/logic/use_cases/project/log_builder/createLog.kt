@@ -5,7 +5,7 @@ import logic.entities.EntityType
 import logic.entities.Project
 import java.time.LocalDateTime
 
-fun createLog(project: Project, logMessage: String, action: (auditLog: AuditLog) -> Unit) {
+suspend fun createLog(project: Project, logMessage: String, action: suspend (auditLog: AuditLog) -> Unit) {
     val auditLog = AuditLog(
         entityType = EntityType.PROJECT,
         entityId = project.id,

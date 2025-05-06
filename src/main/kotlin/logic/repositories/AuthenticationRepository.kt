@@ -3,6 +3,6 @@ package logic.repositories
 import logic.entities.User
 
 interface AuthenticationRepository {
-    fun login(username: String, password: String): User
+   suspend fun login(username: String, password: String): User
 }
 
