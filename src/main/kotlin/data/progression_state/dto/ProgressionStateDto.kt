@@ -13,7 +13,6 @@ data class ProgressionStateDto(
 	@BsonId
 	val id: String = UUID.randomUUID().toString(),
 	val name: String,
-	@BsonProperty("created_by")
 	val projectId: String,
 ): CsvSerializable {
 	override fun toCsvFields(): List<String> = listOf(

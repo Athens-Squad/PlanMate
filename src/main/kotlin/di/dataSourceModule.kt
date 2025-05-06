@@ -68,7 +68,7 @@ val dataSourceModule  = module {
 	single(named("progressionStatesFileParser")) { CsvFileParser(factory = ProgressionStateDto.Companion::fromCsv) }
 	single<ProgressionStateDataSource> {
 		ProgressionStateDatabaseDataSource(
-			progressionStatesDocument = get()
+			progressionStatesCollection = get()
 		)
 	}
 }
