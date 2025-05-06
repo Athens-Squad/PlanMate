@@ -25,7 +25,7 @@ class AuditLogUi(
     }
 
 
-    fun showHistoryOption() { //TODO() call from task history
+    fun showHistoryOption() {
         consoleIO.printer.printTitle("Select Option (1 , 2 )")
         consoleIO.printer.printOptions(AuditLogOptions.entries)
         val inputHistoryOption = consoleIO.reader.readNumberFromUser()

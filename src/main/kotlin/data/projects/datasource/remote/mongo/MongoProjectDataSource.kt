@@ -2,7 +2,7 @@ package net.thechance.data.projects.datasource.remote.mongo
 
 import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
-import data.states.data_source.StatesDataSource
+import data.progression_state.data_source.ProgressionStateDataSource
 import data.tasks.data_source.TasksDataSource
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
@@ -14,7 +14,7 @@ import net.thechance.data.projects.dto.ProjectDto
 class MongoProjectDataSource(
     private val projectsCollection: MongoCollection<ProjectDto>,
     private val tasksDataSource: TasksDataSource,
-    private val statesDataSource: StatesDataSource
+    private val statesDataSource: ProgressionStateDataSource
 ) : ProjectsDataSource {
     override suspend fun createProject(project: Project) {
         val projectDto = ProjectDto.fromProject(project)
@@ -41,7 +41,7 @@ class MongoProjectDataSource(
             .map { projectDto: ProjectDto ->
                 val project = projectDto.toProject()
 
-                val progressionStates = statesDataSource.getStates()
+                val progressionStates = statesDataSource.getProgressionStates()
                     .filter { state: ProgressionState ->
                         state.projectId == project.id
                     }

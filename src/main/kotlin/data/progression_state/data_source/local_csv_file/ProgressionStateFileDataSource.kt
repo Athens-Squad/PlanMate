@@ -13,33 +13,33 @@ class ProgressionStateFileDataSource(
 	private val csvFileParser: CsvFileParser<ProgressionStateDto>
 ) : ProgressionStateDataSource {
 
-	override suspend fun createProgressionState(progressionState: ProgressionStateDto) {
-		val record = csvFileParser.toCsvRecord(progressionState)
+	override suspend fun createProgressionState(progressionState: ProgressionState) {
+		val record = csvFileParser.toCsvRecord(progressionState.toProgressionStateDto())
 		progressionStatesFileHandler.appendRecord(record)
 	}
 
-	override suspend fun updateProgressionState(progressionState: ProgressionStateDto) {
+	override suspend fun updateProgressionState(progressionState: ProgressionState) {
 		val updateState = getProgressionStates()
 			.map { if (it.id == progressionState.id) progressionState else it }
-		val updatedRecords = updateState.map { csvFileParser.toCsvRecord(it) }
+		val updatedRecords = updateState.map { csvFileParser.toCsvRecord(it.toProgressionStateDto()) }
 		progressionStatesFileHandler.writeRecords(updatedRecords)
 	}
 
 	override suspend fun deleteProgressionState(progressionStateId: String) {
 		val updatedState = getProgressionStates()
 			.filter { it.id != progressionStateId }
-		val updatedRecords = updatedState.map { csvFileParser.toCsvRecord(it) }
+		val updatedRecords = updatedState.map { csvFileParser.toCsvRecord(it.toProgressionStateDto()) }
 		progressionStatesFileHandler.writeRecords(updatedRecords)
 	}
 
-	override suspend fun getProgressionStates(): List<ProgressionStateDto> {
+	override suspend fun getProgressionStates(): List<ProgressionState> {
 		return progressionStatesFileHandler.readRecords()
-			.map { csvFileParser.parseRecord(it) }
+			.map { csvFileParser.parseRecord(it).toProgressionState() }
 	}
 
-	override suspend fun getProgressionStatesByProjectId(projectId: String): List<ProgressionStateDto> {
+	override suspend fun getProgressionStatesByProjectId(projectId: String): List<ProgressionState> {
 		return progressionStatesFileHandler.readRecords()
-			.map { csvFileParser.parseRecord(it) }
+			.map { csvFileParser.parseRecord(it).toProgressionState() }
 			.filter { it.projectId == projectId }
 	}
 }
