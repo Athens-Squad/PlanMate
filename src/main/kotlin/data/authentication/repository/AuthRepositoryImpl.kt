@@ -10,9 +10,9 @@ class AuthRepositoryImpl(
 
 ): AuthenticationRepository {
 
-    override fun login(username: String, password: String): Result<User> = runCatching {
+    override fun login(username: String, password: String): User{
         val users = getAllUsers()
-        users.find { user ->
+       return users.find { user ->
             user.name == username && user.password == password
         } ?: throw UserNotFoundException()
     }

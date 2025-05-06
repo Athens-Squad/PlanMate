@@ -1,13 +1,18 @@
 package data.projects
 
 import helper.project_helper.createProject
+import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
+import net.thechance.data.projects.datasource.ProjectsDataSource
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ProjectsRepositoryImplTest {
 
     private val projectsDataSource: ProjectsDataSource = mockk(relaxed = true)
@@ -20,25 +25,25 @@ class ProjectsRepositoryImplTest {
     }
 
     @Test
-    fun `should get all projects, when called`() {
+    fun `should get all projects, when called`() = runTest {
         // When
         projectsRepository.getProjects()
 
         // Then
-        verify(exactly = 1) { projectsDataSource.getProjectsFromCsvFile() }
+        coVerify(exactly = 1) { projectsDataSource.getProjects() }
     }
 
     @Test
-    fun `should create project, when called`() {
+    fun `should create project, when called`() = runTest {
         // When
         projectsRepository.createProject(fakeProject)
 
         // Then
-        verify(exactly = 1) { projectsDataSource.saveProjectInCsvFile(fakeProject) }
+        coVerify(exactly = 1) { projectsDataSource.createProject(fakeProject) }
     }
 
     @Test
-    fun `should update project, when called`() {
+    fun `should update project, when called`() = runTest {
         // Given
         val newFakeProject = createProject(
             name = "new Project",
@@ -50,16 +55,16 @@ class ProjectsRepositoryImplTest {
         projectsRepository.updateProject(newFakeProject)
 
         // Then
-        verify(exactly = 1) { projectsDataSource.updateProjectFromCsvFile(newFakeProject) }
+        coVerify(exactly = 1) { projectsDataSource.updateProject(newFakeProject) }
     }
 
     @Test
-    fun `should delete project, when called`() {
+    fun `should delete project, when called`() = runTest {
         // When
         projectsRepository.deleteProject(fakeProject.id)
 
         // Then
-        verify(exactly = 1) { projectsDataSource.deleteProjectFromCsvFile(fakeProject.id) }
+        coVerify(exactly = 1) { projectsDataSource.deleteProject(fakeProject.id) }
     }
 
 }

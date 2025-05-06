@@ -12,22 +12,18 @@ class GetAllProjectsByUsernameUseCase(
     private val projectRepository: ProjectsRepository,
     private val userRepository: UserRepository
 ) {
-    fun execute(username: String): Result<List<Project>> {
-        return runCatching {
-            username.apply {
-                checkIfFieldIsValid().takeIf { it } ?: throw InvalidUsernameForProjectException()
-                checkIfUserAuthorized(username) { userRepository.getUserByUsername(it) }
-                    .takeIf { it } ?: throw NotAuthorizedUserException()
-            }
+    suspend fun execute(username: String): List<Project> {
+        username.apply {
+            checkIfFieldIsValid().takeIf { it } ?: throw InvalidUsernameForProjectException()
 
-            projectRepository.getProjects()
-                .fold(
-                    onSuccess = { projects -> projects.filter {  project ->
-                            checkIfUserIsProjectOwner(username, project.createdBy)
-                        }
-                    },
-                    onFailure = { throw NoProjectFoundException() }
-                )
+            checkIfUserAuthorized(username) { userRepository.getUserByUsername(it) }
+                .takeIf { it } ?: throw NotAuthorizedUserException()
         }
+
+        return projectRepository.getProjects()
+            .filter {  project ->
+                checkIfUserIsProjectOwner(username, project.createdBy)
+            }
+            .ifEmpty { throw NoProjectFoundException() }
     }
 }

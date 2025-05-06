@@ -1,7 +1,10 @@
 package net.thechance.di
 
 import com.mongodb.kotlin.client.coroutine.MongoClient
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import net.thechance.data.progression_state.dto.ProgressionStateDto
+import net.thechance.data.projects.dto.ProjectDto
 import net.thechance.data.utils.loadEnvironmentVariable
 import org.koin.dsl.module
 
@@ -14,4 +17,9 @@ val mongoModule = module {
         get<MongoClient>().getDatabase("planmate")
     }
 
+    single<MongoCollection<ProjectDto>> { get<MongoDatabase>().getCollection<ProjectDto>("projects") }
+
+    single<MongoCollection<ProgressionStateDto>> {
+        get<MongoDatabase>().getCollection("progressionStates", ProgressionStateDto::class.java)
+    }
 }

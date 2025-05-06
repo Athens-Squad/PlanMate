@@ -1,12 +1,12 @@
 package di
 
 import logic.use_cases.audit_log.CreateAuditLogUseCase
-import logic.use_cases.state.*
+import logic.use_cases.progression_state.*
 import logic.use_cases.task.*
 import logic.use_cases.project.*
 import logic.use_cases.authentication.*
 import logic.use_cases.audit_log.*
-import logic.use_cases.state.StatesUseCases
+import logic.use_cases.progression_state.ProgressionStatesUseCases
 import logic.use_cases.project.GetAllProjectsByUsernameUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
@@ -30,12 +30,12 @@ val useCasesModule = module {
     singleOf(::GetAllProjectsByUsernameUseCase)
     singleOf(::ProjectUseCases)
 
-    singleOf(::CreateStateUseCase)
-    singleOf(::DeleteStateUseCase)
-    singleOf(::GetStateByIdUseCase)
-    singleOf(::GetStatesByProjectIdUseCase)
-    singleOf(::UpdateStateUseCase)
-    singleOf(::StatesUseCases)
+    singleOf(::CreateProgressionStateUseCase)
+    singleOf(::DeleteProgressionStateUseCase)
+    singleOf(::GetProgressionStateByIdUseCase)
+    singleOf(::GetProgressionStatesByProjectIdUseCase)
+    singleOf(::UpdateProgressionStateUseCase)
+    singleOf(::ProgressionStatesUseCases)
 
     singleOf(::CreateTaskUseCase)
     singleOf(::DeleteTaskUseCase)

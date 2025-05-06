@@ -8,6 +8,7 @@ import logic.repositories.UserRepository
 import data.authentication.utils.PasswordHashing
 import logic.entities.UserType
 import logic.use_cases.authentication.RegisterAsAdminUseCase
+import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
@@ -17,12 +18,14 @@ class RegisterAsAdminUseCaseTest {
 
     private lateinit var userRepository: UserRepository
     private lateinit var passwordHashing: PasswordHashing
+    private lateinit var userValidator: UserValidator
     private lateinit var registerAsAdminUseCase: RegisterAsAdminUseCase
 
     @BeforeEach
     fun setup() {
         userRepository = mockk(relaxed = true)
         passwordHashing = PasswordHashing()
+        userValidator = mockk()
         registerAsAdminUseCase = RegisterAsAdminUseCase(userRepository,passwordHashing)
     }
 
