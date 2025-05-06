@@ -21,6 +21,8 @@ dependencies {
     testImplementation("com.google.truth:truth:1.4.2")
     //mockk
     testImplementation("io.mockk:mockk:1.13.16")
+    // coroutines
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
 
     //di
     implementation("io.insert-koin:koin-core:4.0.4")
