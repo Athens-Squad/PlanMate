@@ -45,13 +45,12 @@ class GetAuditLogsByProjectIdUseCaseTest{
    )
   )
 
-  every { auditRepository.getAuditLogs() } returns Result.success(expected)
+  every { auditRepository.getAuditLogs() } returns expected
 
   //when
   val result = getAuditLogsByProjectIdUseCase.execute(projectId)
 
    //then
-  assertThat(result.isSuccess).isTrue()
   verify(exactly = 1) { auditRepository.getAuditLogs() }
  }
 
@@ -60,13 +59,13 @@ class GetAuditLogsByProjectIdUseCaseTest{
   // Given
   val projectId = "PROJECT-001"
 
-  every { auditRepository.getAuditLogs() } returns Result.failure(Exception("error"))
+  every { auditRepository.getAuditLogs() } throws  Exception("error")
 
   // When
   val result = getAuditLogsByProjectIdUseCase.execute(projectId)
 
   // Then
-  assertThat(result.getOrNull()).isEmpty()
+  assertThat(result).isEmpty()
   verify(exactly = 1) { auditRepository.getAuditLogs() }
  }
 
@@ -75,13 +74,13 @@ class GetAuditLogsByProjectIdUseCaseTest{
  fun `getAuditLogs() return empty list when an invalid ProjectId Given`()  {
   // Given
   val invalidProjectId = "PROJECT-XYZ123"
-  every { auditRepository.getAuditLogs() }  returns Result.success(emptyList())
+  every { auditRepository.getAuditLogs() }  returns emptyList()
 
   // When
   val result = getAuditLogsByProjectIdUseCase.execute(invalidProjectId)
 
   // Then
-  assertThat(result.getOrNull()).isEmpty()
+  assertThat(result).isEmpty()
   verify(exactly = 1) { auditRepository.getAuditLogs() }
 
  }
@@ -95,7 +94,7 @@ class GetAuditLogsByProjectIdUseCaseTest{
   val result = getAuditLogsByProjectIdUseCase.execute(blankProjectId)
 
   // Then
-  assertThat(result.getOrNull()).isEmpty()
+  assertThat(result).isEmpty()
   verify(exactly = 0) { auditRepository.getAuditLogs() }
 
 
@@ -115,13 +114,13 @@ class GetAuditLogsByProjectIdUseCaseTest{
    )
   )
 
-  every { auditRepository.getAuditLogs() } returns Result.success(noMatchingAuditLogs)
+  every { auditRepository.getAuditLogs() } returns noMatchingAuditLogs
 
   // When
   val result = getAuditLogsByProjectIdUseCase.execute(taskId)
 
   // Then
-  assertThat(result.getOrNull()).isEmpty()
+  assertThat(result).isEmpty()
   verify(exactly = 1) { auditRepository.getAuditLogs() }
  }
 

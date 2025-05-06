@@ -33,10 +33,10 @@ class CreateAuditLogUseCaseTest {
             createdAt = LocalDateTime.of(2025, 4, 28, 20, 0)
         )
 
-        every { auditRepository.createAuditLog(auditLog) } returns Result.success(Unit)
+        every { auditRepository.createAuditLog(auditLog) } just runs
 
-        val result = createAuditLogUseCase.execute(auditLog)
-        assertThat(result.isSuccess).isTrue()
+        createAuditLogUseCase.execute(auditLog)
+
         verify(exactly = 1) { auditRepository.createAuditLog(auditLog) }
 
     }
@@ -53,7 +53,7 @@ class CreateAuditLogUseCaseTest {
         )
 
         // when
-        every { auditRepository.createAuditLog(invalidAuditLog) } returns Result.success(Unit)
+        every { auditRepository.createAuditLog(invalidAuditLog) } just runs
 
         // then
         createAuditLogUseCase.execute(invalidAuditLog)
@@ -71,7 +71,7 @@ class CreateAuditLogUseCaseTest {
         )
 
         // when
-        every { auditRepository.createAuditLog(invalidAuditLog) } returns Result.success(Unit)
+        every { auditRepository.createAuditLog(invalidAuditLog) } just runs
 
         // then
         createAuditLogUseCase.execute(invalidAuditLog)
@@ -89,7 +89,7 @@ class CreateAuditLogUseCaseTest {
         )
 
         // when
-        every { auditRepository.createAuditLog(invalidAuditLog) } returns Result.success(Unit)
+        every { auditRepository.createAuditLog(invalidAuditLog) } just runs
 
         // then
         createAuditLogUseCase.execute(invalidAuditLog)
@@ -110,9 +110,9 @@ class CreateAuditLogUseCaseTest {
 
         every { auditRepository.createAuditLog(auditLog) } throws RuntimeException("Failed to create audit log")
         // When:
-        val result = createAuditLogUseCase.execute(auditLog)
+        createAuditLogUseCase.execute(auditLog)
+
         // Then:
-        assertThat(result.isFailure).isTrue()
         verify(exactly = 1) { auditRepository.createAuditLog(auditLog) }
     }
 }

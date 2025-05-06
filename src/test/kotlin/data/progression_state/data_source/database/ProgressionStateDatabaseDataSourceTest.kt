@@ -10,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import net.thechance.data.progression_state.dto.ProgressionStateDto
+import net.thechance.data.progression_state.mappers.toProgressionState
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -33,7 +34,7 @@ class ProgressionStateDatabaseDataSourceTest {
 			fakeProgressionState1
 		)
 
-		progressionStateDatabaseDataSource.createProgressionState(fakeProgressionState1)
+		progressionStateDatabaseDataSource.createProgressionState(fakeProgressionState1.toProgressionState())
 		val expectedResult = progressionStateDatabaseDataSource.getProgressionStates()
 
 		assertThat(expectedResult).containsExactly(fakeProgressionState1)

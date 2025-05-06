@@ -19,7 +19,7 @@ class ClearLogUseCaseTest{
  @Test
  fun `should clear all audit logs`() {
   //given
-  every {  auditRepository.clearLog()  } returns Result.success(Unit)
+  every {  auditRepository.clearLog()  } just runs
  //when
   clearLogUseCase.execute()
   //then
@@ -32,7 +32,7 @@ class ClearLogUseCaseTest{
     @Test
     fun ` handle  when there are no logs to clear`() {
         // Given:
-        every { auditRepository.clearLog() } returns Result.success(Unit)
+        every { auditRepository.clearLog() } just runs
 
         // When
         clearLogUseCase.execute()

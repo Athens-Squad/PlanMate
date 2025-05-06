@@ -44,14 +44,13 @@ class GetAuditLogsByTaskIdUseCaseTest {
             )
         )
 
-        every { auditRepository.getAuditLogs() }  returns Result.success(expected)
+        every { auditRepository.getAuditLogs() }  returns expected
 
         //when
 
         val result = getAuditLogsByTaskIdUseCase.execute(taskId)
 
         //then
-        assertThat(result.isSuccess).isTrue()
         verify(exactly = 1) { auditRepository.getAuditLogs() }
 
 
@@ -65,13 +64,13 @@ class GetAuditLogsByTaskIdUseCaseTest {
         val invalidTaskId = "TASK-XYZ123"
 
 
-        every { auditRepository.getAuditLogs() } returns Result.success(emptyList())
+        every { auditRepository.getAuditLogs() } returns emptyList()
 
         //when
         val result = getAuditLogsByTaskIdUseCase.execute(invalidTaskId)
 
         //then
-        assertThat(result.getOrNull()).isEmpty()
+        assertThat(result).isEmpty()
         verify(exactly = 1) { auditRepository.getAuditLogs() }
     }
 
@@ -85,7 +84,7 @@ class GetAuditLogsByTaskIdUseCaseTest {
         val result = getAuditLogsByTaskIdUseCase.execute(blankTaskId)
 
         // Then
-        assertThat(result.getOrNull()).isEmpty()
+        assertThat(result).isEmpty()
         verify(exactly = 0) { auditRepository.getAuditLogs() }
 
 
@@ -101,13 +100,13 @@ class GetAuditLogsByTaskIdUseCaseTest {
         val taskId = "Task-001"
 
 
-        every { auditRepository.getAuditLogs() } returns Result.failure(Exception("error"))
+        every { auditRepository.getAuditLogs() } throws  Exception("error")
 
         // When
         val result = getAuditLogsByTaskIdUseCase.execute(taskId)
 
         // Then
-        assertThat(result.getOrNull()).isEmpty()
+        assertThat(result).isEmpty()
         verify(exactly = 1) { auditRepository.getAuditLogs() }
     }
     @Test
@@ -124,13 +123,13 @@ class GetAuditLogsByTaskIdUseCaseTest {
             )
         )
 
-        every { auditRepository.getAuditLogs() } returns Result.success(noMatchingLogs)
+        every { auditRepository.getAuditLogs() } returns noMatchingLogs
 
         // When
         val result = getAuditLogsByTaskIdUseCase.execute(taskId)
 
         // Then
-        assertThat(result.getOrNull()).isEmpty()
+        assertThat(result).isEmpty()
         verify(exactly = 1) { auditRepository.getAuditLogs() }
     }
 

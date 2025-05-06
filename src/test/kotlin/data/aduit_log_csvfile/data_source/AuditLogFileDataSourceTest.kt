@@ -27,9 +27,9 @@ class AuditLogFileDataSourceTest {
         every { fileHandler.appendRecord("csv_string") } just Runs
 
         //when
-        val result = dataSource.createAuditLog(log)
+        dataSource.createAuditLog(log)
+
         //then
-        assertThat(result.isSuccess).isTrue()
         verify { fileHandler.appendRecord("csv_string") }
 
 
@@ -49,7 +49,7 @@ class AuditLogFileDataSourceTest {
         //when
         val result = dataSource.getAuditLogs()
         //then
-        assertThat(result.getOrThrow()).containsExactly(log)
+        assertThat(result).containsExactly(log)
 
     }
 
