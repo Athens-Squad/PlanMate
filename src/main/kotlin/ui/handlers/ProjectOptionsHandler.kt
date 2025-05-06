@@ -28,16 +28,13 @@ class ProjectOptionsHandler(
 
             when (option) {
                 ProjectOptions.CREATE_TASK.optionNumber -> createTask()
-
                 ProjectOptions.EDIT.optionNumber -> projectsUi.editProject(project)
                 ProjectOptions.MANAGE_STATES.optionNumber -> progressionStateUi.manageStates( project.id)
                 ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
                 ProjectOptions.SHOW_HISTORY.optionNumber -> showHistory()
-
                 ProjectOptions.DELETE.optionNumber -> deleteProject()
             }
         } while (option != ProjectOptions.BACK.optionNumber && option != ProjectOptions.DELETE.optionNumber)
-
     }
 
     suspend fun handleMate(project: Project) {
@@ -51,7 +48,12 @@ class ProjectOptionsHandler(
 
             when (option) {
                 ProjectMateOptions.CREATE_TASK.optionNumber -> createTask()
-                ProjectMateOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
+                ProjectMateOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(
+                    project.tasks,
+                    project.id,
+                    project.progressionStates
+                )
+
                 ProjectMateOptions.SHOW_HISTORY.optionNumber -> showHistory()
             }
         } while (option != ProjectMateOptions.BACK.optionNumber)
@@ -69,7 +71,8 @@ class ProjectOptionsHandler(
     }
 
     private suspend fun showHistory() {
-        auditLogUi.getProjectHistory(project.id).onSuccess { history ->
+        try {
+            val history = auditLogUi.getProjectHistory(project.id)
             if(history.isEmpty()){
                 consoleIO.printer.printError("no history found")
                 return
@@ -77,12 +80,11 @@ class ProjectOptionsHandler(
             history.forEach { log->
                 consoleIO.printer.printInfoLine(log.toString())
             }
+            auditLogUi.showHistoryOption()
+
+        } catch (exception : Exception){
+            consoleIO.printer.printError(exception.message.toString())
         }
-            .onFailure {
-                consoleIO.printer.printError(it.message.toString())
-                return
-            }
-        auditLogUi.showHistoryOption()
     }
 
     private fun deleteProject() {

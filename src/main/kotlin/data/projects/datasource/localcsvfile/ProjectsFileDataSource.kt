@@ -39,7 +39,7 @@ class ProjectsFileDataSource(
         return projectsFileHandler.readRecords().map { record ->
             val project = csvFileParser.parseRecord(record)
 
-            val tasks = tasksFileDataSource.getTasksByProjectId(project.id).getOrThrow().toMutableList()
+            val tasks = tasksFileDataSource.getTasksByProjectId(project.id).toMutableList()
             val states = statesFileDataSource.getProgressionStates()
                 .filter { it.projectId == project.id }
                 .toMutableList()

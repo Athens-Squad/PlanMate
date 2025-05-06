@@ -3,15 +3,15 @@ package logic.repositories
 import logic.entities.Task
 
 interface TasksRepository {
-    fun createTask(task: Task): Result<Unit>
+    suspend fun createTask(task: Task)
 
-    fun updateTask(updatedTask: Task): Result<Unit>
+    suspend fun updateTask(updatedTask: Task)
 
-    fun deleteTask(taskId: String): Result<Unit>
+    suspend fun deleteTask(taskId: String)
 
-    fun getTaskById(taskId: String): Result<Task>
+    suspend fun getTaskById(taskId: String): Task
 
-    fun getTasksByProjectId(projectId: String): Result<List<Task>>
+    suspend fun getTasksByProjectId(projectId: String): List<Task>
 
-    fun getAllTasks(): Result<List<Task>>
+    suspend fun getAllTasks(): List<Task>
 }
