@@ -17,6 +17,10 @@ import net.thechance.data.authentication.UserSession
 import net.thechance.data.progression_state.dto.ProgressionStateDto
 import net.thechance.data.projects.datasource.ProjectsDataSource
 import net.thechance.data.projects.datasource.localcsvfile.ProjectsFileDataSource
+import net.thechance.data.projects.datasource.remote.mongo.MongoProjectDataSource
+import net.thechance.data.projects.dto.ProjectDto
+import net.thechance.data.user.data_source.remote.UserDto
+import net.thechance.data.user.data_source.remote.UserMongoDataSource
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
@@ -37,10 +41,7 @@ val dataSourceModule  = module {
     single(named("usersFileParser")) { CsvFileParser(factory = User.Companion::fromCsv) }
     single { UserSession() }
     single<UsersDataSource> {
-        UsersFileDataSource(
-            userFileHandler = get(named("usersFileHandler")),
-            csvFileParser = get(named("usersFileParser"))
-        )
+        UserMongoDataSource(get<MongoCollection<UserDto>>())
     }
 
     single(named("auditLogCsvFile")) { File("data_files/audit_log.csv") }
@@ -54,11 +55,10 @@ val dataSourceModule  = module {
     single(named("projectsFileHandler")) { CsvFileHandler(get(named("projectsCsvFile"))) }
     single(named("projectsFileParser")) { CsvFileParser(factory = Project.Companion::fromCsv) }
     single<ProjectsDataSource> {
-        ProjectsFileDataSource(
-            projectsFileHandler = get(named("projectsFileHandler")),
-            csvFileParser = get(named("projectsFileParser")),
-            tasksFileDataSource = get(),
-            statesFileDataSource = get()
+        MongoProjectDataSource(
+            projectsCollection = get<MongoCollection<ProjectDto>>(),
+            tasksDataSource = get<TasksDataSource>(),
+            statesDataSource = get<ProgressionStateDataSource>()
         )
     }
 

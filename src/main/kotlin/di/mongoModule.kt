@@ -19,14 +19,14 @@ val mongoModule = module {
         get<MongoClient>().getDatabase("planmate")
     }
 
-    single<MongoCollection<ProjectDto>> { get<MongoDatabase>().getCollection<ProjectDto>("projects") }
+    single<MongoCollection<ProjectDto>> { get<MongoDatabase>().getCollection<ProjectDto>("projects", ProjectDto::class.java) }
     single<MongoCollection<ProgressionStateDto>> {
         get<MongoDatabase>().getCollection("progression_states", ProgressionStateDto::class.java)
     }
     single<MongoCollection<AuditLogDto>> {
         get<MongoDatabase>().getCollection("audit_log", AuditLogDto::class.java)
     }
-    single<MongoCollection<UserDto>> { get<MongoDatabase>().getCollection<UserDto>("users") }
+    single<MongoCollection<UserDto>> { get<MongoDatabase>().getCollection<UserDto>("users", UserDto::class.java) }
 
 
 
