@@ -6,19 +6,19 @@ import java.util.UUID
 object FakeProgressionStateData {
 
 	val fakeProgressionState1: ProgressionStateDto = ProgressionStateDto(
-		id = UUID.fromString("1"),
+		id = "1",
 		name = "state1",
-		projectId = UUID.fromString("pr1")
+		projectId = "pr1"
 	)
 	val fakeProgressionState2: ProgressionStateDto = ProgressionStateDto(
-		id = UUID.fromString("2"),
+		id = "2",
 		name = "state2",
-		projectId = UUID.fromString("pr2")
+		projectId = "pr2"
 	)
 	val fakeProgressionState3: ProgressionStateDto = ProgressionStateDto(
-		id = UUID.fromString("3"),
+		id = "3",
 		name = "state3",
-		projectId = UUID.fromString("pr3")
+		projectId = "pr3"
 	)
 	val fakeProgressionStates = listOf(fakeProgressionState1, fakeProgressionState2, fakeProgressionState3)
 }

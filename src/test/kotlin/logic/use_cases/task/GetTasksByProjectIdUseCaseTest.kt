@@ -5,7 +5,7 @@ import helper.task_helper.FakeTask.fakeTask
 import io.mockk.every
 import io.mockk.mockk
 import logic.repositories.TasksRepository
-import logic.exceptions.TasksException
+
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
@@ -32,7 +32,7 @@ class GetTasksByProjectIdUseCaseTest {
 
  @Test
  fun `should return failure for invalid project ID`() {
-  val projectNotFoundException = TasksException.CannotCompleteTaskOperationException("Project not found")
+  val projectNotFoundException = CannotCompleteTaskOperationException("Project not found")
   every { tasksRepository.getTasksByProjectId(fakeTask.projectId) } returns Result.failure(projectNotFoundException)
 
   val result = getTasksByProjectIdUseCase.execute(fakeTask.projectId)

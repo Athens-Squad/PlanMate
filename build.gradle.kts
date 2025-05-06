@@ -19,11 +19,10 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
     //google truth
     testImplementation("com.google.truth:truth:1.4.2")
+    //coroutine test
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3") // or your version
     //mockk
     testImplementation("io.mockk:mockk:1.13.16")
-    // coroutines
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
-
     //di
     implementation("io.insert-koin:koin-core:4.0.4")
 
@@ -32,6 +31,8 @@ dependencies {
 
     // MongoDB Kotlin driver dependency
     implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1")
+
+
 }
 
 tasks.test {

@@ -11,7 +11,7 @@ class UsersFileDataSource(
     private val csvFileParser: CsvFileParser<User>
 ) : UsersDataSource {
 
-    override fun createUser(user: User) {
+    override suspend fun createUser(user: User) {
         val users = getAllUsers()
         if (users.any {
                 it.name == user.name
@@ -22,12 +22,12 @@ class UsersFileDataSource(
         userFileHandler.appendRecord(record)
     }
 
-    override fun getUserByUsername(userName: String): User {
+    override suspend fun getUserByUsername(userName: String): User {
         val users = getAllUsers()
          return users.find { it.name == userName } ?: throw UserNotFoundException()
     }
 
-     override fun getAllUsers(): List<User> {
+     override suspend fun getAllUsers(): List<User> {
         return userFileHandler.readRecords().map { record ->
             csvFileParser.parseRecord(record)
         }

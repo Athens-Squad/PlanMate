@@ -1,7 +1,7 @@
 package net.thechance.di
 
-import data.aduit_log_csvfile.data_source.AuditLogDataSource
-import data.aduit_log_csvfile.data_source.AuditLogFileDataSource
+import com.mongodb.kotlin.client.coroutine.MongoCollection
+import net.thechance.data.aduit_log.data_source.AuditLogDataSource
 import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
 import data.progression_state.data_source.ProgressionStateDataSource
@@ -9,6 +9,9 @@ import data.progression_state.data_source.database.ProgressionStateDatabaseDataS
 import data.tasks.data_source.TasksDataSource
 import data.user.data_source.UsersDataSource
 import data.user.data_source.UsersFileDataSource
+import logic.entities.*
+import net.thechance.data.aduit_log.data_source.MongoAuditLogDataSource
+import net.thechance.data.aduit_log.dto.AuditLogDto
 import logic.entities.AuditLog
 import logic.entities.Project
 import logic.entities.Task
@@ -17,6 +20,10 @@ import net.thechance.data.authentication.UserSession
 import net.thechance.data.progression_state.dto.ProgressionStateDto
 import net.thechance.data.projects.datasource.ProjectsDataSource
 import net.thechance.data.projects.datasource.localcsvfile.ProjectsFileDataSource
+import net.thechance.data.projects.datasource.remote.mongo.MongoProjectDataSource
+import net.thechance.data.projects.dto.ProjectDto
+import net.thechance.data.user.data_source.remote.UserDto
+import net.thechance.data.user.data_source.remote.UserMongoDataSource
 import net.thechance.data.tasks.data_source.remote.mongo.MongoTaskDataSource
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -37,31 +44,24 @@ val dataSourceModule = module {
     single(named("usersFileParser")) { CsvFileParser(factory = User.Companion::fromCsv) }
     single { UserSession() }
     single<UsersDataSource> {
-        UsersFileDataSource(
-            userFileHandler = get(named("usersFileHandler")),
-            csvFileParser = get(named("usersFileParser"))
-        )
+        UserMongoDataSource(get<MongoCollection<UserDto>>())
     }
 
     single(named("auditLogCsvFile")) { File("data_files/audit_log.csv") }
     single(named("AuditLogFileHandler")) { CsvFileHandler(get(named("auditLogCsvFile"))) }
     single(named("AuditLogFileParser")) { CsvFileParser(factory = AuditLog.Companion::fromCsv) }
     single<AuditLogDataSource> {
-        AuditLogFileDataSource(
-            auditLogFileHandler = get(named("AuditLogFileHandler")),
-            csvFileParser = get(named("AuditLogFileParser"))
-        )
+        MongoAuditLogDataSource(get<MongoCollection<AuditLogDto>>())
     }
 
     single(named("projectsCsvFile")) { File("data_files/projects.csv") }
     single(named("projectsFileHandler")) { CsvFileHandler(get(named("projectsCsvFile"))) }
     single(named("projectsFileParser")) { CsvFileParser(factory = Project.Companion::fromCsv) }
     single<ProjectsDataSource> {
-        ProjectsFileDataSource(
-            projectsFileHandler = get(named("projectsFileHandler")),
-            csvFileParser = get(named("projectsFileParser")),
-            tasksFileDataSource = get(),
-            statesFileDataSource = get()
+        MongoProjectDataSource(
+            projectsCollection = get<MongoCollection<ProjectDto>>(),
+            tasksDataSource = get<TasksDataSource>(),
+            statesDataSource = get<ProgressionStateDataSource>()
         )
     }
 

@@ -13,7 +13,7 @@ class RegisterAsAdminUseCase(
 
 ) {
 
-    fun execute(adminUser: User) {
+   suspend fun execute(adminUser: User) {
          if (
             userValidator. isUsernameNotValid(adminUser.name) ||
             userValidator. isPasswordNotValid(adminUser.password) ||

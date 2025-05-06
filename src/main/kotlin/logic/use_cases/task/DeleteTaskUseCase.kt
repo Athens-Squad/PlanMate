@@ -23,7 +23,7 @@ class DeleteTaskUseCase(
         }
     }
 
-    private fun createLog(taskId: String, userName: String) {
+    private suspend fun createLog(taskId: String, userName: String) {
         val auditLog = AuditLog(
             entityType = EntityType.TASK,
             entityId = taskId,
