@@ -11,7 +11,7 @@ interface TasksDataSource {
 
     suspend fun getAllTasks(): List<Task>
 
-    suspend fun updateTask(updatedTask: Task)
+    suspend fun updateTask(task: Task)
 
     suspend fun deleteTask(taskId: String)
 }

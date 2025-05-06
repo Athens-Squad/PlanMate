@@ -7,26 +7,28 @@ import data.csv_file_handle.CsvFileParser
 import data.progression_state.data_source.ProgressionStateDataSource
 import data.progression_state.data_source.database.ProgressionStateDatabaseDataSource
 import data.tasks.data_source.TasksDataSource
-import data.tasks.data_source.TasksFileDataSource
 import data.user.data_source.UsersDataSource
 import data.user.data_source.UsersFileDataSource
-import logic.entities.*
+import logic.entities.AuditLog
+import logic.entities.Project
+import logic.entities.Task
+import logic.entities.User
 import net.thechance.data.authentication.UserSession
 import net.thechance.data.progression_state.dto.ProgressionStateDto
 import net.thechance.data.projects.datasource.ProjectsDataSource
 import net.thechance.data.projects.datasource.localcsvfile.ProjectsFileDataSource
+import net.thechance.data.tasks.data_source.remote.mongo.MongoTaskDataSource
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
 
-val dataSourceModule  = module {
+val dataSourceModule = module {
     single(named("tasksCsvFile")) { File("data_files/tasks.csv") }
     single(named("tasksFileHandler")) { CsvFileHandler(get(named("tasksCsvFile"))) }
     single(named("tasksFileParser")) { CsvFileParser(factory = Task.Companion::fromCsv) }
     single<TasksDataSource> {
-        TasksFileDataSource(
-            tasksFileHandler = get(named("tasksFileHandler")),
-            csvFileParser = get(named("tasksFileParser"))
+        MongoTaskDataSource(
+            taskCollection = get()
         )
     }
 
@@ -63,12 +65,12 @@ val dataSourceModule  = module {
         )
     }
 
-	single(named("progressionStatesCsvFile")) { File("data_files/progression_states.csv") }
-	single(named("progressionStatesFileHandler")) { CsvFileHandler(get(named("stateCsvFile"))) }
-	single(named("progressionStatesFileParser")) { CsvFileParser(factory = ProgressionStateDto.Companion::fromCsv) }
-	single<ProgressionStateDataSource> {
-		ProgressionStateDatabaseDataSource(
-			progressionStatesDocument = get()
-		)
-	}
+    single(named("progressionStatesCsvFile")) { File("data_files/progression_states.csv") }
+    single(named("progressionStatesFileHandler")) { CsvFileHandler(get(named("stateCsvFile"))) }
+    single(named("progressionStatesFileParser")) { CsvFileParser(factory = ProgressionStateDto.Companion::fromCsv) }
+    single<ProgressionStateDataSource> {
+        ProgressionStateDatabaseDataSource(
+            progressionStatesDocument = get()
+        )
+    }
 }
