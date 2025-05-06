@@ -5,7 +5,6 @@ import di.appModule
 import di.repositoriesModule
 import di.uiModule
 import di.useCasesModule
-import kotlinx.coroutines.runBlocking
 import net.thechance.di.dataSourceModule
 import ui.PlanMateCli
 import org.koin.core.context.startKoin

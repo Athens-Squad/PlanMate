@@ -14,7 +14,7 @@ class PlanMateCli(
     private val adminOptionsHandler: AdminOptionsHandler,
     private val mateOptionsHandler: MateOptionsHandler
 ) {
-    suspend fun run() {
+    fun run() {
         consoleIO.printer.printWelcomeMessage("Welcome to Athens Plan Mate...")
         authenticationUi.runAuthenticationUi { startAuthenticationUi() }
     }
