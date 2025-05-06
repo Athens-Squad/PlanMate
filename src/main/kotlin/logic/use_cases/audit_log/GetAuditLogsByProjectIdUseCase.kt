@@ -1,21 +1,20 @@
 package logic.use_cases.audit_log
 
 import logic.entities.AuditLog
-import logic.repositories.AuditRepository
 import logic.entities.EntityType
-
+import logic.repositories.AuditRepository
 
 class GetAuditLogsByProjectIdUseCase(private val auditRepository: AuditRepository) {
-    fun execute(projectId: String):Result< List<AuditLog>> {
+    suspend fun execute(projectId: String): List<AuditLog> {
         if (projectId.isBlank()) {
-            return Result.success(emptyList())
+            return emptyList()
         }
 
-        return runCatching {
-            auditRepository.getAuditLogs().getOrThrow()
+        return try {
+            auditRepository.getAuditLogs()
                 .filter { it.entityType == EntityType.PROJECT && it.entityId == projectId }
-        }.recoverCatching {
+        } catch (e: Exception) {
             emptyList()
         }
     }
-    }
+}
