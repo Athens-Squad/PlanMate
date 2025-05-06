@@ -2,7 +2,7 @@ package net.thechance.data.projects.datasource.localcsvfile
 
 import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
-import data.states.data_source.StatesDataSource
+import data.progression_state.data_source.ProgressionStateDataSource
 import data.tasks.data_source.TasksDataSource
 import logic.entities.Project
 import net.thechance.data.projects.datasource.ProjectsDataSource
@@ -11,7 +11,7 @@ class ProjectsFileDataSource(
     private val projectsFileHandler: CsvFileHandler,
     private val csvFileParser: CsvFileParser<Project>,
     private val tasksFileDataSource: TasksDataSource,
-    private val statesFileDataSource: StatesDataSource
+    private val statesFileDataSource: ProgressionStateDataSource
 ) : ProjectsDataSource {
 
     override suspend fun createProject(project: Project) {
@@ -39,8 +39,8 @@ class ProjectsFileDataSource(
         return projectsFileHandler.readRecords().map { record ->
             val project = csvFileParser.parseRecord(record)
 
-            val tasks = tasksFileDataSource.getTasksByProjectId(project.id).getOrThrow().toMutableList()
-            val states = statesFileDataSource.getStates().getOrThrow()
+            val tasks = tasksFileDataSource.getTasksByProjectId(project.id).toMutableList()
+            val states = statesFileDataSource.getProgressionStates()
                 .filter { it.projectId == project.id }
                 .toMutableList()
 

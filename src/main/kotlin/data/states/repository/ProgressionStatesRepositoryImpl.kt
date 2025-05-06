@@ -1,11 +1,12 @@
 package data.states.repository
 
-import logic.repositories.StatesRepository
-import data.states.data_source.ProgressionStatesDataSource
+import data.progression_state.data_source.ProgressionStateDataSource
+import logic.repositories.ProgressionStateRepository
 
 
-class ProgressionStatesRepositoryImpl(private val progressionStatesDataSource: ProgressionStatesDataSource
-):StatesRepository  , ProgressionStatesDataSource by progressionStatesDataSource{
+class ProgressionStatesRepositoryImpl(
+    private val progressionStatesDataSource: ProgressionStateDataSource
+) : ProgressionStateRepository, ProgressionStateDataSource by progressionStatesDataSource {
 
 }
 

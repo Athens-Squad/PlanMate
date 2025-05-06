@@ -1,5 +1,6 @@
 package ui.featuresui
 
+import kotlinx.coroutines.*
 import logic.entities.ProgressionState
 import logic.entities.Task
 import logic.use_cases.task.TasksUseCases
@@ -14,24 +15,29 @@ class TasksUi(
     private val auditLogUi: AuditLogUi,
     private val session: UserSession
 ) {
+    private val exceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler({ _, throwable: Throwable ->
+        consoleIO.printer.printError(throwable.message.toString())
+    })
+    private val tasksCoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
     fun manageTasks(tasks: MutableList<Task>, projectId: String, progressionStates: List<ProgressionState>) {
-        try {
-            do {
-                consoleIO.printer.printTitle("Select A Task :")
-                var inputTaskName = consoleIO.reader.readStringFromUser()
-                val taskId = getTaskId(inputTaskName, tasks)
-                val task = tasksUseCases.getTaskByIdUseCase.execute(taskId)
-                consoleIO.printer.printPlainText(task.toString())
-                handleTaskOptions(task, projectId, progressionStates)
+        tasksCoroutineScope.launch {
+            try {
+                do {
+                    consoleIO.printer.printTitle("Select A Task :")
+                    var inputTaskName = consoleIO.reader.readStringFromUser()
+                    val taskId = getTaskId(inputTaskName, tasks)
+                    val task = tasksUseCases.getTaskByIdUseCase.execute(taskId)
+                    consoleIO.printer.printPlainText(task.toString())
+                    handleTaskOptions(task, projectId, progressionStates)
 
-                consoleIO.printer.printOption("0 : Back")
-                inputTaskName = consoleIO.reader.readStringFromUser()
+                    consoleIO.printer.printOption("0 : Back")
+                    inputTaskName = consoleIO.reader.readStringFromUser()
 
-            } while (inputTaskName != "0")
-        } catch (exception: Exception) {
-            consoleIO.printer.printError(exception.message.toString())
+                } while (inputTaskName != "0")
+            } catch (exception: Exception) {
+                consoleIO.printer.printError(exception.message.toString())
+            }
         }
-
     }
 
     private fun handleTaskOptions(task: Task, projectId: String, progressionStates: List<ProgressionState>) {
@@ -77,15 +83,17 @@ class TasksUi(
         val inputTaskState = consoleIO.reader.readStringFromUser()
 
         val state = progressionStates.first { it.name == inputTaskState }
-        tasksUseCases.createTaskUseCase.execute(
-            Task(
-                title = taskName,
-                description = taskDescription,
-                currentProgressionState = state,
-                projectId = projectId
-            ),
-            userName = session.currentUser.name
-        )
+        tasksCoroutineScope.launch {
+            tasksUseCases.createTaskUseCase.execute(
+                Task(
+                    title = taskName,
+                    description = taskDescription,
+                    currentProgressionState = state,
+                    projectId = projectId
+                ),
+                userName = session.currentUser.name
+            )
+        }
     }
 
     private fun editTask(progressionStates: List<ProgressionState>, task: Task, projectId: String) {
@@ -125,51 +133,59 @@ class TasksUi(
         )
 
         val taskState = receiveStringInput("Enter New Task State : ")
-
-        tasksUseCases
-            .updateTaskUseCase
-            .execute(
-                task.copy(
-                    currentProgressionState = ProgressionState(
-                        name = taskState,
-                        projectId = projectId
-                    )
-                ),
-                userName = session.currentUser.name
-            )
+        tasksCoroutineScope.launch {
+            tasksUseCases
+                .updateTaskUseCase
+                .execute(
+                    task.copy(
+                        currentProgressionState = ProgressionState(
+                            name = taskState,
+                            projectId = projectId
+                        )
+                    ),
+                    userName = session.currentUser.name
+                )
+        }
     }
 
 
     private fun editTaskDescription(task: Task) {
         val taskDescription = receiveStringInput("Enter New Task Description : ")
 
-        tasksUseCases
-            .updateTaskUseCase
-            .execute(
-                task.copy(description = taskDescription),
-                userName = session.currentUser.name
-            )
+        tasksCoroutineScope.launch {
+            tasksUseCases
+                .updateTaskUseCase
+                .execute(
+                    task.copy(description = taskDescription),
+                    userName = session.currentUser.name
+                )
+        }
     }
 
     private fun editTaskName(task: Task) {
         val taskName = receiveStringInput("Enter New Task Name : ")
 
-        tasksUseCases
-            .updateTaskUseCase
-            .execute(
-                task.copy(title = taskName),
-                userName = session.currentUser.name
-            )
+        tasksCoroutineScope.launch {
+
+            tasksUseCases
+                .updateTaskUseCase
+                .execute(
+                    task.copy(title = taskName),
+                    userName = session.currentUser.name
+                )
+        }
 
     }
 
     private fun deleteTask(task: Task) {
-        tasksUseCases
-            .deleteTaskUseCase
-            .execute(
-                taskId = task.id,
-                userName = session.currentUser.name
-            )
+        tasksCoroutineScope.launch {
+            tasksUseCases
+                .deleteTaskUseCase
+                .execute(
+                    taskId = task.id,
+                    userName = session.currentUser.name
+                )
+        }
     }
 
 

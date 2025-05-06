@@ -71,7 +71,8 @@ class ProjectOptionsHandler(
     }
 
     private suspend fun showHistory() {
-        auditLogUi.getProjectHistory(project.id).onSuccess { history ->
+        try {
+            val history = auditLogUi.getProjectHistory(project.id)
             if(history.isEmpty()){
                 consoleIO.printer.printError("no history found")
                 return
@@ -79,12 +80,11 @@ class ProjectOptionsHandler(
             history.forEach { log->
                 consoleIO.printer.printInfoLine(log.toString())
             }
+            auditLogUi.showHistoryOption()
+
+        } catch (exception : Exception){
+            consoleIO.printer.printError(exception.message.toString())
         }
-            .onFailure {
-                consoleIO.printer.printError(it.message.toString())
-                return
-            }
-        auditLogUi.showHistoryOption()
     }
 
     private fun deleteProject() {

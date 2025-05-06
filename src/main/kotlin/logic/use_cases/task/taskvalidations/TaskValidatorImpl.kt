@@ -1,18 +1,18 @@
 package logic.use_cases.task.taskvalidations
 
-import logic.entities.Task
-import logic.repositories.ProjectsRepository
-import logic.repositories.StatesRepository
-import logic.repositories.TasksRepository
-import logic.exceptions.TasksException
 import logic.entities.ProgressionState
+import logic.entities.Task
+import logic.exceptions.TasksException
+import logic.repositories.ProgressionStateRepository
+import logic.repositories.ProjectsRepository
+import logic.repositories.TasksRepository
 
 class TaskValidatorImpl(
     private val tasksRepository: TasksRepository,
     private val projectsRepository: ProjectsRepository,
-    private val statesRepository: StatesRepository
+    private val statesRepository: ProgressionStateRepository
 ) : TaskValidator {
-    override fun doIfTaskExistsOrThrow(taskId: String, action: (Task) -> Unit) {
+    override suspend fun doIfTaskExistsOrThrow(taskId: String, action: suspend (Task) -> Unit) {
         try {
             val task = tasksRepository.getTaskById(taskId)
             action(task)
@@ -22,7 +22,7 @@ class TaskValidatorImpl(
 
     }
 
-    override fun doIfTaskNotExistsOrThrow(task: Task, action: () -> Unit) {
+    override suspend fun doIfTaskNotExistsOrThrow(task: Task,  action: suspend() -> Unit) {
         try {
             tasksRepository.getTaskById(task.id)
             throw TasksException.CannotCompleteTaskOperationException("There is existing task with same id")
@@ -33,7 +33,7 @@ class TaskValidatorImpl(
 
     }
 
-    override fun validateTaskBeforeCreation(task: Task) {
+    override suspend fun validateTaskBeforeCreation(task: Task) {
         //validate task exists
         validateTaskTitleExists(task)
 
@@ -46,7 +46,7 @@ class TaskValidatorImpl(
         validateTaskState(task.currentProgressionState, task.projectId)
     }
 
-    override fun validateTaskBeforeUpdating(task: Task, updatedTask: Task) {
+    override suspend fun validateTaskBeforeUpdating(task: Task, updatedTask: Task) {
         //validate taskId
         if (task.id != updatedTask.id)
             throw TasksException.CannotUpdateTaskException("Cannot change taskId!")
@@ -69,7 +69,7 @@ class TaskValidatorImpl(
 
     }
 
-    private fun validateTaskTitleExists(task: Task) {
+    private suspend fun validateTaskTitleExists(task: Task) {
         //Check if the task exists in the repository
 
         val taskExists = tasksRepository.getTasksByProjectId(task.projectId)
@@ -80,15 +80,15 @@ class TaskValidatorImpl(
 
     }
 
-    private fun validateProjectExists(projectId: String) {
-        projectsRepository.getProjects().getOrNull()?.find { it.id == projectId }
+    private suspend fun validateProjectExists(projectId: String) {
+        projectsRepository.getProjects().find { it.id == projectId }
             ?: throw TasksException.InvalidTaskException("Project with ID $projectId does not exist.")
 
     }
 
-    private fun validateTaskState(currentProgressionState: ProgressionState, projectId: String) {
-        statesRepository.getStates().getOrNull()
-            ?.find { it.id == currentProgressionState.id && it.projectId == projectId }
+    private suspend fun validateTaskState(currentProgressionState: ProgressionState, projectId: String) {
+        statesRepository.getProgressionStates()
+            .find { it.id == currentProgressionState.id && it.projectId == projectId }
             ?: throw TasksException.InvalidTaskException("State '${currentProgressionState.name}' is not valid for the given project.")
 
     }

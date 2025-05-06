@@ -13,7 +13,7 @@ class DeleteTaskUseCase(
     private val auditRepository: AuditRepository,
     private val taskValidator: TaskValidator
 ) {
-    fun execute(taskId: String, userName: String) {
+    suspend fun execute(taskId: String, userName: String) {
         taskValidator.doIfTaskExistsOrThrow(taskId) {
             // Delete the task
             taskRepository.deleteTask(taskId)

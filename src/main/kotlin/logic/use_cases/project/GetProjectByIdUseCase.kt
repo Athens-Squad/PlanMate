@@ -1,10 +1,9 @@
 package logic.use_cases.project
 
-import logic.entities.Project
-import logic.repositories.ProjectsRepository
 import data.projects.exceptions.ProjectsLogicExceptions
 import data.projects.exceptions.ProjectsLogicExceptions.InvalidProjectNameException
-import logic.repositories.StatesRepository
+import logic.entities.Project
+import logic.repositories.ProjectsRepository
 import logic.use_cases.project.projectValidations.checkIfFieldIsValid
 import logic.use_cases.project.projectValidations.checkIfProjectExistInRepositoryAndReturn
 

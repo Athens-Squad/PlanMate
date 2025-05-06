@@ -6,20 +6,13 @@ import logic.entities.EntityType
 
 
 class GetAuditLogsByTaskIdUseCase(private val auditRepository: AuditRepository) {
-    fun execute(taskId: String): Result<List<AuditLog>> {
+    fun execute(taskId: String): List<AuditLog> {
         if (taskId.isBlank()) {
-            return Result.success(emptyList())
+            return emptyList()
         }
 
-        return runCatching {
-            auditRepository.getAuditLogs().getOrThrow()
-                .filter { it.entityType == EntityType.TASK && it.entityId == taskId }
-        }.recoverCatching {
-            emptyList()
-        }
+        return auditRepository.getAuditLogs()
+            .filter { it.entityType == EntityType.TASK && it.entityId == taskId }
+
     }
-
-
-
-
 }

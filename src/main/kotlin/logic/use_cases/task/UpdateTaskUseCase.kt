@@ -15,7 +15,7 @@ class UpdateTaskUseCase(
     private val taskValidator: TaskValidator
 ) {
 
-    fun execute(updatedTask: Task, userName: String) {
+    suspend fun execute(updatedTask: Task, userName: String) {
 
         //update only if task exists
         taskValidator.doIfTaskExistsOrThrow(updatedTask.id) { task ->

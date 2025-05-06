@@ -13,7 +13,7 @@ class CreateTaskUseCase(
     private val auditRepository: AuditRepository,
     private val taskValidator: TaskValidator
 ) {
-    fun execute(task: Task, userName: String) {
+    suspend fun execute(task: Task, userName: String) {
         taskValidator.doIfTaskNotExistsOrThrow(task) {
             //validate task
             taskValidator.validateTaskBeforeCreation(task)
