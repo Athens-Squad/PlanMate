@@ -4,26 +4,25 @@ import logic.entities.User
 import data.authentication.utils.PasswordHashing
 import logic.repositories.AuthenticationRepository
 import logic.use_cases.authentication.exceptions.InvalidCredentialsException
+import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
 
 class LoginUseCase(
     private val authenticationRepository: AuthenticationRepository,
     private val passwordHashing: PasswordHashing,
+    private val userValidator: UserValidator,
+
 ) {
-    fun execute(username: String, password: String): Result<User> {
-        return if (
-            isUsernameNotValid(username) ||
-            isPasswordNotValid(password)
+    fun execute(username: String, password: String): User{
+       if (
+          userValidator. isUsernameNotValid(username) ||
+            userValidator.isPasswordNotValid(password)
         ) {
-            Result.failure(InvalidCredentialsException())
-        } else {
-            runCatching {
-                val hashedPassword = passwordHashing.hash(password)
-                authenticationRepository.login(username, hashedPassword).getOrThrow()
-            }
+           throw InvalidCredentialsException()
         }
+
+        val hashedPassword = passwordHashing.hash(password)
+        return authenticationRepository.login(username, hashedPassword)
     }
 
 
-    private fun isUsernameNotValid(userName: String) = userName.isEmpty()
-    private fun isPasswordNotValid(password: String) = password.isEmpty()
 }

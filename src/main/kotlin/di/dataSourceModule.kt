@@ -1,19 +1,22 @@
 package net.thechance.di
 
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.aduit_log_csvfile.data_source.AuditLogDataSource
 import data.aduit_log_csvfile.data_source.AuditLogFileDataSource
 import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
-import data.projects.ProjectsDataSource
-import data.projects.ProjectsFileDataSource
-import data.states.data_source.ProgressionStatesDataSource
-import data.states.data_source.ProgressionStatesFileDataSource
+import net.thechance.data.projects.datasource.ProjectsDataSource
+import net.thechance.data.projects.datasource.localcsvfile.ProjectsFileDataSource
+import data.states.data_source.StatesDataSource
+import data.states.data_source.StatesFileDataSource
 import data.tasks.data_source.TasksDataSource
 import data.tasks.data_source.TasksFileDataSource
 import data.user.data_source.UsersDataSource
 import data.user.data_source.UsersFileDataSource
 import logic.entities.*
 import net.thechance.data.authentication.UserSession
+import net.thechance.data.projects.datasource.remote.mongo.MongoProjectDataSource
+import net.thechance.data.projects.dto.ProjectDto
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
@@ -62,13 +65,12 @@ val dataSourceModule  = module {
         )
     }
 
-    single(named("stateCsvFile")) { File("data_files/states.csv") }
-    single(named("statesFileHandler")) { CsvFileHandler(get(named("stateCsvFile"))) }
-    single(named("statesFileParser")) { CsvFileParser(factory = ProgressionState.Companion::fromCsv) }
-    single<ProgressionStatesDataSource> {
-        ProgressionStatesFileDataSource(
-            statesFileHandler = get(named("statesFileHandler")),
-            csvFileParser = get(named("statesFileParser"))
-        )
-    }
+	single(named("progressionStatesCsvFile")) { File("data_files/progression_states.csv") }
+	single(named("progressionStatesFileHandler")) { CsvFileHandler(get(named("stateCsvFile"))) }
+	single(named("progressionStatesFileParser")) { CsvFileParser(factory = ProgressionStateDto.Companion::fromCsv) }
+	single<ProgressionStateDataSource> {
+		ProgressionStateDatabaseDataSource(
+			progressionStatesDocument = get()
+		)
+	}
 }

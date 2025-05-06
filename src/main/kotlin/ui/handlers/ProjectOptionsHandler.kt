@@ -8,14 +8,16 @@ import net.thechance.ui.options.project.ProjectOptions
 import ui.featuresui.*
 
 class ProjectOptionsHandler(
-    private val consoleIO: ConsoleIO,
-    private val projectsUi: ProjectsUi,
-    private val statesUi: StatesUi,
-    private val tasksUi: TasksUi,
-    private val auditLogUi: AuditLogUi,
+	private val consoleIO: ConsoleIO,
+	private val projectsUi: ProjectsUi,
+	private val progressionStateUi: ProgressionStateUi,
+	private val tasksUi: TasksUi,
+	private val auditLogUi: AuditLogUi,
 ) {
     private lateinit var project: Project
-    fun handleAdmin(project: Project) {
+
+
+    suspend fun handleAdmin(project: Project) {
         this.project = project
 
         do {
@@ -27,20 +29,15 @@ class ProjectOptionsHandler(
             when (option) {
                 ProjectOptions.CREATE_TASK.optionNumber -> createTask()
                 ProjectOptions.EDIT.optionNumber -> projectsUi.editProject(project)
-                ProjectOptions.MANAGE_STATES.optionNumber -> statesUi.manageStates(project.id)
-                ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(
-                    project.tasks,
-                    project.id,
-                    project.progressionStates
-                )
-
+                ProjectOptions.MANAGE_STATES.optionNumber -> progressionStateUi.manageStates( project.id)
+                ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
                 ProjectOptions.SHOW_HISTORY.optionNumber -> showHistory()
                 ProjectOptions.DELETE.optionNumber -> deleteProject()
             }
         } while (option != ProjectOptions.BACK.optionNumber && option != ProjectOptions.DELETE.optionNumber)
     }
 
-    fun handleMate(project: Project) {
+    suspend fun handleMate(project: Project) {
         this.project = project
 
         do {
@@ -62,30 +59,24 @@ class ProjectOptionsHandler(
         } while (option != ProjectMateOptions.BACK.optionNumber)
     }
 
-    private fun createTask() {
-        try {
-            statesUi.getStates(project.id)
-                .onSuccess { states ->
-                    if (states.isEmpty()) {
-                        consoleIO.printer.printError("please create state first")
-                        return
-                    }
-                    tasksUi.createTask(states, project.id)
-                    consoleIO.printer.printCorrectOutput("Task Created Successfully.")
-                }
-
-        } catch (exception: Exception) {
-            consoleIO.printer.printError(exception.message.toString())
+    private suspend fun createTask() {
+        val progressionStates = progressionStateUi.getProgressionStatesByProjectId(project.id)
+        if(progressionStates.isEmpty()){
+            consoleIO.printer.printError("please create state first")
+            return
         }
+        tasksUi.createTask(progressionStates, project.id)
+
+        consoleIO.printer.printCorrectOutput("Task Created Successfully.")
     }
 
-    private fun showHistory() {
+    private suspend fun showHistory() {
         auditLogUi.getProjectHistory(project.id).onSuccess { history ->
-            if (history.isEmpty()) {
+            if(history.isEmpty()){
                 consoleIO.printer.printError("no history found")
                 return
             }
-            history.forEach { log ->
+            history.forEach { log->
                 consoleIO.printer.printInfoLine(log.toString())
             }
         }
@@ -98,7 +89,6 @@ class ProjectOptionsHandler(
 
     private fun deleteProject() {
         projectsUi.deleteProject(project.id)
-            .onSuccess { consoleIO.printer.printCorrectOutput("Project Deleted Successfully") }
-            .onFailure { consoleIO.printer.printError(it.message.toString()) }
+        consoleIO.printer.printCorrectOutput("Project Deleted Successfully")
     }
 }

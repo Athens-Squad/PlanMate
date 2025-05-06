@@ -2,7 +2,6 @@ package ui.featuresui
 
 import logic.entities.ProgressionState
 import logic.entities.Task
-import logic.use_cases.state.GetStatesByProjectIdUseCase
 import logic.use_cases.task.TasksUseCases
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.options.tasks.EditTaskOptions

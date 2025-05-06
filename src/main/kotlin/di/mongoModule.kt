@@ -14,4 +14,9 @@ val mongoModule = module {
         get<MongoClient>().getDatabase("planmate")
     }
 
+    single<MongoCollection<ProjectDto>> { get<MongoDatabase>().getCollection<ProjectDto>("projects") }
+
+    single<MongoCollection<ProgressionStateDto>> {
+        get<MongoDatabase>().getCollection("progressionStates", ProgressionStateDto::class.java)
+    }
 }

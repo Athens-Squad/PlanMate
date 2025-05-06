@@ -16,29 +16,25 @@ class CreateProjectUseCase(
     private val userRepository: UserRepository,
     private val auditRepository: AuditRepository
 ) {
-    fun execute(project: Project): Result<Unit> {
-        return runCatching {
+    suspend fun execute(project: Project): Unit {
+        project.apply {
+            createdBy.checkIfFieldIsValid().takeIf { it } ?: throw InvalidUsernameForProjectException()
+            name.checkIfFieldIsValid().takeIf { it } ?: throw InvalidProjectNameException()
 
-            project.apply {
-                createdBy.checkIfFieldIsValid().takeIf { it } ?: throw InvalidUsernameForProjectException()
-                name.checkIfFieldIsValid().takeIf { it } ?: throw InvalidProjectNameException()
+            checkIfUserAuthorized(createdBy) { userRepository.getUserByUsername(createdBy) }
+                .takeIf { it } ?: throw NotAuthorizedUserException()
 
-                checkIfUserAuthorized(createdBy) { userRepository.getUserByUsername(createdBy) }
-                    .takeIf { it } ?: throw NotAuthorizedUserException()
+            checkIfProjectAlreadyExistInRepository(id) { projectRepository.getProjects() }
+                .takeIf { it } ?: throw ProjectAlreadyExistException()
+        }
 
-                checkIfProjectAlreadyExistInRepository(id) { projectRepository.getProjects() }
-                    .takeIf { it } ?: throw ProjectAlreadyExistException()
-            }
+        projectRepository.createProject(project)
 
-            projectRepository.createProject(project)
-                .onSuccess {
-                    createLog(
-                        project = project,
-                        logMessage = "Project created successfully."
-                    ) {
-                        auditRepository.createAuditLog(it).getOrThrow()
-                    }
-                }
+        createLog(
+            project = project,
+            logMessage = "Project created successfully."
+        ) {
+            auditRepository.createAuditLog(it)
         }
     }
 }
