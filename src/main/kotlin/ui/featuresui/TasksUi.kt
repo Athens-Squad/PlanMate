@@ -19,6 +19,8 @@ class TasksUi(
         consoleIO.printer.printError(throwable.message.toString())
     })
     private val tasksCoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
+
+
     fun manageTasks(tasks: MutableList<Task>, projectId: String, progressionStates: List<ProgressionState>) {
         tasksCoroutineScope.launch {
             try {
@@ -51,8 +53,14 @@ class TasksUi(
                 when (inputTaskOption) {
                     TaskOptions.EDIT.optionNumber -> editTask(progressionStates, task, projectId)
                     TaskOptions.SHOW_HISTORY.optionNumber -> {
-                        auditLogUi.getTaskHistory(task.id)
-                        auditLogUi.showHistoryOption()
+                        tasksCoroutineScope.launch {
+                            try {
+                                auditLogUi.getTaskHistory(task.id)
+                                auditLogUi.showHistoryOption()
+                            } catch (exception: Exception) {
+                                consoleIO.printer.printError("Error : ${exception.message}")
+                            }
+                        }
                     }
 
                     TaskOptions.DELETE.optionNumber -> {

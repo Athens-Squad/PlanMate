@@ -31,7 +31,7 @@ class UpdateTaskUseCase(
         }
     }
 
-    private fun createLog(task: Task, userName: String) {
+    private suspend fun createLog(task: Task, userName: String) {
         val auditLog = AuditLog(
             entityType = EntityType.TASK,
             entityId = task.id,

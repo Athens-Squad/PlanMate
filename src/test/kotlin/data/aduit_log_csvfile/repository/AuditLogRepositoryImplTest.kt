@@ -7,9 +7,10 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import logic.entities.AuditLog
-import data.aduit_log_csvfile.data_source.AuditLogDataSource
+import net.thechance.data.aduit_log.data_source.AuditLogDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import logic.entities.EntityType
+import net.thechance.data.aduit_log.repository.AuditLogRepositoryImpl
 import org.hamcrest.core.Every
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

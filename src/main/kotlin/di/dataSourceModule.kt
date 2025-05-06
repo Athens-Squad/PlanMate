@@ -1,7 +1,7 @@
 package net.thechance.di
 
-import data.aduit_log_csvfile.data_source.AuditLogDataSource
-import data.aduit_log_csvfile.data_source.AuditLogFileDataSource
+import com.mongodb.kotlin.client.coroutine.MongoCollection
+import net.thechance.data.aduit_log.data_source.AuditLogDataSource
 import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
 import data.progression_state.data_source.ProgressionStateDataSource
@@ -11,6 +11,8 @@ import data.tasks.data_source.TasksFileDataSource
 import data.user.data_source.UsersDataSource
 import data.user.data_source.UsersFileDataSource
 import logic.entities.*
+import net.thechance.data.aduit_log.data_source.MongoAuditLogDataSource
+import net.thechance.data.aduit_log.dto.AuditLogDto
 import net.thechance.data.authentication.UserSession
 import net.thechance.data.progression_state.dto.ProgressionStateDto
 import net.thechance.data.projects.datasource.ProjectsDataSource
@@ -45,10 +47,7 @@ val dataSourceModule  = module {
     single(named("AuditLogFileHandler")) { CsvFileHandler(get(named("auditLogCsvFile"))) }
     single(named("AuditLogFileParser")) { CsvFileParser(factory = AuditLog.Companion::fromCsv) }
     single<AuditLogDataSource> {
-        AuditLogFileDataSource(
-            auditLogFileHandler = get(named("AuditLogFileHandler")),
-            csvFileParser = get(named("AuditLogFileParser"))
-        )
+        MongoAuditLogDataSource(get<MongoCollection<AuditLogDto>>())
     }
 
     single(named("projectsCsvFile")) { File("data_files/projects.csv") }

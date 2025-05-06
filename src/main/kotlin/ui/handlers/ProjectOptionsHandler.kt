@@ -1,6 +1,7 @@
 package net.thechance.ui.handlers
 
 
+import kotlinx.coroutines.*
 import logic.entities.Project
 import net.thechance.ui.options.project.ProjectMateOptions
 import ui.io.ConsoleIO
@@ -14,6 +15,12 @@ class ProjectOptionsHandler(
 	private val tasksUi: TasksUi,
 	private val auditLogUi: AuditLogUi,
 ) {
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        consoleIO.printer.printError("Unexpected error: ${throwable.message}")
+    }
+    private val projectsScope: CoroutineScope =
+        CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
+
     private lateinit var project: Project
 
 
@@ -72,15 +79,17 @@ class ProjectOptionsHandler(
 
     private suspend fun showHistory() {
         try {
-            val history = auditLogUi.getProjectHistory(project.id)
-            if(history.isEmpty()){
-                consoleIO.printer.printError("no history found")
-                return
+            projectsScope.launch {
+                val history = auditLogUi.getProjectHistory(project.id)
+                if(history.isEmpty()){
+                    consoleIO.printer.printError("no history found")
+                    return@launch
+                }
+                history.forEach { log->
+                    consoleIO.printer.printInfoLine(log.toString())
+                }
+                auditLogUi.showHistoryOption()
             }
-            history.forEach { log->
-                consoleIO.printer.printInfoLine(log.toString())
-            }
-            auditLogUi.showHistoryOption()
 
         } catch (exception : Exception){
             consoleIO.printer.printError(exception.message.toString())

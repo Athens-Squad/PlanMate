@@ -1,8 +1,8 @@
-package data.aduit_log_csvfile.repository
+package net.thechance.data.aduit_log.repository
 
 import logic.entities.AuditLog
 import logic.repositories.AuditRepository
-import data.aduit_log_csvfile.data_source.AuditLogDataSource
+import net.thechance.data.aduit_log.data_source.AuditLogDataSource
 
 class AuditLogRepositoryImpl(
     private val auditLogDataSource: AuditLogDataSource
