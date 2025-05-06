@@ -1,13 +1,16 @@
 package net.thechance.di
 
+import com.mongodb.kotlin.client.coroutine.MongoCollection
+import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.aduit_log_csvfile.data_source.AuditLogDataSource
 import data.aduit_log_csvfile.data_source.AuditLogFileDataSource
 import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
+import data.progression_state.data_source.ProgressionStateDataSource
+import data.progression_state.data_source.database.ProgressionStateDatabaseDataSource
+import data.progression_state.data_source.local_csv_file.ProgressionStateFileDataSource
 import data.projects.ProjectsDataSource
 import data.projects.ProjectsFileDataSource
-import data.states.data_source.StatesDataSource
-import data.states.data_source.StatesFileDataSource
 import data.tasks.data_source.TasksDataSource
 import data.tasks.data_source.TasksFileDataSource
 import data.user.data_source.UsersDataSource
@@ -55,20 +58,20 @@ val dataSourceModule  = module {
     single(named("projectsFileParser")) { CsvFileParser(factory = Project.Companion::fromCsv) }
     single<ProjectsDataSource> {
         ProjectsFileDataSource(
-            projectsFileHandler = get(named("projectsFileHandler")),
-            csvFileParser = get(named("projectsFileParser")),
-            tasksFileDataSource = get(),
-            statesFileDataSource = get()
+	        projectsFileHandler = get(named("projectsFileHandler")),
+	        csvFileParser = get(named("projectsFileParser")),
+	        tasksFileDataSource = get(),
+	        statesFileDataSource = get(),
         )
     }
 
     single(named("stateCsvFile")) { File("data_files/states.csv") }
     single(named("statesFileHandler")) { CsvFileHandler(get(named("stateCsvFile"))) }
     single(named("statesFileParser")) { CsvFileParser(factory = ProgressionState.Companion::fromCsv) }
-    single<StatesDataSource> {
-        StatesFileDataSource(
-            statesFileHandler = get(named("statesFileHandler")),
-            csvFileParser = get(named("statesFileParser"))
-        )
+    single<ProgressionStateDataSource> {
+	    ProgressionStateDatabaseDataSource(
+		    progressionStatesDocument = get()
+	    )
     }
 }
+

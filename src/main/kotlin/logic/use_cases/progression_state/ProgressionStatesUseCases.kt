@@ -1,0 +1,10 @@
+package logic.use_cases.progression_state
+
+
+data class ProgressionStatesUseCases(
+	val createProgressionStateUseCase: CreateProgressionStateUseCase,
+	val updateProgressionStateUseCase: UpdateProgressionStateUseCase,
+	val deleteProgressionStateUseCase: DeleteProgressionStateUseCase,
+	val getProgressionStateByIdUseCase: GetProgressionStateByIdUseCase,
+	val getProgressionStatesByProjectIdUseCase: GetProgressionStatesByProjectIdUseCase
+)

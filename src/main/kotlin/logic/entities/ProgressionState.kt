@@ -1,9 +1,9 @@
 package logic.entities
 
 
-import data.states.utils.StateColumIndex.NAME
-import data.states.utils.StateColumIndex.ID
-import data.states.utils.StateColumIndex.PROJECT_ID
+import data.progression_state.utils.ProgressionStateColumIndex.NAME
+import data.progression_state.utils.ProgressionStateColumIndex.ID
+import data.progression_state.utils.ProgressionStateColumIndex.PROJECT_ID
 import logic.CsvSerializable
 import java.util.*
 

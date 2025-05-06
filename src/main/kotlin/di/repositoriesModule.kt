@@ -5,7 +5,7 @@ import data.user.repository.UserRepositoryImpl
 import data.aduit_log_csvfile.repository.AuditLogRepositoryImpl
 import data.authentication.repository.AuthRepositoryImpl
 import data.projects.ProjectsRepositoryImpl
-import data.states.repository.StatesRepositoryImpl
+import data.progression_state.repository.ProgressionStateRepositoryImpl
 import data.tasks.repository.TasksRepositoryImpl
 import logic.repositories.AuthenticationRepository
 import org.koin.dsl.module
@@ -15,7 +15,7 @@ val repositoriesModule = module {
     single<AuditRepository> { AuditLogRepositoryImpl(get()) }
 
     single<ProjectsRepository> { ProjectsRepositoryImpl(get()) }
-    single<StatesRepository> { StatesRepositoryImpl(get()) }
+    single<ProgressionStateRepository> { ProgressionStateRepositoryImpl(get()) }
 
     single<TasksRepository> { TasksRepositoryImpl(get()) }
 

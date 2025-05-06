@@ -1,0 +1,10 @@
+package data.progression_state.repository
+
+import data.progression_state.data_source.ProgressionStateDataSource
+import logic.repositories.ProgressionStateRepository
+
+
+class ProgressionStateRepositoryImpl(
+	private val progressionStateDataSource: ProgressionStateDataSource
+): ProgressionStateRepository, ProgressionStateDataSource by progressionStateDataSource
+
