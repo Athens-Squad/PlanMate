@@ -57,16 +57,20 @@ val dataSourceModule  = module {
     single(named("projectsFileHandler")) { CsvFileHandler(get(named("projectsCsvFile"))) }
     single(named("projectsFileParser")) { CsvFileParser(factory = Project.Companion::fromCsv) }
     single<ProjectsDataSource> {
-        MongoProjectDataSource(get<MongoCollection<ProjectDto>>(), get(), get())
-    }
-
-    single(named("stateCsvFile")) { File("data_files/states.csv") }
-    single(named("statesFileHandler")) { CsvFileHandler(get(named("stateCsvFile"))) }
-    single(named("statesFileParser")) { CsvFileParser(factory = ProgressionState.Companion::fromCsv) }
-    single<StatesDataSource> {
-        StatesFileDataSource(
-            statesFileHandler = get(named("statesFileHandler")),
-            csvFileParser = get(named("statesFileParser"))
+        ProjectsFileDataSource(
+            projectsFileHandler = get(named("projectsFileHandler")),
+            csvFileParser = get(named("projectsFileParser")),
+            tasksFileDataSource = get(),
+            statesFileDataSource = get()
         )
     }
+
+	single(named("progressionStatesCsvFile")) { File("data_files/progression_states.csv") }
+	single(named("progressionStatesFileHandler")) { CsvFileHandler(get(named("stateCsvFile"))) }
+	single(named("progressionStatesFileParser")) { CsvFileParser(factory = ProgressionStateDto.Companion::fromCsv) }
+	single<ProgressionStateDataSource> {
+		ProgressionStateDatabaseDataSource(
+			progressionStatesDocument = get()
+		)
+	}
 }

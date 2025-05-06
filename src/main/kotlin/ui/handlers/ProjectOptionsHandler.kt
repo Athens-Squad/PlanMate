@@ -1,6 +1,6 @@
 package net.thechance.ui.handlers
 
-import kotlinx.coroutines.*
+
 import logic.entities.Project
 import net.thechance.ui.options.project.ProjectMateOptions
 import ui.io.ConsoleIO
@@ -8,11 +8,11 @@ import net.thechance.ui.options.project.ProjectOptions
 import ui.featuresui.*
 
 class ProjectOptionsHandler(
-    private val consoleIO: ConsoleIO,
-    private val projectsUi: ProjectsUi,
-    private val statesUi: StatesUi,
-    private val tasksUi: TasksUi,
-    private val auditLogUi: AuditLogUi
+	private val consoleIO: ConsoleIO,
+	private val projectsUi: ProjectsUi,
+	private val progressionStateUi: ProgressionStateUi,
+	private val tasksUi: TasksUi,
+	private val auditLogUi: AuditLogUi,
 ) {
     private lateinit var project: Project
 
@@ -30,12 +30,8 @@ class ProjectOptionsHandler(
                 ProjectOptions.CREATE_TASK.optionNumber -> createTask()
 
                 ProjectOptions.EDIT.optionNumber -> projectsUi.editProject(project)
-
-                ProjectOptions.MANAGE_STATES.optionNumber -> statesUi.manageStates( project.id)
-
-                ProjectOptions.MANAGE_TASKS.optionNumber ->
-                    tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
-
+                ProjectOptions.MANAGE_STATES.optionNumber -> progressionStateUi.manageStates( project.id)
+                ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
                 ProjectOptions.SHOW_HISTORY.optionNumber -> showHistory()
 
                 ProjectOptions.DELETE.optionNumber -> deleteProject()
@@ -62,12 +58,12 @@ class ProjectOptionsHandler(
     }
 
     private suspend fun createTask() {
-        val states = statesUi.getStates(project.id)
-        if(states.isEmpty()){
+        val progressionStates = progressionStateUi.getProgressionStatesByProjectId(project.id)
+        if(progressionStates.isEmpty()){
             consoleIO.printer.printError("please create state first")
             return
         }
-        tasksUi.createTask(states, project.id)
+        tasksUi.createTask(progressionStates, project.id)
 
         consoleIO.printer.printCorrectOutput("Task Created Successfully.")
     }
