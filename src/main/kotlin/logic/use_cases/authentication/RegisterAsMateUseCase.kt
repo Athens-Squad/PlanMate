@@ -13,18 +13,18 @@ class RegisterAsMateUseCase(
 
 ) {
     suspend fun execute(mateUser: User) {
-      if (
-           userValidator. isUsernameNotValid(mateUser.name) ||
-           userValidator. isPasswordNotValid(mateUser.password) ||
-           userValidator.  isTypeNotMate(mateUser.type) ||
-           userValidator. isMateAdminIdNotValid(mateUser.type)||
-           userValidator. userNameExist(mateUser.name)
+        if (
+            userValidator.isUsernameNotValid(mateUser.name) ||
+            userValidator.isPasswordNotValid(mateUser.password) ||
+            userValidator.isTypeNotMate(mateUser.type) ||
+            userValidator.isMateAdminIdNotValid(mateUser.type) ||
+            userValidator.userNameExist(mateUser.name)
         ) {
             throw Exception("Cannot Register!")
         }
-                val hashedPassword = passwordHashing.hash(mateUser.password)
-                val mateUserWithHashedPassword = mateUser.copy(password = hashedPassword)
-                userRepository.createUser(mateUserWithHashedPassword)
+        val hashedPassword = passwordHashing.hash(mateUser.password)
+        val mateUserWithHashedPassword = mateUser.copy(password = hashedPassword)
+        userRepository.createUser(mateUserWithHashedPassword)
 
 
     }

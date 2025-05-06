@@ -97,19 +97,25 @@ class AuthenticationUi(
         )
     }
 
-    suspend fun createMate(adminName: String) {
+    fun createMate(adminName: String) {
         consoleIO.printer.printTitle("Create Mate Account, Please Enter Mate's Info : ")
         val userName = receiveUserInfo("Enter Mate's Username : ")
         val password = receiveUserInfo("Enter Mate's Password : ")
 
-        return authenticationUseCases.registerAsMateUseCase.execute(
-            User(
-                name = userName,
-                password = password,
-                type = UserType.MateUser(adminName)
-            )
-        )
 
+        authScope.launch {
+            try {
+                authenticationUseCases.registerAsMateUseCase.execute(
+                    User(
+                        name = userName,
+                        password = password,
+                        type = UserType.MateUser(adminName)
+                    )
+                )
+            } catch (exception: Exception) {
+                consoleIO.printer.printError("Error : ${exception.message}")
+            }
+        }
     }
 
    private  fun receiveUserInfo(message: String): String {
