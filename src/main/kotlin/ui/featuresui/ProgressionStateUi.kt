@@ -1,0 +1,124 @@
+package ui.featuresui
+
+import logic.entities.ProgressionState
+import logic.use_cases.progression_state.ProgressionStatesUseCases
+import net.thechance.ui.options.progression_states.EditProgressionStateOptions
+import net.thechance.ui.options.progression_states.ProgressionStateOptions
+import ui.io.ConsoleIO
+
+class ProgressionStateUi(
+    private val consoleIO: ConsoleIO,
+    private val progressionStatesUseCases: ProgressionStatesUseCases
+) {
+    suspend fun manageStates(projectId: String) {
+        do {
+            val progressionStates = progressionStatesUseCases
+                .getProgressionStatesByProjectIdUseCase
+                .execute(projectId)
+
+            consoleIO.printer.printTitle("Select Option (1 to 4):")
+            consoleIO.printer.printOptions(ProgressionStateOptions.entries)
+            val inputStateOption = consoleIO.reader.readNumberFromUser()
+
+            when (inputStateOption) {
+                ProgressionStateOptions.CREATE.optionNumber -> {
+                    createProgressionState(projectId).also {
+                        consoleIO.printer.printCorrectOutput("created successful")
+                        return
+                    }
+                }
+                ProgressionStateOptions.EDIT.optionNumber -> editProgressionState(progressionStates)
+
+                ProgressionStateOptions.DELETE.optionNumber -> {
+                    deleteProgressionState(progressionStates)
+                        .also {
+                            consoleIO.printer.printCorrectOutput("State Deleted Successfully")
+                        }
+                }
+            }
+        } while (inputStateOption != ProgressionStateOptions.BACK.optionNumber &&
+            inputStateOption != ProgressionStateOptions.DELETE.optionNumber
+        )
+    }
+
+    private suspend fun createProgressionState(projectId: String) {
+        consoleIO.printer.printTitle("Create State.")
+
+        val stateName = receiveStringInput("Enter State Name : ")
+
+        return progressionStatesUseCases.createProgressionStateUseCase.execute(
+            ProgressionState(
+                name = stateName,
+                projectId = projectId
+            )
+        )
+    }
+
+    private suspend fun editProgressionState(progressionStates: List<ProgressionState>) {
+        consoleIO.printer.printTitle("Edit State")
+
+        consoleIO.printer.printOption(
+            progressionStates.map {
+                it.name
+            }.toString()
+        )
+
+        val inputProgressionState = consoleIO.reader.readStringFromUser()
+
+        consoleIO.printer.printTitle("Select your option (1) : ")
+
+        consoleIO.printer.printOptions(EditProgressionStateOptions.entries)
+        val inputEditOption = consoleIO.reader.readNumberFromUser()
+
+        val currentProgressionState = getProgressionState(inputProgressionState, progressionStates)
+        val progressionStateName = receiveStringInput("Enter New State Name : ")
+
+        when (inputEditOption) {
+            EditProgressionStateOptions.NAME.optionNumber -> {
+	            progressionStatesUseCases.updateProgressionStateUseCase.execute(
+                    updatedProgressionState = currentProgressionState.copy(
+						name = progressionStateName
+					)
+                )
+            }
+
+            else -> Exception("Invalid Input!")
+        }
+    }
+
+    private suspend fun deleteProgressionState(progressionStates: List<ProgressionState>) {
+        consoleIO.printer.printTitle("Delete State")
+
+        consoleIO.printer.printOption(
+            progressionStates.map {
+                it.name
+            }.toString()
+        )
+
+        val inputState = consoleIO.reader.readStringFromUser()
+
+
+        getProgressionStateId(inputState, progressionStates)
+	        .also { progressionStateId ->
+		        progressionStatesUseCases.deleteProgressionStateUseCase.execute(progressionStateId)
+	        }
+    }
+
+    suspend fun getProgressionStatesByProjectId(projectId: String):List<ProgressionState> {
+        return progressionStatesUseCases.getProgressionStatesByProjectIdUseCase.execute(projectId)
+    }
+
+
+    private fun receiveStringInput(message: String): String {
+        consoleIO.printer.printOption(message)
+        return consoleIO.reader.readStringFromUser()
+    }
+
+    private fun getProgressionStateId(inputStateName: String, progressionStates: List<ProgressionState>): String {
+        return progressionStates.first { it.name == inputStateName }.id
+    }
+
+    private fun getProgressionState(inputStateName: String, progressionStates: List<ProgressionState>): ProgressionState  {
+        return  progressionStates.first { it.name == inputStateName }
+    }
+}

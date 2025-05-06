@@ -8,11 +8,11 @@ import net.thechance.ui.options.project.ProjectOptions
 import ui.featuresui.*
 
 class ProjectOptionsHandler(
-    private val consoleIO: ConsoleIO,
-    private val projectsUi: ProjectsUi,
-    private val statesUi: StatesUi,
-    private val tasksUi: TasksUi,
-    private val auditLogUi: AuditLogUi,
+	private val consoleIO: ConsoleIO,
+	private val projectsUi: ProjectsUi,
+	private val progressionStateUi: ProgressionStateUi,
+	private val tasksUi: TasksUi,
+	private val auditLogUi: AuditLogUi,
 ) {
     private lateinit var project: Project
     fun handleAdmin(project: Project) {
@@ -27,7 +27,7 @@ class ProjectOptionsHandler(
             when (option) {
                 ProjectOptions.CREATE_TASK.optionNumber -> createTask()
                 ProjectOptions.EDIT.optionNumber -> projectsUi.editProject(project)
-                ProjectOptions.MANAGE_STATES.optionNumber -> statesUi.manageStates( project.id)
+                ProjectOptions.MANAGE_STATES.optionNumber -> progressionStateUi.manageStates( project.id)
                 ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
                 ProjectOptions.SHOW_HISTORY.optionNumber -> showHistory()
                 ProjectOptions.DELETE.optionNumber -> deleteProject()
@@ -53,7 +53,7 @@ class ProjectOptionsHandler(
     }
 
     private fun createTask() {
-        statesUi.getStates(project.id)
+        progressionStateUi.getProgressionStatesByProjectId(project.id)
             .onSuccess {states ->
                 if(states.isEmpty()){
                     consoleIO.printer.printError("please create state first")
