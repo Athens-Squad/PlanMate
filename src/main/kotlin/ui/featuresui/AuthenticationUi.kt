@@ -14,7 +14,7 @@ class AuthenticationUi(
     private val userSession: UserSession
 ) {
 
-    fun runAuthenticationUi(navigateAfterLoggedInSuccessfully: () -> Unit) {
+   suspend fun runAuthenticationUi(navigateAfterLoggedInSuccessfully: () -> Unit) {
         consoleIO.printer.printTitle("Select your option (1 or 2) : ")
         consoleIO.printer.printOptions(AuthenticationOptions.entries)
 
@@ -72,7 +72,7 @@ class AuthenticationUi(
         consoleIO.printer.printError(exception.message.toString())
     }
 
-    private fun login(): User {
+    private suspend fun login(): User {
         consoleIO.printer.printTitle("Login, Please Enter Your Info : ")
         val userName = receiveUserInfo("Enter Your Username : ")
         val password = receiveUserInfo("Enter Your Password : ")
@@ -80,7 +80,7 @@ class AuthenticationUi(
         return authenticationUseCases.loginUseCase.execute(userName, password)
     }
 
-    private fun registerAdmin() {
+    private suspend fun registerAdmin() {
         consoleIO.printer.printTitle("Signup, Please Enter Your Info : ")
         val userName = receiveUserInfo("Enter Your Username : ")
         val password = receiveUserInfo("Enter Your Password : ")
@@ -94,7 +94,7 @@ class AuthenticationUi(
         )
     }
 
-    fun createMate(adminName: String) {
+    suspend fun createMate(adminName: String) {
         consoleIO.printer.printTitle("Create Mate Account, Please Enter Mate's Info : ")
         val userName = receiveUserInfo("Enter Mate's Username : ")
         val password = receiveUserInfo("Enter Mate's Password : ")
@@ -109,7 +109,7 @@ class AuthenticationUi(
 
     }
 
-    private fun receiveUserInfo(message: String): String {
+   private  fun receiveUserInfo(message: String): String {
         consoleIO.printer.printOption(message)
         return consoleIO.reader.readStringFromUser()
     }

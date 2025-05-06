@@ -12,7 +12,7 @@ class RegisterAsMateUseCase(
     private val userValidator: UserValidator
 
 ) {
-    fun execute(mateUser: User) {
+    suspend fun execute(mateUser: User) {
       if (
            userValidator. isUsernameNotValid(mateUser.name) ||
            userValidator. isPasswordNotValid(mateUser.password) ||

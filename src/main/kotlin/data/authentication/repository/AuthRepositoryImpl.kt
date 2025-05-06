@@ -10,14 +10,14 @@ class AuthRepositoryImpl(
 
 ): AuthenticationRepository {
 
-    override fun login(username: String, password: String): User{
+    override suspend fun login(username: String, password: String): User{
         val users = getAllUsers()
        return users.find { user ->
             user.name == username && user.password == password
         } ?: throw UserNotFoundException()
     }
 
-    private fun getAllUsers(): List<User> {
+    private suspend fun getAllUsers(): List<User> {
         return usersFileDataSource.getAllUsers()
     }
 }

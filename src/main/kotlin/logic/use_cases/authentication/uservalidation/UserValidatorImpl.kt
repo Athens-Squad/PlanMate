@@ -6,30 +6,30 @@ import logic.repositories.UserRepository
 class UserValidatorImpl (
     private val userRepository: UserRepository
 ):UserValidator{
-    override fun isUsernameNotValid(username: String): Boolean {
+    override suspend fun isUsernameNotValid(username: String): Boolean {
       return  username.isEmpty() || username.trim().isEmpty()
 
     }
 
-    override fun isPasswordNotValid(password: String): Boolean {
+    override suspend fun isPasswordNotValid(password: String): Boolean {
         return password.length < 8 || password.length > 20
     }
 
-    override fun isTypeNotAdmin(userType: UserType): Boolean {
+    override suspend fun isTypeNotAdmin(userType: UserType): Boolean {
          return  userType is UserType.MateUser
     }
 
-    override fun isTypeNotMate(userType: UserType): Boolean {
+    override suspend fun isTypeNotMate(userType: UserType): Boolean {
             return userType is UserType.AdminUser
     }
 
-    override fun isMateAdminIdNotValid(userType: UserType): Boolean {
+    override suspend fun isMateAdminIdNotValid(userType: UserType): Boolean {
    return userType is UserType.MateUser && userType.adminName.trim().isEmpty()
 
 
     }
 
-    override fun userNameExist(username: String): Boolean {
+    override suspend fun userNameExist(username: String): Boolean {
          return try {
              userRepository.getUserByUsername(username)
              true
