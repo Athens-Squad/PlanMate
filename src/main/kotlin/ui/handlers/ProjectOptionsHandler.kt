@@ -27,8 +27,13 @@ class ProjectOptionsHandler(
             when (option) {
                 ProjectOptions.CREATE_TASK.optionNumber -> createTask()
                 ProjectOptions.EDIT.optionNumber -> projectsUi.editProject(project)
-                ProjectOptions.MANAGE_STATES.optionNumber -> statesUi.manageStates( project.id)
-                ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
+                ProjectOptions.MANAGE_STATES.optionNumber -> statesUi.manageStates(project.id)
+                ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(
+                    project.tasks,
+                    project.id,
+                    project.progressionStates
+                )
+
                 ProjectOptions.SHOW_HISTORY.optionNumber -> showHistory()
                 ProjectOptions.DELETE.optionNumber -> deleteProject()
             }
@@ -46,37 +51,41 @@ class ProjectOptionsHandler(
 
             when (option) {
                 ProjectMateOptions.CREATE_TASK.optionNumber -> createTask()
-                ProjectMateOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
+                ProjectMateOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(
+                    project.tasks,
+                    project.id,
+                    project.progressionStates
+                )
+
                 ProjectMateOptions.SHOW_HISTORY.optionNumber -> showHistory()
             }
         } while (option != ProjectMateOptions.BACK.optionNumber)
     }
 
     private fun createTask() {
-        statesUi.getStates(project.id)
-            .onSuccess {states ->
-                if(states.isEmpty()){
-                    consoleIO.printer.printError("please create state first")
-                    return
-                }
-                tasksUi.createTask(states, project.id)
-                    .onSuccess {
-                        consoleIO.printer.printCorrectOutput("Task Created Successfully.")
+        try {
+            statesUi.getStates(project.id)
+                .onSuccess { states ->
+                    if (states.isEmpty()) {
+                        consoleIO.printer.printError("please create state first")
+                        return
                     }
-                    .onFailure { consoleIO.printer.printError("Cannot Create the Task!") }
-            }
-            .onFailure {
-                consoleIO.printer.printError(it.message.toString())
-            }
+                    tasksUi.createTask(states, project.id)
+                    consoleIO.printer.printCorrectOutput("Task Created Successfully.")
+                }
+
+        } catch (exception: Exception) {
+            consoleIO.printer.printError(exception.message.toString())
+        }
     }
 
     private fun showHistory() {
         auditLogUi.getProjectHistory(project.id).onSuccess { history ->
-            if(history.isEmpty()){
+            if (history.isEmpty()) {
                 consoleIO.printer.printError("no history found")
                 return
             }
-            history.forEach { log->
+            history.forEach { log ->
                 consoleIO.printer.printInfoLine(log.toString())
             }
         }

@@ -13,16 +13,13 @@ class DeleteTaskUseCase(
     private val auditRepository: AuditRepository,
     private val taskValidator: TaskValidator
 ) {
-    fun execute(taskId: String, userName: String): Result<Unit> {
-        return runCatching {
-            taskValidator.doIfTaskExistsOrThrow(taskId) {
-                // Delete the task
-                taskRepository.deleteTask(taskId)
-                    .onSuccess {
-                        // Create an audit log for task deletion
-                        createLog(taskId, userName)
-                    }
-            }
+    fun execute(taskId: String, userName: String) {
+        taskValidator.doIfTaskExistsOrThrow(taskId) {
+            // Delete the task
+            taskRepository.deleteTask(taskId)
+
+            // Create an audit log for task deletion
+            createLog(taskId, userName)
         }
     }
 
@@ -34,6 +31,6 @@ class DeleteTaskUseCase(
             userName = userName,
             createdAt = LocalDateTime.now()
         )
-        auditRepository.createAuditLog(auditLog).getOrThrow()
+        auditRepository.createAuditLog(auditLog)
     }
 }

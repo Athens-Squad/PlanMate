@@ -3,15 +3,15 @@ package data.tasks.data_source
 import logic.entities.Task
 
 interface TasksDataSource {
-    fun createTask(task: Task): Result<Unit>
+    fun createTask(task: Task)
 
-    fun getTaskById(taskId: String): Result<Task>
+    fun getTaskById(taskId: String): Task
 
-    fun getTasksByProjectId(projectId: String): Result<List<Task>>
+    fun getTasksByProjectId(projectId: String): List<Task>
 
-    fun getAllTasks(): Result<List<Task>>
+    fun getAllTasks(): List<Task>
 
-    fun updateTask(updatedTask: Task): Result<Unit>
+    fun updateTask(updatedTask: Task)
 
-    fun deleteTask(taskId: String): Result<Unit>
+    fun deleteTask(taskId: String)
 }

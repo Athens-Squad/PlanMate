@@ -13,12 +13,12 @@ class StatesFileDataSourceTest{
 
   private val statesFileHandler: CsvFileHandler = mockk(relaxed = true)
   private val csvFileParser: CsvFileParser<ProgressionState> = mockk(relaxed = true)
- lateinit var  stateFileDataSource : StatesFileDataSource
+ lateinit var  stateFileDataSource : ProgressionStatesFileDataSource
 
   @BeforeEach
   fun setUp(){
 
-    stateFileDataSource = StatesFileDataSource(statesFileHandler , csvFileParser)
+    stateFileDataSource = ProgressionStatesFileDataSource(statesFileHandler , csvFileParser)
   }
 
  @Test
@@ -30,7 +30,7 @@ class StatesFileDataSourceTest{
   every { statesFileHandler.appendRecord(record) } returns Unit // Mock the append operation
 
   // When
-  val result = stateFileDataSource.createState(state)
+  val result = stateFileDataSource.createProgressionState(state)
 
   // Then
   assertEquals(Result.success(Unit), result)

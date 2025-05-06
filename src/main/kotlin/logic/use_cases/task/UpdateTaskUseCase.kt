@@ -15,22 +15,19 @@ class UpdateTaskUseCase(
     private val taskValidator: TaskValidator
 ) {
 
-    fun execute(updatedTask: Task, userName: String): Result<Unit> {
-        return runCatching {
-            //update only if task exists
-            taskValidator.doIfTaskExistsOrThrow(updatedTask.id) { task ->
+    fun execute(updatedTask: Task, userName: String) {
 
-                //validate updatedTask
-                taskValidator.validateTaskBeforeUpdating(task, updatedTask)
+        //update only if task exists
+        taskValidator.doIfTaskExistsOrThrow(updatedTask.id) { task ->
 
-                taskRepository.updateTask(updatedTask)
-                    .onSuccess {
+            //validate updatedTask
+            taskValidator.validateTaskBeforeUpdating(task, updatedTask)
 
-                        //create log
-                        createLog(updatedTask, userName)
+            taskRepository.updateTask(updatedTask)
 
-                    }
-            }
+            //create log
+            createLog(updatedTask, userName)
+
         }
     }
 
@@ -42,7 +39,7 @@ class UpdateTaskUseCase(
             userName = userName,
             createdAt = LocalDateTime.now()
         )
-        auditRepository.createAuditLog(auditLog).getOrThrow()
+        auditRepository.createAuditLog(auditLog)
     }
 
 }

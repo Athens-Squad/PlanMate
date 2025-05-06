@@ -6,8 +6,8 @@ import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
 import data.projects.ProjectsDataSource
 import data.projects.ProjectsFileDataSource
-import data.states.data_source.StatesDataSource
-import data.states.data_source.StatesFileDataSource
+import data.states.data_source.ProgressionStatesDataSource
+import data.states.data_source.ProgressionStatesFileDataSource
 import data.tasks.data_source.TasksDataSource
 import data.tasks.data_source.TasksFileDataSource
 import data.user.data_source.UsersDataSource
@@ -65,8 +65,8 @@ val dataSourceModule  = module {
     single(named("stateCsvFile")) { File("data_files/states.csv") }
     single(named("statesFileHandler")) { CsvFileHandler(get(named("stateCsvFile"))) }
     single(named("statesFileParser")) { CsvFileParser(factory = ProgressionState.Companion::fromCsv) }
-    single<StatesDataSource> {
-        StatesFileDataSource(
+    single<ProgressionStatesDataSource> {
+        ProgressionStatesFileDataSource(
             statesFileHandler = get(named("statesFileHandler")),
             csvFileParser = get(named("statesFileParser"))
         )

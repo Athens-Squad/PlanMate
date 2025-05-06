@@ -2,9 +2,9 @@ package data.states.data_source
 
 import logic.entities.ProgressionState
 
-interface StatesDataSource {
+interface ProgressionStatesDataSource {
 
-    fun createState(progressionState: ProgressionState): Result<Unit>
+    fun createProgressionState(progressionState: ProgressionState): Result<Unit>
 
     fun updateState(progressionState: ProgressionState): Result<Unit>
 

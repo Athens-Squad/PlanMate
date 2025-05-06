@@ -11,25 +11,26 @@ class TaskValidatorImpl(
     private val tasksRepository: TasksRepository,
     private val projectsRepository: ProjectsRepository,
     private val statesRepository: StatesRepository
-): TaskValidator {
+) : TaskValidator {
     override fun doIfTaskExistsOrThrow(taskId: String, action: (Task) -> Unit) {
-        tasksRepository.getTaskById(taskId)
-            .onSuccess {
-                action(it)
-            }
-            .onFailure {
-                throw TasksException.CannotCompleteTaskOperationException("Cannot find the task!")
-            }
+        try {
+            val task = tasksRepository.getTaskById(taskId)
+            action(task)
+        } catch (_: Exception) {
+            throw TasksException.CannotCompleteTaskOperationException("Cannot find the task!")
+        }
+
     }
 
     override fun doIfTaskNotExistsOrThrow(task: Task, action: () -> Unit) {
-        tasksRepository.getTaskById(task.id)
-            .onFailure {
-                action()
-            }
-            .onSuccess {
-                throw TasksException.CannotCompleteTaskOperationException("There is existing task with same id")
-            }
+        try {
+            tasksRepository.getTaskById(task.id)
+            throw TasksException.CannotCompleteTaskOperationException("There is existing task with same id")
+
+        } catch (_: Exception) {
+            action()
+        }
+
     }
 
     override fun validateTaskBeforeCreation(task: Task) {
@@ -70,7 +71,8 @@ class TaskValidatorImpl(
 
     private fun validateTaskTitleExists(task: Task) {
         //Check if the task exists in the repository
-        val taskExists = tasksRepository.getTasksByProjectId(task.projectId).getOrThrow()
+
+        val taskExists = tasksRepository.getTasksByProjectId(task.projectId)
             .find { it.title == task.title } != null
         if (taskExists) {
             throw TasksException.InvalidTaskException("Task with the same title already exist in this project.")

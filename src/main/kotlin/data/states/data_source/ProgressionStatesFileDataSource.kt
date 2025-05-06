@@ -4,11 +4,11 @@ import data.csv_file_handle.CsvFileParser
 import logic.entities.ProgressionState
 
 
-class StatesFileDataSource(
+class ProgressionStatesFileDataSource(
     private val statesFileHandler: CsvFileHandler,
     private val csvFileParser: CsvFileParser<ProgressionState>
-) : StatesDataSource {
-    override fun createState(progressionState: ProgressionState): Result<Unit> {
+) : ProgressionStatesDataSource {
+    override fun createProgressionState(progressionState: ProgressionState): Result<Unit> {
         return runCatching {
 
             val record = csvFileParser.toCsvRecord(progressionState)

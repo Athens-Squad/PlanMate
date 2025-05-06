@@ -16,60 +16,54 @@ class TasksUi(
     private val session: UserSession
 ) {
     fun manageTasks(tasks: MutableList<Task>, projectId: String, progressionStates: List<ProgressionState>) {
-        do {
-            consoleIO.printer.printTitle("Select A Task :")
-            var inputTaskName = consoleIO.reader.readStringFromUser()
-            getTaskId(inputTaskName, tasks)
-                .onSuccess { taskId ->
-                    tasksUseCases.getTaskByIdUseCase.execute(taskId)
-                        .onSuccess { task ->
-                            consoleIO.printer.printPlainText(task.toString())
-                            handleTaskOptions(task, projectId, progressionStates)
-                        }
-                        .onFailure {
-                            consoleIO.printer.printError(it.message.toString())
-                        }
-                }
-                .onFailure {
-                    consoleIO.printer.printError(it.message.toString())
-                }
-            consoleIO.printer.printOption("0 : Back")
-            inputTaskName = consoleIO.reader.readStringFromUser()
+        try {
+            do {
+                consoleIO.printer.printTitle("Select A Task :")
+                var inputTaskName = consoleIO.reader.readStringFromUser()
+                val taskId = getTaskId(inputTaskName, tasks)
+                val task = tasksUseCases.getTaskByIdUseCase.execute(taskId)
+                consoleIO.printer.printPlainText(task.toString())
+                handleTaskOptions(task, projectId, progressionStates)
 
-        } while (inputTaskName != "0")
+                consoleIO.printer.printOption("0 : Back")
+                inputTaskName = consoleIO.reader.readStringFromUser()
+
+            } while (inputTaskName != "0")
+        } catch (exception: Exception) {
+            consoleIO.printer.printError(exception.message.toString())
+        }
 
     }
 
     private fun handleTaskOptions(task: Task, projectId: String, progressionStates: List<ProgressionState>) {
-        do {
-            consoleIO.printer.printTitle("Select Option (1 to 4):")
-            consoleIO.printer.printOptions(TaskOptions.entries)
+        try {
+            do {
+                consoleIO.printer.printTitle("Select Option (1 to 4):")
+                consoleIO.printer.printOptions(TaskOptions.entries)
 
-            val inputTaskOption = consoleIO.reader.readNumberFromUser()
+                val inputTaskOption = consoleIO.reader.readNumberFromUser()
 
-            when (inputTaskOption) {
-                TaskOptions.EDIT.optionNumber -> editTask(progressionStates, task, projectId)
-                TaskOptions.SHOW_HISTORY.optionNumber -> {
-                    auditLogUi.getTaskHistory(task.id)
-                    auditLogUi.showHistoryOption()
+                when (inputTaskOption) {
+                    TaskOptions.EDIT.optionNumber -> editTask(progressionStates, task, projectId)
+                    TaskOptions.SHOW_HISTORY.optionNumber -> {
+                        auditLogUi.getTaskHistory(task.id)
+                        auditLogUi.showHistoryOption()
+                    }
+
+                    TaskOptions.DELETE.optionNumber -> {
+                        deleteTask(task)
+                        consoleIO.printer.printCorrectOutput("Task Deleted Successfully")
+                    }
                 }
-
-                TaskOptions.DELETE.optionNumber -> {
-                    deleteTask(task)
-                        .onSuccess {
-                            consoleIO.printer.printCorrectOutput("Task Deleted Successfully")
-                        }
-                        .onFailure {
-                            consoleIO.printer.printError(it.message.toString())
-                        }
-                }
-            }
-        } while (inputTaskOption != TaskOptions.BACK.optionNumber ||
-            inputTaskOption != TaskOptions.DELETE.optionNumber
-        )
+            } while (inputTaskOption != TaskOptions.BACK.optionNumber ||
+                inputTaskOption != TaskOptions.DELETE.optionNumber
+            )
+        } catch (exception: Exception) {
+            consoleIO.printer.printError(exception.message.toString())
+        }
     }
 
-    fun createTask(progressionStates: List<ProgressionState>, projectId: String): Result<Unit> {
+    fun createTask(progressionStates: List<ProgressionState>, projectId: String) {
         consoleIO.printer.printTitle("Create Task")
         val taskName = receiveStringInput("Enter Task Name : ")
         val taskDescription = receiveStringInput("Enter Task Description : ")
@@ -84,7 +78,7 @@ class TasksUi(
         val inputTaskState = consoleIO.reader.readStringFromUser()
 
         val state = progressionStates.first { it.name == inputTaskState }
-        return tasksUseCases.createTaskUseCase.execute(
+        tasksUseCases.createTaskUseCase.execute(
             Task(
                 title = taskName,
                 description = taskDescription,
@@ -95,7 +89,7 @@ class TasksUi(
         )
     }
 
-    private fun editTask(progressionStates: List<ProgressionState>, task: Task, projectId: String): Result<Unit> {
+    private fun editTask(progressionStates: List<ProgressionState>, task: Task, projectId: String) {
         consoleIO.printer.printTitle("Edit Task")
 
         consoleIO.printer.printTitle("Select your option (1 to 3) : ")
@@ -104,7 +98,7 @@ class TasksUi(
 
         val inputEditOption = consoleIO.reader.readNumberFromUser()
 
-        return when (inputEditOption) {
+        when (inputEditOption) {
             EditTaskOptions.NAME.optionNumber -> editTaskName(task)
             EditTaskOptions.DESCRIPTION.optionNumber -> editTaskDescription(task)
             EditTaskOptions.PROGRESSION_STATE.optionNumber -> editTaskProgressionState(
@@ -113,7 +107,7 @@ class TasksUi(
                 projectId
             )
 
-            else -> Result.failure(Exception("Invalid Input!"))
+            else -> throw IllegalArgumentException("Invalid input: $inputEditOption")
         }
     }
 
@@ -121,7 +115,7 @@ class TasksUi(
         task: Task,
         progressionStates: List<ProgressionState>,
         projectId: String
-    ): Result<Unit> {
+    ) {
 
         consoleIO.printer.printTitle("Select Your Task Progression State")
 
@@ -133,7 +127,7 @@ class TasksUi(
 
         val taskState = receiveStringInput("Enter New Task State : ")
 
-        return tasksUseCases
+        tasksUseCases
             .updateTaskUseCase
             .execute(
                 task.copy(
@@ -146,10 +140,11 @@ class TasksUi(
             )
     }
 
-    private fun editTaskDescription(task: Task): Result<Unit> {
+
+    private fun editTaskDescription(task: Task) {
         val taskDescription = receiveStringInput("Enter New Task Description : ")
 
-        return tasksUseCases
+        tasksUseCases
             .updateTaskUseCase
             .execute(
                 task.copy(description = taskDescription),
@@ -157,10 +152,10 @@ class TasksUi(
             )
     }
 
-    private fun editTaskName(task: Task): Result<Unit> {
+    private fun editTaskName(task: Task) {
         val taskName = receiveStringInput("Enter New Task Name : ")
 
-        return tasksUseCases
+        tasksUseCases
             .updateTaskUseCase
             .execute(
                 task.copy(title = taskName),
@@ -169,8 +164,8 @@ class TasksUi(
 
     }
 
-    private fun deleteTask(task: Task): Result<Unit> {
-        return tasksUseCases
+    private fun deleteTask(task: Task) {
+        tasksUseCases
             .deleteTaskUseCase
             .execute(
                 taskId = task.id,
@@ -179,10 +174,9 @@ class TasksUi(
     }
 
 
-    private fun getTaskId(inputTaskName: String, tasks: List<Task>): Result<String> {
-        return runCatching {
-            tasks.first { it.title == inputTaskName }.id
-        }
+    private fun getTaskId(inputTaskName: String, tasks: List<Task>): String {
+        return tasks.first { it.title == inputTaskName }.id
+
     }
 
     private fun receiveStringInput(message: String): String {
