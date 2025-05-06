@@ -14,7 +14,6 @@ import org.koin.java.KoinJavaComponent.getKoin
 fun main()
 
 {
-    runBlocking {
         startKoin {
             modules(appModule, repositoriesModule, useCasesModule, uiModule, dataSourceModule)
         }
@@ -22,5 +21,5 @@ fun main()
 
         val cli = getKoin().get<PlanMateCli>()
         cli.run()
-    }
+
 }
