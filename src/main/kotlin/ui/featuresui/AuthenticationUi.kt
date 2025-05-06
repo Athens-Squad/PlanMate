@@ -1,5 +1,6 @@
 package ui.featuresui
 
+import kotlinx.coroutines.*
 import logic.entities.User
 import logic.use_cases.authentication.AuthenticationUseCases
 import logic.entities.UserType
@@ -13,48 +14,22 @@ class AuthenticationUi(
     private val authenticationUseCases: AuthenticationUseCases,
     private val userSession: UserSession
 ) {
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        consoleIO.printer.printError("Unexpected error: ${throwable.message}")
+    }
 
-   suspend fun runAuthenticationUi(navigateAfterLoggedInSuccessfully: () -> Unit) {
+    private val authScope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
+
+  fun runAuthenticationUi(navigateAfterLoggedInSuccessfully: () -> Unit) {
         consoleIO.printer.printTitle("Select your option (1 or 2) : ")
         consoleIO.printer.printOptions(AuthenticationOptions.entries)
 
         try {
             val userInput = consoleIO.reader.readNumberFromUser()
             when (userInput) {
-                AuthenticationOptions.LOGIN.optionNumber -> {
+                AuthenticationOptions.LOGIN.optionNumber -> handleLogin (navigateAfterLoggedInSuccessfully)
 
-                    try {
-                        val user = login()
-
-                        userSession.currentUser = user
-                        consoleIO.printer.printCorrectOutput("Logged in Successfully.")
-                        navigateAfterLoggedInSuccessfully()
-                    } catch (e: Exception) {
-                        handleException(e)
-                        runAuthenticationUi(navigateAfterLoggedInSuccessfully)
-                    }
-                }
-
-                AuthenticationOptions.REGISTER_AS_ADMIN.optionNumber -> {
-
-                    try {
-                        registerAdmin()
-                        consoleIO.printer.printCorrectOutput("Registered Successfully.")
-
-                        try {
-                            val user = login()
-
-                            userSession.currentUser = user
-                            navigateAfterLoggedInSuccessfully()
-                        } catch (e: Exception) {
-                            handleException(e)
-                            runAuthenticationUi(navigateAfterLoggedInSuccessfully)
-                        }
-                    } catch (e: Exception) {
-                        handleException(e)
-                        runAuthenticationUi(navigateAfterLoggedInSuccessfully)
-                    }
-                }
+                AuthenticationOptions.REGISTER_AS_ADMIN.optionNumber -> handleRegisterAndLogin(navigateAfterLoggedInSuccessfully)
 
                 else -> {
                     consoleIO.printer.printError("Invalid Input, Please Try Again!")
@@ -66,6 +41,34 @@ class AuthenticationUi(
             runAuthenticationUi { navigateAfterLoggedInSuccessfully() }
         }
     }
+
+    private fun handleLogin(navigate: () -> Unit) {
+        authScope.launch {
+            try {
+                val user = login()
+                userSession.currentUser = user
+                consoleIO.printer.printCorrectOutput("Logged in Successfully.")
+                navigate()
+            } catch (e: Exception) {
+                handleException(e)
+                runAuthenticationUi(navigate)
+            }
+        }
+    }
+
+    private fun handleRegisterAndLogin(navigate: () -> Unit) {
+        authScope.launch {
+            try {
+                registerAdmin()
+                consoleIO.printer.printCorrectOutput("Registered Successfully.")
+                handleLogin(navigate)
+            } catch (e: Exception) {
+                handleException(e)
+                runAuthenticationUi(navigate)
+            }
+        }
+    }
+
 
 
     private fun handleException(exception: Throwable) {
