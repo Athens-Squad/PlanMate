@@ -1,11 +1,11 @@
 package logic.entities
 
-import data.aduit_log_csvfile.utils.AuditLogColumnIndex.CREATEDAT
-import data.aduit_log_csvfile.utils.AuditLogColumnIndex.ENTITYID
-import data.aduit_log_csvfile.utils.AuditLogColumnIndex.ENTITYTYPE
-import data.aduit_log_csvfile.utils.AuditLogColumnIndex.USERNAME
-import data.aduit_log_csvfile.utils.AuditLogColumnIndex.DESCRIPTION
-import data.aduit_log_csvfile.utils.AuditLogColumnIndex.ID
+import net.thechance.data.aduit_log.utils.AuditLogColumnIndex.CREATEDAT
+import net.thechance.data.aduit_log.utils.AuditLogColumnIndex.ENTITYID
+import net.thechance.data.aduit_log.utils.AuditLogColumnIndex.ENTITYTYPE
+import net.thechance.data.aduit_log.utils.AuditLogColumnIndex.USERNAME
+import net.thechance.data.aduit_log.utils.AuditLogColumnIndex.DESCRIPTION
+import net.thechance.data.aduit_log.utils.AuditLogColumnIndex.ID
 import logic.CsvSerializable
 import java.time.LocalDateTime
 import java.util.UUID

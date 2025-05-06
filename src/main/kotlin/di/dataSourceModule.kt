@@ -1,19 +1,22 @@
 package net.thechance.di
 
-import data.aduit_log_csvfile.data_source.AuditLogDataSource
-import data.aduit_log_csvfile.data_source.AuditLogFileDataSource
+import com.mongodb.kotlin.client.coroutine.MongoCollection
+import net.thechance.data.aduit_log.data_source.AuditLogDataSource
 import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
-import data.projects.ProjectsDataSource
-import data.projects.ProjectsFileDataSource
-import data.states.data_source.StatesDataSource
-import data.states.data_source.StatesFileDataSource
+import data.progression_state.data_source.ProgressionStateDataSource
+import data.progression_state.data_source.database.ProgressionStateDatabaseDataSource
 import data.tasks.data_source.TasksDataSource
 import data.tasks.data_source.TasksFileDataSource
 import data.user.data_source.UsersDataSource
 import data.user.data_source.UsersFileDataSource
 import logic.entities.*
+import net.thechance.data.aduit_log.data_source.MongoAuditLogDataSource
+import net.thechance.data.aduit_log.dto.AuditLogDto
 import net.thechance.data.authentication.UserSession
+import net.thechance.data.progression_state.dto.ProgressionStateDto
+import net.thechance.data.projects.datasource.ProjectsDataSource
+import net.thechance.data.projects.datasource.localcsvfile.ProjectsFileDataSource
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
@@ -44,10 +47,7 @@ val dataSourceModule  = module {
     single(named("AuditLogFileHandler")) { CsvFileHandler(get(named("auditLogCsvFile"))) }
     single(named("AuditLogFileParser")) { CsvFileParser(factory = AuditLog.Companion::fromCsv) }
     single<AuditLogDataSource> {
-        AuditLogFileDataSource(
-            auditLogFileHandler = get(named("AuditLogFileHandler")),
-            csvFileParser = get(named("AuditLogFileParser"))
-        )
+        MongoAuditLogDataSource(get<MongoCollection<AuditLogDto>>())
     }
 
     single(named("projectsCsvFile")) { File("data_files/projects.csv") }
@@ -62,13 +62,12 @@ val dataSourceModule  = module {
         )
     }
 
-    single(named("stateCsvFile")) { File("data_files/states.csv") }
-    single(named("statesFileHandler")) { CsvFileHandler(get(named("stateCsvFile"))) }
-    single(named("statesFileParser")) { CsvFileParser(factory = ProgressionState.Companion::fromCsv) }
-    single<StatesDataSource> {
-        StatesFileDataSource(
-            statesFileHandler = get(named("statesFileHandler")),
-            csvFileParser = get(named("statesFileParser"))
-        )
-    }
+	single(named("progressionStatesCsvFile")) { File("data_files/progression_states.csv") }
+	single(named("progressionStatesFileHandler")) { CsvFileHandler(get(named("stateCsvFile"))) }
+	single(named("progressionStatesFileParser")) { CsvFileParser(factory = ProgressionStateDto.Companion::fromCsv) }
+	single<ProgressionStateDataSource> {
+		ProgressionStateDatabaseDataSource(
+			progressionStatesDocument = get()
+		)
+	}
 }

@@ -3,11 +3,11 @@ package logic.use_cases.task.taskvalidations
 import logic.entities.Task
 
 interface TaskValidator {
-    fun doIfTaskExistsOrThrow(taskId: String, action: (Task) -> Unit)
+    suspend fun doIfTaskExistsOrThrow(taskId: String, action: suspend (Task) -> Unit)
 
-    fun doIfTaskNotExistsOrThrow(task: Task, action: () -> Unit)
+    suspend fun doIfTaskNotExistsOrThrow(task: Task, action: suspend () -> Unit)
 
-    fun validateTaskBeforeCreation(task: Task)
+    suspend fun validateTaskBeforeCreation(task: Task)
 
-    fun validateTaskBeforeUpdating(task: Task, updatedTask: Task)
+    suspend fun validateTaskBeforeUpdating(task: Task, updatedTask: Task)
 }

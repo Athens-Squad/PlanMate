@@ -22,7 +22,7 @@ val uiModule = module {
 
     singleOf(::AuditLogUi)
     singleOf(::ProjectsUi)
-    singleOf(::StatesUi)
+    singleOf(::ProgressionStateUi)
     singleOf(::TasksUi)
     singleOf(::AuthenticationUi)
 

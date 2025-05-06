@@ -16,31 +16,26 @@ class DeleteProjectUseCase(
     private val userRepository: UserRepository,
     private val auditRepository: AuditRepository
 ) {
-    fun execute(projectId: String, username: String): Result<Unit> {
-        return runCatching {
+    suspend fun execute(projectId: String, username: String) {
+        username.apply {
+            checkIfFieldIsValid().takeIf { it } ?: throw InvalidUsernameForProjectException()
+            checkIfUserAuthorized(username) { userRepository.getUserByUsername(it) }
+                .takeIf { it } ?: throw NotAuthorizedUserException()
+        }
 
-            username.apply {
-                checkIfFieldIsValid().takeIf { it } ?: throw InvalidUsernameForProjectException()
-                checkIfUserAuthorized(username) { userRepository.getUserByUsername(it) }
-                    .takeIf { it } ?: throw NotAuthorizedUserException()
-            }
+        projectId.checkIfFieldIsValid().takeIf { it } ?: throw NoProjectFoundException()
+        val project = checkIfProjectExistInRepositoryAndReturn(projectId) { projectRepository.getProjects() }
+            ?: throw NoProjectFoundException()
 
-            projectId.checkIfFieldIsValid().takeIf { it } ?: throw NoProjectFoundException()
-            val project = checkIfProjectExistInRepositoryAndReturn(projectId) { projectRepository.getProjects() }
-                ?: throw NoProjectFoundException()
+        checkIfUserIsProjectOwner(username, project.createdBy).takeIf { it }
+            ?: throw NotAuthorizedUserException()
 
-            checkIfUserIsProjectOwner(username, project.createdBy).takeIf { it }
-                ?: throw NotAuthorizedUserException()
-
-            projectRepository.deleteProject(projectId)
-                .onSuccess {
-                    createLog(
-                        project = project,
-                        logMessage = "Project deleted successfully."
-                    ) {
-                        auditRepository.createAuditLog(it).getOrThrow()
-                    }
-                }
+        projectRepository.deleteProject(projectId)
+        createLog(
+            project = project,
+            logMessage = "Project deleted successfully."
+        ) {
+            auditRepository.createAuditLog(it)
         }
     }
 }

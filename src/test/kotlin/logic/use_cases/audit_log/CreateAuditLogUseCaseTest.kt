@@ -1,29 +1,31 @@
 package logic.use_cases.audit_log
 
 import com.google.common.truth.Truth.assertThat
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import logic.entities.AuditLog
 import logic.repositories.AuditRepository
 import logic.entities.EntityType
-import org.junit.jupiter.api.BeforeEach
-import java.time.LocalDateTime
+import kotlin.test.BeforeTest
 import kotlin.test.Test
-import io.mockk.*
+import kotlin.test.assertFailsWith
+import java.time.LocalDateTime
 
 class CreateAuditLogUseCaseTest {
 
     private lateinit var auditRepository: AuditRepository
     private lateinit var createAuditLogUseCase: CreateAuditLogUseCase
 
-    @BeforeEach
+    @BeforeTest
     fun setUp() {
         auditRepository = mockk()
         createAuditLogUseCase = CreateAuditLogUseCase(auditRepository)
     }
 
     @Test
-    fun ` create audit log successfully`() {
+    fun `create audit log successfully`() = runTest {
         val auditLog = AuditLog(
             id = "AUD-001",
             entityType = EntityType.TASK,
@@ -33,17 +35,15 @@ class CreateAuditLogUseCaseTest {
             createdAt = LocalDateTime.of(2025, 4, 28, 20, 0)
         )
 
-        every { auditRepository.createAuditLog(auditLog) } returns Result.success(Unit)
+        coEvery { auditRepository.createAuditLog(auditLog) } returns Unit
 
-        val result = createAuditLogUseCase.execute(auditLog)
-        assertThat(result.isSuccess).isTrue()
-        verify(exactly = 1) { auditRepository.createAuditLog(auditLog) }
+        createAuditLogUseCase.execute(auditLog)
 
+        coVerify(exactly = 1) { auditRepository.createAuditLog(auditLog) }
     }
 
     @Test
-    fun `createAuditLog not create audit log when description is missing`() {
-        //given
+    fun `should not create audit log when description is missing`() = runTest {
         val invalidAuditLog = AuditLog(
             entityType = EntityType.TASK,
             entityId = "TASK-001",
@@ -52,16 +52,13 @@ class CreateAuditLogUseCaseTest {
             createdAt = LocalDateTime.of(2025, 4, 28, 9, 0)
         )
 
-        // when
-        every { auditRepository.createAuditLog(invalidAuditLog) } returns Result.success(Unit)
-
-        // then
         createAuditLogUseCase.execute(invalidAuditLog)
-        verify(exactly = 0) { auditRepository.createAuditLog(invalidAuditLog) }
+
+        coVerify(exactly = 0) { auditRepository.createAuditLog(any()) }
     }
+
     @Test
-    fun `createAuditLog not create audit log when entityId is missing`() {
-        //given
+    fun `should not create audit log when entityId is missing`() = runTest {
         val invalidAuditLog = AuditLog(
             entityType = EntityType.TASK,
             entityId = "",
@@ -70,16 +67,13 @@ class CreateAuditLogUseCaseTest {
             createdAt = LocalDateTime.of(2025, 4, 28, 9, 0)
         )
 
-        // when
-        every { auditRepository.createAuditLog(invalidAuditLog) } returns Result.success(Unit)
-
-        // then
         createAuditLogUseCase.execute(invalidAuditLog)
-        verify(exactly = 0) { auditRepository.createAuditLog(invalidAuditLog) }
+
+        coVerify(exactly = 0) { auditRepository.createAuditLog(any()) }
     }
+
     @Test
-    fun `createAuditLog not create log when  userId is missing`() {
-        //given
+    fun `should not create audit log when userName is missing`() = runTest {
         val invalidAuditLog = AuditLog(
             entityType = EntityType.TASK,
             entityId = "TASK-001",
@@ -88,17 +82,13 @@ class CreateAuditLogUseCaseTest {
             createdAt = LocalDateTime.of(2025, 4, 28, 9, 0)
         )
 
-        // when
-        every { auditRepository.createAuditLog(invalidAuditLog) } returns Result.success(Unit)
-
-        // then
         createAuditLogUseCase.execute(invalidAuditLog)
-        verify(exactly = 0) { auditRepository.createAuditLog(invalidAuditLog) }
+
+        coVerify(exactly = 0) { auditRepository.createAuditLog(any()) }
     }
 
     @Test
-    fun `should return false when audit repository throws exception`() {
-        // Given:
+    fun `should throw exception when repository fails`() = runTest {
         val auditLog = AuditLog(
             id = "AUD-002",
             entityType = EntityType.PROJECT,
@@ -108,11 +98,13 @@ class CreateAuditLogUseCaseTest {
             createdAt = LocalDateTime.of(2025, 4, 28, 10, 0)
         )
 
-        every { auditRepository.createAuditLog(auditLog) } throws RuntimeException("Failed to create audit log")
-        // When:
-        val result = createAuditLogUseCase.execute(auditLog)
-        // Then:
-        assertThat(result.isFailure).isTrue()
-        verify(exactly = 1) { auditRepository.createAuditLog(auditLog) }
+        coEvery { auditRepository.createAuditLog(auditLog) } throws RuntimeException("Failed to create audit log")
+
+        val exception = assertFailsWith<RuntimeException> {
+            createAuditLogUseCase.execute(auditLog)
+        }
+
+        assertThat(exception.message).isEqualTo("Failed to create audit log")
+        coVerify(exactly = 1) { auditRepository.createAuditLog(auditLog) }
     }
 }
