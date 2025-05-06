@@ -1,15 +1,19 @@
 package logic.use_cases.progression_state
 
 
+import logic.entities.ProgressionState
 import logic.repositories.ProgressionStateRepository
-import logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
+import net.thechance.logic.use_cases.progression_state.progressionStateValidations.UseCaseValidator
 
 class DeleteProgressionStateUseCase(
 	private val repository: ProgressionStateRepository,
-	private val progressionStateValidator: ProgressionStateValidator
+	private val progressionStateValidator: UseCaseValidator<ProgressionState>
 ) {
-    suspend fun execute(progressionStateId: String) {
-        progressionStateValidator.progressionStateIsExist(progressionStateId)
-        repository.deleteProgressionState(progressionStateId)
-    }
+	suspend fun execute(progressionStateId: String) {
+		progressionStateValidator
+			.validateAfterCreation(progressionStateId)
+			?.let { throw it }
+
+		repository.deleteProgressionState(progressionStateId)
+	}
 }
