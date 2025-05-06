@@ -5,7 +5,7 @@ import logic.repositories.TasksRepository
 
 
 class GetTaskByIdUseCase(private val taskRepository: TasksRepository) {
-    fun execute(taskId: String): Result<Task> {
+    suspend fun execute(taskId: String): Task {
         return taskRepository.getTaskById(taskId)
     }
 }

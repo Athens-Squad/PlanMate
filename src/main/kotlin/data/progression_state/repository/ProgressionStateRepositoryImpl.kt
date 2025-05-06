@@ -12,13 +12,13 @@ class ProgressionStateRepositoryImpl(
 ): ProgressionStateRepository {
 	override suspend fun createProgressionState(progressionState: ProgressionState) {
 		progressionStateDataSource.createProgressionState(
-			progressionState = progressionState.toProgressionStateDto()
+			progressionState = progressionState
 		)
 	}
 
 	override suspend fun updateProgressionState(progressionState: ProgressionState) {
 		progressionStateDataSource.updateProgressionState(
-			progressionState = progressionState.toProgressionStateDto()
+			progressionState = progressionState
 		)
 	}
 
@@ -29,11 +29,11 @@ class ProgressionStateRepositoryImpl(
 	}
 
 	override suspend fun getProgressionStates(): List<ProgressionState> {
-		return progressionStateDataSource.getProgressionStates().map { it.toProgressionState() }
+		return progressionStateDataSource.getProgressionStates().map { it }
 	}
 
 	override suspend fun getProgressionStatesByProjectId(projectId: String): List<ProgressionState> {
-		return progressionStateDataSource.getProgressionStatesByProjectId(projectId).map { it.toProgressionState() }
+		return progressionStateDataSource.getProgressionStatesByProjectId(projectId).map { it }
 	}
 
 }

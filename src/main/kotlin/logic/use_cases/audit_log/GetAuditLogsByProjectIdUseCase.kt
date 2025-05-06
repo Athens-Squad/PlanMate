@@ -6,16 +6,13 @@ import logic.entities.EntityType
 
 
 class GetAuditLogsByProjectIdUseCase(private val auditRepository: AuditRepository) {
-    fun execute(projectId: String):Result< List<AuditLog>> {
+    fun execute(projectId: String): List<AuditLog> {
         if (projectId.isBlank()) {
-            return Result.success(emptyList())
+            return emptyList()
         }
 
-        return runCatching {
-            auditRepository.getAuditLogs().getOrThrow()
-                .filter { it.entityType == EntityType.PROJECT && it.entityId == projectId }
-        }.recoverCatching {
-            emptyList()
-        }
+        return auditRepository.getAuditLogs()
+            .filter { it.entityType == EntityType.PROJECT && it.entityId == projectId }
     }
-    }
+
+}

@@ -10,7 +10,7 @@ class ProgressionProgressionStateValidationImp(
 ) : ProgressionStateValidator {
 
     override suspend fun validateProjectExists(projectId: String) {
-        projectsRepository.getProjects().getOrNull()?.find { it.id == projectId }
+        projectsRepository.getProjects().find { it.id == projectId }
             ?: throw IllegalArgumentException("Project with ID $projectId does not exist.")
     }
 

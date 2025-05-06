@@ -2,15 +2,11 @@ package logic.use_cases.project.projectValidations
 
 import logic.entities.*
 
-fun checkIfUserAuthorized(userName: String, action: (username: String) -> Result<User>): Boolean {
-    return action(userName).fold(
-        onSuccess = { user ->
-            user.type == UserType.AdminUser
-        },
-        onFailure = {
-            false
-        }
-    )
+suspend fun checkIfUserAuthorized(
+    userName: String,
+    action: suspend (username: String) -> User
+): Boolean {
+    return action(userName).type == UserType.AdminUser
 }
 
 fun String.checkIfFieldIsValid(): Boolean {
@@ -21,15 +17,16 @@ fun checkIfUserIsProjectOwner(username: String, projectOwner: String): Boolean {
     return username == projectOwner
 }
 
-fun checkIfProjectAlreadyExistInRepository(projectId: String, action: (projectId: String) -> Result<List<Project>>): Boolean {
-    return action(projectId).fold(
-        onSuccess = { projects -> projects.none { it.id == projectId } },
-        onFailure = { false }
-    )
+suspend fun checkIfProjectAlreadyExistInRepository(
+    projectId: String,
+    action: suspend (projectId: String) -> List<Project>
+): Boolean {
+    return action(projectId).none { it.id == projectId }
 }
-fun checkIfProjectExistInRepositoryAndReturn(projectId: String, action: (projectId: String) -> Result<List<Project>>): Project? {
-    return action(projectId).fold(
-        onSuccess = { projects -> projects.firstOrNull { it.id == projectId } },
-        onFailure = { null }
-    )
+
+suspend fun checkIfProjectExistInRepositoryAndReturn(
+    projectId: String,
+    action: suspend (projectId: String) -> List<Project>
+): Project? {
+    return action(projectId).firstOrNull { it.id == projectId }
 }

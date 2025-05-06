@@ -8,7 +8,7 @@ fun createUser(
     id: String = "1",
     username: String = "Malak",
     password: String = "123Password",
-    userType : UserType = UserType.MateUser(adminId = "12")
+    userType : UserType = UserType.MateUser(adminName = "12")
 ) = User(
     id = id,
     name = username,

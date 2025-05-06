@@ -1,60 +1,61 @@
 package net.thechance.ui.utils
 
+import kotlinx.coroutines.*
 import logic.entities.Project
 import logic.entities.UserType
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.handlers.ProjectOptionsHandler
 import ui.featuresui.ProjectsUi
-import ui.featuresui.TasksUi
 import ui.io.ConsoleIO
 
 class ProjectSelector(
     private val consoleIO: ConsoleIO,
     private val projectsUi: ProjectsUi,
-    private val tasksUi: TasksUi,
     private val projectOptionsHandler: ProjectOptionsHandler,
     private val showProjectSwimlanes: ShowProjectSwimlanes,
     private val session: UserSession
 ) {
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        consoleIO.printer.printError("Unexpected error: ${throwable.message}")
+    }
+    private val projectsScope: CoroutineScope =
+        CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
+
 
     fun selectProject(projects: List<Project>) {
         if(projects.isEmpty()){
-            consoleIO.printer.printError("No projects")
+            consoleIO.printer.printError("No Projects Found")
             return
         }
-        do {
-            consoleIO.printer.printTitle("Select A Project :")
-            val inputProjectName = consoleIO.reader.readStringFromUser()
 
-            getProjectId(inputProjectName, projects)
-                .onSuccess { projectId ->
-                    projectsUi.getProject(projectId)
-                        .onSuccess { project ->
-                            printProjectInfo(project)
+        projectsScope.launch {
+            try {
+                do {
+                    consoleIO.printer.printTitle("Select A Project :")
+                    val inputProjectName = consoleIO.reader.readStringFromUser()
 
-                            if (session.currentUser.type is UserType.AdminUser) {
-                                projectOptionsHandler.handleAdmin(project)
-                            }
+                    val project = projectsUi.getProject(getProjectId(inputProjectName, projects))
 
-                            if (session.currentUser.type is UserType.MateUser) {
-                                projectOptionsHandler.handleMate(project)
-                            }
-                        }
-                        .onFailure {
-                            consoleIO.printer.printError(it.message.toString())
-                        }
-                }
-                .onFailure {
-                    consoleIO.printer.printError(it.message.toString())
-                }
+                    printProjectInfo(project)
 
-        } while (inputProjectName == "0")
+                    if (session.currentUser.type is UserType.AdminUser) {
+                        projectOptionsHandler.handleAdmin(project)
+                    }
+
+                    if (session.currentUser.type is UserType.MateUser) {
+                        projectOptionsHandler.handleMate(project)
+                    }
+
+                } while (inputProjectName == "0")
+            } catch (exception: Exception) {
+                consoleIO.printer.printError("Error : ${exception.message}")
+            }
+        }
+
     }
 
-    private fun getProjectId(inputProjectName: String, projects: List<Project>): Result<String> {
-        return runCatching {
-            projects.first { it.name == inputProjectName }.id
-        }
+    private fun getProjectId(inputProjectName: String, projects: List<Project>): String {
+        return projects.first { it.name == inputProjectName }.id
     }
 
     private fun printProjectInfo(project: Project) {
