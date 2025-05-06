@@ -1,18 +1,17 @@
 package data.progression_state.data_source.database
 
 import com.mongodb.kotlin.client.coroutine.MongoCollection
-import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.progression_state.data_source.ProgressionStateDataSource
-import logic.entities.ProgressionState
+import net.thechance.data.progression_state.dto.ProgressionStateDto
 
 class ProgressionStateDatabaseDataSource(
-	progressionStatesDocument: MongoCollection<MongoDatabase>
-): ProgressionStateDataSource {
-	override suspend fun createProgressionState(progressionState: ProgressionState) {
+	progressionStatesDocument: MongoCollection<ProgressionStateDto>
+) : ProgressionStateDataSource {
+	override suspend fun createProgressionState(progressionState: ProgressionStateDto) {
 		TODO("Not yet implemented")
 	}
 
-	override suspend fun updateProgressionState(progressionState: ProgressionState) {
+	override suspend fun updateProgressionState(progressionState: ProgressionStateDto) {
 		TODO("Not yet implemented")
 	}
 
@@ -20,11 +19,11 @@ class ProgressionStateDatabaseDataSource(
 		TODO("Not yet implemented")
 	}
 
-	override suspend fun getProgressionStates(): List<ProgressionState> {
+	override suspend fun getProgressionStates(): List<ProgressionStateDto> {
 		TODO("Not yet implemented")
 	}
 
-	override suspend fun getProgressionStatesByProjectId(projectId: String): List<ProgressionState> {
+	override suspend fun getProgressionStatesByProjectId(projectId: String): List<ProgressionStateDto> {
 		TODO("Not yet implemented")
 	}
 

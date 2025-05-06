@@ -4,18 +4,21 @@ import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
 import data.progression_state.data_source.ProgressionStateDataSource
 import logic.entities.ProgressionState
+import net.thechance.data.progression_state.dto.ProgressionStateDto
+import net.thechance.data.progression_state.mappers.toProgressionState
+import net.thechance.data.progression_state.mappers.toProgressionStateDto
 
 class ProgressionStateFileDataSource(
 	private val progressionStatesFileHandler: CsvFileHandler,
-	private val csvFileParser: CsvFileParser<ProgressionState>
+	private val csvFileParser: CsvFileParser<ProgressionStateDto>
 ) : ProgressionStateDataSource {
 
-	override suspend fun createProgressionState(progressionState: ProgressionState) {
+	override suspend fun createProgressionState(progressionState: ProgressionStateDto) {
 		val record = csvFileParser.toCsvRecord(progressionState)
 		progressionStatesFileHandler.appendRecord(record)
 	}
 
-	override suspend fun updateProgressionState(progressionState: ProgressionState) {
+	override suspend fun updateProgressionState(progressionState: ProgressionStateDto) {
 		val updateState = getProgressionStates()
 			.map { if (it.id == progressionState.id) progressionState else it }
 		val updatedRecords = updateState.map { csvFileParser.toCsvRecord(it) }
@@ -29,12 +32,12 @@ class ProgressionStateFileDataSource(
 		progressionStatesFileHandler.writeRecords(updatedRecords)
 	}
 
-	override suspend fun getProgressionStates(): List<ProgressionState> {
+	override suspend fun getProgressionStates(): List<ProgressionStateDto> {
 		return progressionStatesFileHandler.readRecords()
 			.map { csvFileParser.parseRecord(it) }
 	}
 
-	override suspend fun getProgressionStatesByProjectId(projectId: String): List<ProgressionState> {
+	override suspend fun getProgressionStatesByProjectId(projectId: String): List<ProgressionStateDto> {
 		return progressionStatesFileHandler.readRecords()
 			.map { csvFileParser.parseRecord(it) }
 			.filter { it.projectId == projectId }

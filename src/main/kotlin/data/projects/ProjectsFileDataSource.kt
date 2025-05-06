@@ -3,7 +3,6 @@ package data.projects
 import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
 import data.states.data_source.StatesDataSource
-import data.states.data_source.StatesFileDataSource
 import data.tasks.data_source.TasksDataSource
 import logic.entities.Project
 
