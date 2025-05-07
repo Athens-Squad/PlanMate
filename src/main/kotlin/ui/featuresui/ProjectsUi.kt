@@ -42,7 +42,7 @@ class ProjectsUi(
         }
     }
 
-    fun editProject(project: Project) {
+    suspend fun editProject(project: Project) {
         consoleIO.printer.printTitle("Edit Project")
 
         consoleIO.printer.printTitle("Select your option (1 or 2) : ")
@@ -51,7 +51,6 @@ class ProjectsUi(
 
         val inputEditOption = consoleIO.reader.readNumberFromUser()
 
-        projectsScope.launch {
             try {
                 when(inputEditOption) {
                     EditProjectOptions.NAME.optionNumber ->  editProjectName(project)
@@ -60,7 +59,6 @@ class ProjectsUi(
                 }
             } catch (exception: Exception) {
                 consoleIO.printer.printError("Error : ${exception.message}")
-            }
         }
 
     }
