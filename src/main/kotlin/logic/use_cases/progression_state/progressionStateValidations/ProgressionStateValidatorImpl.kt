@@ -9,25 +9,25 @@ import net.thechance.data.progression_state.exceptions.NoProjectFoundForProgress
 import net.thechance.data.progression_state.exceptions.ProgressionStateAlreadyExistsException
 import net.thechance.data.progression_state.exceptions.ProgressionStateException
 import net.thechance.data.progression_state.exceptions.ProgressionStateNotFoundException
-import net.thechance.logic.use_cases.progression_state.progressionStateValidations.UseCaseValidator
+import net.thechance.logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
 
 
-class ProgressionStateUseCaseValidatorImpl(
+class ProgressionStateValidatorImpl(
     private val projectsRepository: ProjectsRepository,
     private val progressionStateRepository: ProgressionStateRepository
-) : UseCaseValidator<ProgressionState> {
+) : ProgressionStateValidator {
 
-	override suspend fun validateBeforeCreation(entity: ProgressionState): ProgressionStateException? {
+	override suspend fun validateBeforeCreation(progressionState: ProgressionState): ProgressionStateException? {
 		return when {
-			!entity.checkIsFieldsAreValid() -> InvalidProgressionStateFieldsException()
-			!entity.checkIfProjectExists() -> NoProjectFoundForProgressionStateException()
-			entity.checkIfProgressionStateExists() -> ProgressionStateAlreadyExistsException()
+			!progressionState.checkIsFieldsAreValid() -> InvalidProgressionStateFieldsException()
+			!progressionState.checkIfProjectExists() -> NoProjectFoundForProgressionStateException()
+			progressionState.checkIfProgressionStateExists() -> ProgressionStateAlreadyExistsException()
 			else -> { null }
 		}
 	}
 
-	override suspend fun validateAfterCreation(entityId: String): DomainException? {
-		val entity = progressionStateRepository.getProgressionStates().find { it.id == entityId }
+	override suspend fun validateAfterCreation(progressionStateId: String): DomainException? {
+		val entity = progressionStateRepository.getProgressionStates().find { it.id == progressionStateId }
 			?: return ProgressionStateNotFoundException()
 
 		return when {
