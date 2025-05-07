@@ -24,7 +24,6 @@ import net.thechance.data.projects.datasource.remote.mongo.MongoProjectDataSourc
 import net.thechance.data.projects.dto.ProjectDto
 import net.thechance.data.user.data_source.remote.UserDto
 import net.thechance.data.user.data_source.remote.UserMongoDataSource
-import net.thechance.data.tasks.data_source.remote.mongo.MongoTaskDataSource
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
@@ -65,12 +64,9 @@ val dataSourceModule = module {
         )
     }
 
-    single(named("progressionStatesCsvFile")) { File("data_files/progression_states.csv") }
-    single(named("progressionStatesFileHandler")) { CsvFileHandler(get(named("stateCsvFile"))) }
-    single(named("progressionStatesFileParser")) { CsvFileParser(factory = ProgressionStateDto.Companion::fromCsv) }
-    single<ProgressionStateDataSource> {
-        ProgressionStateDatabaseDataSource(
-            progressionStatesDocument = get()
-        )
-    }
+	single<ProgressionStateDataSource> {
+		ProgressionStateDatabaseDataSource(
+			progressionStatesCollection = get()
+		)
+	}
 }

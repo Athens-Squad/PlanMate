@@ -23,7 +23,7 @@ class ProgressionStateDatabaseDataSourceTest {
 	fun setUp() {
 		mockkProgressionStatesDocument = mockk(relaxed = true)
 		progressionStateDatabaseDataSource = ProgressionStateDatabaseDataSource(
-			progressionStatesDocument = mockkProgressionStatesDocument
+			progressionStatesCollection = mockkProgressionStatesDocument
 		)
 	}
 
