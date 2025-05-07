@@ -15,13 +15,6 @@ class ProjectSelector(
     private val showProjectSwimlanes: ShowProjectSwimlanes,
     private val session: UserSession
 ) {
-    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        consoleIO.printer.printError("Unexpected error: ${throwable.message}")
-    }
-    private val projectsScope: CoroutineScope =
-        CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
-
-
     suspend fun selectProject(projects: List<Project>) {
         if(projects.isEmpty()){
             consoleIO.printer.printError("No Projects Found")
