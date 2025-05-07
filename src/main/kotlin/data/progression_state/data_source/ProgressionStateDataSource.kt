@@ -1,7 +1,6 @@
 package data.progression_state.data_source
 
 import logic.entities.ProgressionState
-import net.thechance.data.progression_state.dto.ProgressionStateDto
 
 interface ProgressionStateDataSource {
 	suspend fun createProgressionState(progressionState: ProgressionState)

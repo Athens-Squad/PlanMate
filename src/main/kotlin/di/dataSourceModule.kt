@@ -62,12 +62,9 @@ val dataSourceModule  = module {
         )
     }
 
-	single(named("progressionStatesCsvFile")) { File("data_files/progression_states.csv") }
-	single(named("progressionStatesFileHandler")) { CsvFileHandler(get(named("stateCsvFile"))) }
-	single(named("progressionStatesFileParser")) { CsvFileParser(factory = ProgressionStateDto.Companion::fromCsv) }
 	single<ProgressionStateDataSource> {
 		ProgressionStateDatabaseDataSource(
-			progressionStatesDocument = get()
+			progressionStatesCollection = get()
 		)
 	}
 }
