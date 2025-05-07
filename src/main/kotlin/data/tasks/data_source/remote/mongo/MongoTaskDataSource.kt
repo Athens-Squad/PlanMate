@@ -8,12 +8,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import logic.entities.Task
 import net.thechance.data.tasks.dto.TaskDto
+import net.thechance.data.tasks.mappers.toTask
+import net.thechance.data.tasks.mappers.toTaskDto
 
 class MongoTaskDataSource(
     private val taskCollection: MongoCollection<TaskDto>
 ) : TasksDataSource {
     override suspend fun createTask(task: Task) {
-        val taskDto = TaskDto.fromTask(task)
+        val taskDto = task.toTaskDto()
         taskCollection.insertOne(taskDto)
     }
 
@@ -38,7 +40,7 @@ class MongoTaskDataSource(
 
     }
     override suspend fun updateTask(task: Task) {
-        val updatedTaskDto = TaskDto.fromTask(task)
+        val updatedTaskDto = task.toTaskDto()
         val queryParams = Filters.eq("_id", task.id)
 
         taskCollection.replaceOne(queryParams, updatedTaskDto)
