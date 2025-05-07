@@ -6,6 +6,7 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import net.thechance.data.aduit_log.dto.AuditLogDto
 import net.thechance.data.progression_state.dto.ProgressionStateDto
 import net.thechance.data.projects.dto.ProjectDto
+import net.thechance.data.tasks.dto.TaskDto
 import net.thechance.data.user.data_source.remote.UserDto
 import net.thechance.data.utils.loadEnvironmentVariable
 import org.koin.dsl.module
@@ -19,10 +20,14 @@ val mongoModule = module {
         get<MongoClient>().getDatabase("planmate")
     }
 
-    single<MongoCollection<ProjectDto>> { get<MongoDatabase>().getCollection<ProjectDto>("projects", ProjectDto::class.java) }
+    single<MongoCollection<ProjectDto>> { get<MongoDatabase>().getCollection<ProjectDto>("projects") }
+
     single<MongoCollection<ProgressionStateDto>> {
         get<MongoDatabase>().getCollection("progression_states", ProgressionStateDto::class.java)
     }
+
+    single<MongoCollection<TaskDto>> { get<MongoDatabase>().getCollection<TaskDto>("tasks") }
+
     single<MongoCollection<AuditLogDto>> {
         get<MongoDatabase>().getCollection("audit_log", AuditLogDto::class.java)
     }

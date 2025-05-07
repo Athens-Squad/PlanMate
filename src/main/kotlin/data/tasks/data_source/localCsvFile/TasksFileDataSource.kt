@@ -1,8 +1,9 @@
-package data.tasks.data_source
+package net.thechance.data.tasks.data_source.localCsvFile
 
 import logic.entities.Task
 import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
+import data.tasks.data_source.TasksDataSource
 
 class TasksFileDataSource(
     private val tasksFileHandler: CsvFileHandler,
@@ -32,9 +33,9 @@ class TasksFileDataSource(
             .map { csvFileParser.parseRecord(it) }
     }
 
-    override suspend fun updateTask(updatedTask: Task) {
+    override suspend fun updateTask(task: Task) {
         val updatedTasks = getAllTasks()
-            .map { if (it.id == updatedTask.id) updatedTask else it }
+            .map { if (it.id == task.id) task else it }
         val updatedRecords = updatedTasks.map { csvFileParser.toCsvRecord(it) }
         tasksFileHandler.writeRecords(updatedRecords)
 

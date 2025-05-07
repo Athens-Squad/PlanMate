@@ -5,7 +5,7 @@ import logic.entities.Task
 interface TasksRepository {
     suspend fun createTask(task: Task)
 
-    suspend fun updateTask(updatedTask: Task)
+    suspend fun updateTask(task: Task)
 
     suspend fun deleteTask(taskId: String)
 
