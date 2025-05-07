@@ -97,7 +97,7 @@ class AuthenticationUi(
         )
     }
 
-    fun createMate(adminName: String) {
+    fun createMate() {
         consoleIO.printer.printTitle("Create Mate Account, Please Enter Mate's Info : ")
         val userName = receiveUserInfo("Enter Mate's Username : ")
         val password = receiveUserInfo("Enter Mate's Password : ")
@@ -109,9 +109,10 @@ class AuthenticationUi(
                     User(
                         name = userName,
                         password = password,
-                        type = UserType.MateUser(adminName)
+                        type = UserType.MateUser(userSession.currentUser.name)
                     )
                 )
+                consoleIO.printer.printCorrectOutput("Mate Created Successfully!")
             } catch (exception: Exception) {
                 consoleIO.printer.printError("Error : ${exception.message}")
             }

@@ -9,6 +9,7 @@ import net.thechance.data.projects.dto.ProjectDto
 import net.thechance.data.tasks.dto.TaskDto
 import net.thechance.data.user.data_source.remote.UserDto
 import net.thechance.data.utils.loadEnvironmentVariable
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val mongoModule = module {
@@ -20,18 +21,18 @@ val mongoModule = module {
         get<MongoClient>().getDatabase("planmate")
     }
 
-    single<MongoCollection<ProjectDto>> { get<MongoDatabase>().getCollection<ProjectDto>("projects") }
+    single(named("projectsCollection")) { get<MongoDatabase>().getCollection<ProjectDto>("projects") }
 
-    single<MongoCollection<ProgressionStateDto>> {
+    single(named("progressionStatesCollection")) {
         get<MongoDatabase>().getCollection("progression_states", ProgressionStateDto::class.java)
     }
 
-    single<MongoCollection<TaskDto>> { get<MongoDatabase>().getCollection<TaskDto>("tasks") }
+    single(named("tasksCollection")) { get<MongoDatabase>().getCollection<TaskDto>("tasks") }
 
-    single<MongoCollection<AuditLogDto>> {
+    single(named("auditLogsCollection")) {
         get<MongoDatabase>().getCollection("audit_log", AuditLogDto::class.java)
     }
-    single<MongoCollection<UserDto>> { get<MongoDatabase>().getCollection<UserDto>("users", UserDto::class.java) }
+    single(named("usersCollection")) { get<MongoDatabase>().getCollection<UserDto>("users", UserDto::class.java) }
 
 
 

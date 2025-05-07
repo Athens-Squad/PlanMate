@@ -31,8 +31,9 @@ class AdminOptionsHandler(
 
             when (option) {
                 AdminOptions.SHOW_ALL_PROJECTS.optionNumber -> showAllProjects()
-                AdminOptions.CREATE_PROJECT.optionNumber -> createProject()
-                AdminOptions.CREATE_MATE.optionNumber -> createMate()
+                AdminOptions.CREATE_PROJECT.optionNumber -> projectsUi.createProject()
+                AdminOptions.CREATE_MATE.optionNumber ->
+                    authenticationUi.createMate()
                 AdminOptions.EXIT.optionNumber -> consoleIO.printer.printGoodbyeMessage("We will miss you.")
             }
 
@@ -54,16 +55,5 @@ class AdminOptionsHandler(
             }
         }
 
-    }
-
-    private fun createMate() {
-        authenticationUi.createMate(session.currentUser.name)
-        consoleIO.printer.printCorrectOutput("Mate Created Successfully!")
-
-    }
-
-    private fun createProject() {
-        projectsUi.createProject()
-        consoleIO.printer.printCorrectOutput("Project Created Successfully!")
     }
 }
