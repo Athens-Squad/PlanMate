@@ -21,7 +21,7 @@ class AdminOptionsHandler(
         CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
 
-    fun handle() {
+    suspend fun handle() {
         do {
             consoleIO.printer.printWelcomeMessage("Hello Mr/Ms : ${session.currentUser.name}")
 
@@ -40,20 +40,17 @@ class AdminOptionsHandler(
         } while (option != AdminOptions.EXIT.optionNumber)
     }
 
-    private fun showAllProjects() {
-        projectsScope.launch {
-            try {
-                val projects = projectsUi.getAllUserProjects(session.currentUser.name)
+    private suspend fun showAllProjects() {
+        try {
+            val projects = projectsUi.getAllUserProjects(session.currentUser.name)
 
-                projects.forEach { project ->
-                    consoleIO.printer.printPlainText(project.name)
-                }
-
-                projectSelector.selectProject(projects)
-            } catch (exception: Exception) {
-                consoleIO.printer.printError("Error : ${exception.message}")
+            projects.forEach { project ->
+                consoleIO.printer.printPlainText(project.name)
             }
-        }
 
+            projectSelector.selectProject(projects)
+        } catch (exception: Exception) {
+            consoleIO.printer.printError("Error : ${exception.message}")
+        }
     }
 }

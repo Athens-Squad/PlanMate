@@ -26,7 +26,7 @@ suspend fun checkIfProjectAlreadyExistInRepository(
 
 suspend fun checkIfProjectExistInRepositoryAndReturn(
     projectId: String,
-    action: suspend (projectId: String) -> List<Project>
+    action: suspend () -> List<Project>
 ): Project? {
-    return action(projectId).firstOrNull { it.id == projectId }
+    return action().firstOrNull { it.id == projectId }
 }
