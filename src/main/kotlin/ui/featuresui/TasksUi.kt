@@ -21,7 +21,7 @@ class TasksUi(
     private val tasksCoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
 
-    fun manageTasks(tasks: MutableList<Task>, projectId: String, progressionStates: List<ProgressionState>) {
+    suspend fun manageTasks(tasks: MutableList<Task>, projectId: String, progressionStates: List<ProgressionState>) {
         tasksCoroutineScope.launch {
             try {
                 do {
@@ -29,9 +29,10 @@ class TasksUi(
                     var inputTaskName = consoleIO.reader.readStringFromUser()
                     val taskId = getTaskId(inputTaskName, tasks)
                     val task = tasksUseCases.getTaskByIdUseCase.execute(taskId)
-                    consoleIO.printer.printPlainText(task.toString())
-                    handleTaskOptions(task, projectId, progressionStates)
 
+                    task.showTaskDetails()
+
+                    handleTaskOptions(task, projectId, progressionStates)
                     consoleIO.printer.printOption("0 : Back")
                     inputTaskName = consoleIO.reader.readStringFromUser()
 
@@ -39,7 +40,7 @@ class TasksUi(
             } catch (exception: Exception) {
                 consoleIO.printer.printError(exception.message.toString())
             }
-        }
+        }.join()
     }
 
     private fun handleTaskOptions(task: Task, projectId: String, progressionStates: List<ProgressionState>) {
@@ -146,10 +147,11 @@ class TasksUi(
                 .updateTaskUseCase
                 .execute(
                     task.copy(
-                        currentProgressionState = ProgressionState(
-                            name = taskState,
-                            projectId = projectId
-                        )
+                        currentProgressionState =
+                            task.currentProgressionState.copy(
+                                name = taskState,
+                                projectId = projectId
+                            )
                     ),
                     userName = session.currentUser.name
                 )
@@ -205,6 +207,12 @@ class TasksUi(
     private fun receiveStringInput(message: String): String {
         consoleIO.printer.printOption(message)
         return consoleIO.reader.readStringFromUser()
+    }
+
+    fun Task.showTaskDetails() {
+        consoleIO.printer.printTitle(this.title)
+        consoleIO.printer.printInfoLine(this.description)
+        consoleIO.printer.printInfoLine(this.currentProgressionState.name)
     }
 
 }

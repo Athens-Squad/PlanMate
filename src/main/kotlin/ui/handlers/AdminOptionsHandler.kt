@@ -21,7 +21,7 @@ class AdminOptionsHandler(
         CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
 
-    fun handle() {
+    suspend fun handle() {
         do {
             consoleIO.printer.printWelcomeMessage("Hello Mr/Ms : ${session.currentUser.name}")
 
@@ -31,39 +31,26 @@ class AdminOptionsHandler(
 
             when (option) {
                 AdminOptions.SHOW_ALL_PROJECTS.optionNumber -> showAllProjects()
-                AdminOptions.CREATE_PROJECT.optionNumber -> createProject()
-                AdminOptions.CREATE_MATE.optionNumber -> createMate()
+                AdminOptions.CREATE_PROJECT.optionNumber -> projectsUi.createProject()
+                AdminOptions.CREATE_MATE.optionNumber ->
+                    authenticationUi.createMate()
                 AdminOptions.EXIT.optionNumber -> consoleIO.printer.printGoodbyeMessage("We will miss you.")
             }
 
         } while (option != AdminOptions.EXIT.optionNumber)
     }
 
-    private fun showAllProjects() {
-        projectsScope.launch {
-            try {
-                val projects = projectsUi.getAllUserProjects(session.currentUser.name)
+    private suspend fun showAllProjects() {
+        try {
+            val projects = projectsUi.getAllUserProjects(session.currentUser.name)
 
-                projects.forEach { project ->
-                    consoleIO.printer.printPlainText(project.name)
-                }
-
-                projectSelector.selectProject(projects)
-            } catch (exception: Exception) {
-                consoleIO.printer.printError("Error : ${exception.message}")
+            projects.forEach { project ->
+                consoleIO.printer.printPlainText(project.name)
             }
+
+            projectSelector.selectProject(projects)
+        } catch (exception: Exception) {
+            consoleIO.printer.printError("Error : ${exception.message}")
         }
-
-    }
-
-    private fun createMate() {
-        authenticationUi.createMate(session.currentUser.name)
-        consoleIO.printer.printCorrectOutput("Mate Created Successfully!")
-
-    }
-
-    private fun createProject() {
-        projectsUi.createProject()
-        consoleIO.printer.printCorrectOutput("Project Created Successfully!")
     }
 }

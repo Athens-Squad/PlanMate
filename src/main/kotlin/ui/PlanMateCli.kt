@@ -22,8 +22,8 @@ class PlanMateCli(
 
     private fun startAuthenticationUi() {
         when (session.currentUser.type) {
-            UserType.AdminUser -> adminOptionsHandler.handle()
-            is UserType.MateUser -> mateOptionsHandler.handle()
+            UserType.AdminUser -> runBlocking { adminOptionsHandler.handle() }
+            is UserType.MateUser -> runBlocking { mateOptionsHandler.handle() }
         }
     }
 

@@ -56,6 +56,14 @@ class AuthenticationUi(
         }
     }
 
+    private suspend fun login(): User {
+        consoleIO.printer.printTitle("Login, Please Enter Your Info : ")
+        val userName = receiveUserInfo("Enter Your Username : ")
+        val password = receiveUserInfo("Enter Your Password : ")
+
+        return authenticationUseCases.loginUseCase.execute(userName, password)
+    }
+
     private fun handleRegisterAndLogin(navigate: () -> Unit) {
         authScope.launch {
             try {
@@ -69,18 +77,8 @@ class AuthenticationUi(
         }
     }
 
-
-
     private fun handleException(exception: Throwable) {
         consoleIO.printer.printError(exception.message.toString())
-    }
-
-    private suspend fun login(): User {
-        consoleIO.printer.printTitle("Login, Please Enter Your Info : ")
-        val userName = receiveUserInfo("Enter Your Username : ")
-        val password = receiveUserInfo("Enter Your Password : ")
-
-        return authenticationUseCases.loginUseCase.execute(userName, password)
     }
 
     private suspend fun registerAdmin() {
@@ -97,7 +95,7 @@ class AuthenticationUi(
         )
     }
 
-    fun createMate(adminName: String) {
+    fun createMate() {
         consoleIO.printer.printTitle("Create Mate Account, Please Enter Mate's Info : ")
         val userName = receiveUserInfo("Enter Mate's Username : ")
         val password = receiveUserInfo("Enter Mate's Password : ")
@@ -109,9 +107,10 @@ class AuthenticationUi(
                     User(
                         name = userName,
                         password = password,
-                        type = UserType.MateUser(adminName)
+                        type = UserType.MateUser(userSession.currentUser.name)
                     )
                 )
+                consoleIO.printer.printCorrectOutput("Mate Created Successfully!")
             } catch (exception: Exception) {
                 consoleIO.printer.printError("Error : ${exception.message}")
             }
