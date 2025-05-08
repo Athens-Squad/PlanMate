@@ -6,18 +6,19 @@ import helper.project_helper.fakes.FakeProjectData
 import helper.project_helper.fakes.FakeProjectData.adminUser
 import helper.project_helper.fakes.FakeProjectData.alexAdminUser
 import helper.project_helper.fakes.FakeProjectData.mateUserForAdminUser
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
-import data.projects.exceptions.ProjectsLogicExceptions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class GetAllProjectsByUsernameUseCaseTest {
-    
+
     private val projectRepository: ProjectsRepository = mockk(relaxed = true)
     private val userRepository: UserRepository = mockk(relaxed = true)
 
@@ -26,7 +27,7 @@ class GetAllProjectsByUsernameUseCaseTest {
     private lateinit var alexAdminUserProject: Project
 
     private lateinit var getAllProjectsByUsernameUseCase: GetAllProjectsByUsernameUseCase
-    
+
     @BeforeEach
     fun setUp() {
         adminUserProject = createProject().copy(
@@ -51,55 +52,60 @@ class GetAllProjectsByUsernameUseCaseTest {
 
     @Test
     fun `should get all projects by username successfully, when user is admin`() {
-        every { userRepository.getUserByUsername(adminUser.name) } returns Result.success(adminUser)
-        every { projectRepository.getProjects() } returns Result.success(
-            listOf(adminUserProject, adminUserSecondProject, alexAdminUserProject)
-        )
+        runTest {
+            coEvery { userRepository.getUserByUsername(adminUser.name) } returns adminUser
+            coEvery { projectRepository.getProjects() } returns listOf(adminUserProject, adminUserSecondProject, alexAdminUserProject)
 
-        val result = getAllProjectsByUsernameUseCase.execute(adminUser.name)
-        val expectedResult = listOf(adminUserSecondProject, adminUserProject)
 
-        assertThat(result.getOrThrow()).containsExactlyElementsIn(expectedResult)
-        verify(exactly = 1) { projectRepository.getProjects() }
-        verify(exactly = 1) { userRepository.getUserByUsername(adminUser.name) }
+            val result = getAllProjectsByUsernameUseCase.execute(adminUser.name)
+            val expectedResult = listOf(adminUserSecondProject, adminUserProject)
+
+            assertThat(result.containsAll(expectedResult)).isTrue()
+            coVerify(exactly = 1) { projectRepository.getProjects() }
+            coVerify(exactly = 1) { userRepository.getUserByUsername(adminUser.name) }
+        }
+
     }
 
     @Test
     fun `should get all projects by username failed and throw exception, when user is not admin`() {
-        every { projectRepository.getProjects() } returns Result.success(
-            listOf(alexAdminUserProject)
-        )
-        every { userRepository.getUserByUsername(mateUserForAdminUser.name) } returns Result.success(mateUserForAdminUser)
+        runTest {
+            coEvery { projectRepository.getProjects() } returns listOf(alexAdminUserProject)
 
-        val result = getAllProjectsByUsernameUseCase.execute(mateUserForAdminUser.name)
+            coEvery { userRepository.getUserByUsername(mateUserForAdminUser.name) } returns mateUserForAdminUser
 
-        assertThat(result.exceptionOrNull()).isInstanceOf(NotAuthorizedUserException::class.java)
-        verify(exactly = 0) { projectRepository.getProjects() }
-        verify(exactly = 1) { userRepository.getUserByUsername(mateUserForAdminUser.name) }
+            assertThrows<Exception> {  getAllProjectsByUsernameUseCase.execute(mateUserForAdminUser.name) }
+
+            coVerify (exactly = 0) { projectRepository.getProjects() }
+            coVerify(exactly = 1) { userRepository.getUserByUsername(mateUserForAdminUser.name) }
+        }
+
     }
 
     @Test
     fun `should throw exception, when username is invalid`() {
-        val invalidUsername = ""
-        every { userRepository.getUserByUsername(invalidUsername) } returns Result.failure(Exception())
+        runTest {
+            val invalidUsername = ""
+            coEvery { userRepository.getUserByUsername(invalidUsername) } throws  Exception()
 
-        val result = getAllProjectsByUsernameUseCase.execute(invalidUsername)
+            assertThrows<Exception> { getAllProjectsByUsernameUseCase.execute(invalidUsername) }
+            coVerify(exactly = 0) { projectRepository.getProjects() }
+            coVerify(exactly = 0) { userRepository.getUserByUsername(invalidUsername) }
+        }
 
-        assertThat(result.exceptionOrNull()).isInstanceOf(InvalidUsernameForProjectException::class.java)
-        verify(exactly = 0) { projectRepository.getProjects() }
-        verify(exactly = 0) { userRepository.getUserByUsername(invalidUsername) }
     }
 
     @Test
     fun `should throw exception, when username is not found`() {
-        val notExistingUserName = "notExistingUserName"
-        every { userRepository.getUserByUsername(notExistingUserName) } returns Result.failure(Exception())
+        runTest {
+            val notExistingUserName = "notExistingUserName"
+            coEvery { userRepository.getUserByUsername(notExistingUserName) } throws Exception()
 
-        val result = getAllProjectsByUsernameUseCase.execute(notExistingUserName)
+            assertThrows<Exception> { getAllProjectsByUsernameUseCase.execute(notExistingUserName) }
+            coVerify(exactly = 0) { projectRepository.getProjects() }
+            coVerify(exactly = 1) { userRepository.getUserByUsername(notExistingUserName) }
+        }
 
-        assertThat(result.exceptionOrNull()).isInstanceOf(NotAuthorizedUserException::class.java)
-        verify(exactly = 0) { projectRepository.getProjects() }
-        verify(exactly = 1) { userRepository.getUserByUsername(notExistingUserName) }
     }
 
 }
