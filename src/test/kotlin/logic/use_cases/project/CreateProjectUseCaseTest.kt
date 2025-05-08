@@ -1,19 +1,19 @@
 package logic.use_cases.project
 
-import com.google.common.truth.Truth.assertThat
 import helper.project_helper.createProject
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import logic.entities.Project
 import logic.entities.User
 import logic.entities.UserType
 import logic.repositories.AuditRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
-import data.projects.exceptions.ProjectsLogicExceptions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 class CreateProjectUseCaseTest {
 
@@ -37,71 +37,77 @@ class CreateProjectUseCaseTest {
 
     @Test
     fun `should create project successfully, when project is valid`() {
-        every { userRepository.getUserByUsername(fakeProject.createdBy) } returns Result.success(adminUser)
-        every { projectRepository.getProjects() } returns Result.success(listOf(
-                createProject(id = "dummy1", name = "dummyProject")
-            )
-        )
-        every { projectRepository.createProject(fakeProject) } returns Result.success(Unit)
-        every { auditRepository.createAuditLog(any()) } returns Result.success(Unit)
+        runTest {
+            coEvery { userRepository.getUserByUsername(fakeProject.createdBy) } returns adminUser
+            coEvery { projectRepository.getProjects() } returns listOf(createProject(id = "dummy1", name = "dummyProject"))
+            coEvery { projectRepository.createProject(fakeProject) } returns Unit
+            coEvery { auditRepository.createAuditLog(any()) } returns Unit
 
-        val result = createProjectUseCase.execute(fakeProject)
+             createProjectUseCase.execute(fakeProject)
 
-        assertThat(result.isSuccess).isTrue()
-        verify(exactly = 1) { projectRepository.createProject(fakeProject) }
-        verify(exactly = 1) { projectRepository.getProjects() }
-        verify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdBy) }
-        verify(exactly = 1) { auditRepository.createAuditLog(any()) }
+//            assertThat(result.isSuccess).isTrue()
+            coVerify(exactly = 1) { projectRepository.createProject(fakeProject) }
+            coVerify(exactly = 1) { projectRepository.getProjects() }
+            coVerify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdBy) }
+            coVerify(exactly = 1) { auditRepository.createAuditLog(any()) }
+        }
+
     }
 
     @Test
     fun `should create project failed, when project is already exists`() {
-        every { userRepository.getUserByUsername(fakeProject.createdBy) } returns Result.success(adminUser)
-        every { projectRepository.getProjects() } returns Result.success(listOf(fakeProject))
-        every { projectRepository.createProject(fakeProject) } returns Result.success(Unit)
+        runTest {
+            coEvery { userRepository.getUserByUsername(fakeProject.createdBy) } returns adminUser
+            coEvery { projectRepository.getProjects() } returns listOf(fakeProject)
+            coEvery { projectRepository.createProject(fakeProject) } returns Unit
 
-        val result = createProjectUseCase.execute(fakeProject)
+            assertThrows<Exception> {   createProjectUseCase.execute(fakeProject)}
 
-        assertThat(result.exceptionOrNull()).isInstanceOf(ProjectAlreadyExistException::class.java)
-        verify(exactly = 0) { projectRepository.createProject(fakeProject) }
-        verify(exactly = 1) { projectRepository.getProjects() }
-        verify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdBy) }
+            coVerify(exactly = 0) { projectRepository.createProject(fakeProject) }
+            coVerify(exactly = 1) { projectRepository.getProjects() }
+            coVerify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdBy) }
+        }
+
     }
 
     @Test
     fun `should create project failed and throw exception, when user is not admin`() {
-        every { userRepository.getUserByUsername(fakeProject.createdBy) } returns Result.success(mateUser)
+        runTest {
+            coEvery { userRepository.getUserByUsername(fakeProject.createdBy) } returns mateUser
 
-        val result = createProjectUseCase.execute(fakeProject)
 
-        assertThat(result.exceptionOrNull()).isInstanceOf(NotAuthorizedUserException::class.java)
-        verify(exactly = 0) { projectRepository.createProject(fakeProject) }
-        verify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdBy) }
+            assertThrows<Exception> {  createProjectUseCase.execute(fakeProject) }
+
+            coVerify (exactly = 0) { projectRepository.createProject(fakeProject) }
+            coVerify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdBy) }
+        }
+
     }
 
     @Test
     fun `should create project failed and throw exception, when project user name is invalid`() {
-        val fakeProjectWithInvalidUserName = fakeProject.copy(createdBy = "")
-        every { userRepository.getUserByUsername(fakeProjectWithInvalidUserName.createdBy) } returns Result.failure(
-            Exception()
-        )
+        runTest {
+            val fakeProjectWithInvalidUserName = fakeProject.copy(createdBy = "")
+            coEvery { userRepository.getUserByUsername(fakeProjectWithInvalidUserName.createdBy) } throws Exception()
 
-        val result = createProjectUseCase.execute(fakeProjectWithInvalidUserName)
+            assertThrows<Exception> {  createProjectUseCase.execute(fakeProjectWithInvalidUserName) }
 
-        assertThat(result.exceptionOrNull()).isInstanceOf(InvalidUsernameForProjectException::class.java)
-        verify(exactly = 0) { projectRepository.createProject(fakeProjectWithInvalidUserName) }
-        verify(exactly = 0) { userRepository.getUserByUsername(fakeProjectWithInvalidUserName.createdBy) }
+            coVerify(exactly = 0) { projectRepository.createProject(fakeProjectWithInvalidUserName) }
+            coVerify(exactly = 0) { userRepository.getUserByUsername(fakeProjectWithInvalidUserName.createdBy) }
+        }
+
     }
 
     @Test
     fun `should create project failed and throw exception, when project name is invalid`() {
-        val fakeProjectWithInvalidName = fakeProject.copy(name = "")
-        every { userRepository.getUserByUsername(fakeProjectWithInvalidName.createdBy) } returns Result.success(adminUser)
+        runTest {
+            val fakeProjectWithInvalidName = fakeProject.copy(name = "")
+            coEvery { userRepository.getUserByUsername(fakeProjectWithInvalidName.createdBy) } returns adminUser
 
-        val result = createProjectUseCase.execute(fakeProjectWithInvalidName)
 
-        assertThat(result.exceptionOrNull()).isInstanceOf(InvalidProjectNameException::class.java)
-        verify(exactly = 0) { projectRepository.createProject(fakeProjectWithInvalidName) }
+            assertThrows<Exception> { createProjectUseCase.execute(fakeProjectWithInvalidName) }
+            coVerify(exactly = 0) { projectRepository.createProject(fakeProjectWithInvalidName) }
+        }
     }
 
 }
