@@ -1,16 +1,16 @@
 package logic.use_cases.task
 
 import logic.entities.AuditLog
-import logic.repositories.AuditRepository
-import logic.repositories.TasksRepository
 import logic.entities.EntityType
+import logic.repositories.TasksRepository
+import logic.use_cases.audit_log.CreateAuditLogUseCase
 import logic.use_cases.task.taskvalidations.TaskValidator
 import java.time.LocalDateTime
 
 
 class DeleteTaskUseCase(
     private val taskRepository: TasksRepository,
-    private val auditRepository: AuditRepository,
+    private val createAuditLogUseCase: CreateAuditLogUseCase,
     private val taskValidator: TaskValidator
 ) {
     suspend fun execute(taskId: String, userName: String) {
@@ -19,18 +19,15 @@ class DeleteTaskUseCase(
             taskRepository.deleteTask(taskId)
 
             // Create an audit log for task deletion
-            createLog(taskId, userName)
+            createAuditLogUseCase.execute(
+                AuditLog(
+                    entityType = EntityType.TASK,
+                    entityId = taskId,
+                    description = "Task deleted successfully.",
+                    userName = userName,
+                    createdAt = LocalDateTime.now(),
+                )
+            )
         }
-    }
-
-    private suspend fun createLog(taskId: String, userName: String) {
-        val auditLog = AuditLog(
-            entityType = EntityType.TASK,
-            entityId = taskId,
-            description = "Task with ID $taskId deleted successfully.",
-            userName = userName,
-            createdAt = LocalDateTime.now()
-        )
-        auditRepository.createAuditLog(auditLog)
     }
 }
