@@ -1,32 +1,39 @@
 package logic.use_cases.project
 
+import data.projects.exceptions.ProjectsLogicExceptions.*
 import logic.entities.Project
 import logic.repositories.AuditRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
-import data.projects.exceptions.ProjectsLogicExceptions.*
 import logic.use_cases.project.log_builder.createLog
-import logic.use_cases.project.projectValidations.checkIfFieldIsValid
-import logic.use_cases.project.projectValidations.checkIfProjectAlreadyExistInRepository
-import logic.use_cases.project.projectValidations.checkIfProjectExistInRepositoryAndReturn
-import logic.use_cases.project.projectValidations.checkIfUserAuthorized
+import net.thechance.logic.use_cases.project.projectValidations.ProjectValidator
 
 class CreateProjectUseCase(
     private val projectRepository: ProjectsRepository,
     private val userRepository: UserRepository,
-    private val auditRepository: AuditRepository
+    private val auditRepository: AuditRepository,
+    private val projectValidator: ProjectValidator
 ) {
-    suspend fun execute(project: Project): Unit {
-        project.apply {
-            createdBy.checkIfFieldIsValid().takeIf { it } ?: throw InvalidUsernameForProjectException()
-            name.checkIfFieldIsValid().takeIf { it } ?: throw InvalidProjectNameException()
+    suspend fun execute(project: Project) {
+        if (
+            projectValidator.checkIfValueIsBlank(project.createdBy) ||
+            projectValidator.checkIfValueIsBlank(project.name)
+        ) {
+            throw InvalidProjectNameException()
 
-            checkIfUserAuthorized(createdBy) { userRepository.getUserByUsername(createdBy) }
-                .takeIf { it } ?: throw NotAuthorizedUserException()
-
-            checkIfProjectAlreadyExistInRepository(id) { projectRepository.getProjects() }
-                .takeIf { it } ?: throw ProjectAlreadyExistException()
         }
+
+
+        val user = userRepository.getUserByUsername(project.createdBy)
+        if (!projectValidator.checkIfUserIsAdmin(user)) {
+            throw NotAuthorizedUserException()
+        }
+
+        val projects = projectRepository.getProjects()
+        if (projectValidator.checkIfProjectAlreadyExistInRepository(projectId = project.id, projects)) {
+            throw ProjectAlreadyExistException()
+        }
+
 
         projectRepository.createProject(project)
 
