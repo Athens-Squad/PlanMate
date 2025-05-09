@@ -1,19 +1,19 @@
 package di
 
-import net.thechance.ui.handlers.*
+import net.thechance.ui.handlers.AdminOptionsHandler
+import net.thechance.ui.handlers.MateOptionsHandler
+import net.thechance.ui.handlers.ProjectOptionsHandler
 import net.thechance.ui.utils.ProjectSelector
 import net.thechance.ui.utils.ShowProjectSwimlanes
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.module
 import ui.PlanMateCli
 import ui.featuresui.*
 import ui.io.ConsoleIO
 import ui.io.Printer
 import ui.io.Reader
-import org.koin.core.module.dsl.singleOf
-import org.koin.dsl.module
-import ui.utils.Colors
 
 val uiModule = module {
-    single { Colors() }
 
     singleOf(::Printer)
     singleOf(::Reader)
