@@ -6,8 +6,8 @@ import data.user.data_source.UsersDataSource
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import logic.entities.User
-import logic.use_cases.authentication.exceptions.UserAlreadyExistsException
-import logic.use_cases.authentication.exceptions.UserNotFoundException
+import logic.exceptions.UserAlreadyExistsException
+import logic.exceptions.UserNotFoundException
 import net.thechance.data.user.dto.UserDto
 import net.thechance.data.user.mappers.toUser
 import net.thechance.data.user.mappers.toUserDto

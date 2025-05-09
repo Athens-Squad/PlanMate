@@ -1,4 +1,4 @@
-package logic.use_cases.authentication.exceptions
+package logic.exceptions
 
 
 class InvalidCredentialsException(message: String = "Invalid username or password") : Exception(message)

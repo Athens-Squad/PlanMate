@@ -8,8 +8,8 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
-import data.projects.exceptions.ProjectsLogicExceptions.InvalidProjectNameException
-import data.projects.exceptions.ProjectsLogicExceptions.NoProjectFoundException
+import net.thechance.logic.exceptions.ProjectsLogicExceptions.InvalidProjectNameException
+import net.thechance.logic.exceptions.ProjectsLogicExceptions.NoProjectFoundException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 

@@ -4,8 +4,8 @@ import data.user.data_source.UsersDataSource
 import data.utils.csv_file_handle.CsvFileHandler
 import data.utils.csv_file_handle.CsvFileParser
 import logic.entities.User
-import logic.use_cases.authentication.exceptions.UserAlreadyExistsException
-import logic.use_cases.authentication.exceptions.UserNotFoundException
+import logic.exceptions.UserAlreadyExistsException
+import logic.exceptions.UserNotFoundException
 import net.thechance.data.user.dto.UserCsvDto
 import net.thechance.data.user.mappers.toUser
 import net.thechance.data.user.mappers.toUserCsvDto
