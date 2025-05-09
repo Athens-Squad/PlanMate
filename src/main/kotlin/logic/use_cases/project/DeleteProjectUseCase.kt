@@ -1,9 +1,10 @@
 package logic.use_cases.project
 
+import logic.entities.EntityType
 import logic.repositories.AuditRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
-import logic.use_cases.project.log_builder.createLog
+import net.thechance.logic.use_cases.audit_log.log_builder.createLog
 import logic.use_cases.project.projectValidations.checkIfFieldIsValid
 import logic.use_cases.project.projectValidations.checkIfProjectExistInRepositoryAndReturn
 import logic.use_cases.project.projectValidations.checkIfUserAuthorized
@@ -34,7 +35,9 @@ class DeleteProjectUseCase(
 
         projectRepository.deleteProject(projectId)
         createLog(
-            project = project,
+            entityType = EntityType.PROJECT,
+            entityId = project.id,
+            userName = project.name,
             logMessage = "Project deleted successfully."
         ) {
             auditRepository.createAuditLog(it)

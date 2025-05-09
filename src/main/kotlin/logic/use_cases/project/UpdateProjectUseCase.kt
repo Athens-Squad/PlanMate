@@ -1,10 +1,11 @@
 package logic.use_cases.project
 
+import logic.entities.EntityType
 import logic.entities.Project
 import logic.repositories.AuditRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
-import logic.use_cases.project.log_builder.createLog
+import net.thechance.logic.use_cases.audit_log.log_builder.createLog
 import logic.use_cases.project.projectValidations.checkIfFieldIsValid
 import logic.use_cases.project.projectValidations.checkIfProjectExistInRepositoryAndReturn
 import logic.use_cases.project.projectValidations.checkIfUserAuthorized
@@ -29,8 +30,9 @@ class UpdateProjectUseCase(
             checkIfUserAuthorized(createdBy) { userRepository.getUserByUsername(it) }
                 .takeIf { it } ?: throw NotAuthorizedUserException()
 
-            val project = checkIfProjectExistInRepositoryAndReturn(updatedProject.id) { projectRepository.getProjects() }
-                ?: throw NoProjectFoundException()
+            val project =
+                checkIfProjectExistInRepositoryAndReturn(updatedProject.id) { projectRepository.getProjects() }
+                    ?: throw NoProjectFoundException()
 
             checkIfUserIsProjectOwner(project.createdBy, updatedProject.createdBy).takeIf { it }
                 ?: throw NotAuthorizedUserException()
@@ -39,7 +41,9 @@ class UpdateProjectUseCase(
         projectRepository.updateProject(updatedProject)
 
         createLog(
-            project = updatedProject,
+            entityType = EntityType.PROJECT,
+            entityId = updatedProject.id,
+            userName = updatedProject.name,
             logMessage = "Project updated successfully."
         ) {
             auditRepository.createAuditLog(it)

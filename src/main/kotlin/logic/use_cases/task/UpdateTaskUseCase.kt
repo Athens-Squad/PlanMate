@@ -6,6 +6,7 @@ import logic.repositories.AuditRepository
 import logic.repositories.TasksRepository
 import logic.entities.EntityType
 import logic.use_cases.task.taskvalidations.TaskValidator
+import net.thechance.logic.use_cases.audit_log.log_builder.createLog
 import java.time.LocalDateTime
 
 
@@ -26,20 +27,14 @@ class UpdateTaskUseCase(
             taskRepository.updateTask(updatedTask)
 
             //create log
-            createLog(updatedTask, userName)
-
+            createLog(
+                entityType = EntityType.TASK,
+                entityId = task.id,
+                logMessage = "Task updated successfully.",
+                userName = userName,
+            ) {
+                auditRepository.createAuditLog(it)
+            }
         }
     }
-
-    private suspend fun createLog(task: Task, userName: String) {
-        val auditLog = AuditLog(
-            entityType = EntityType.TASK,
-            entityId = task.id,
-            description = "Task ${task.title} updated successfully.",
-            userName = userName,
-            createdAt = LocalDateTime.now()
-        )
-        auditRepository.createAuditLog(auditLog)
-    }
-
 }

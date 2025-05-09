@@ -1,10 +1,11 @@
 package logic.use_cases.project
 
+import logic.entities.EntityType
 import logic.entities.Project
 import logic.repositories.AuditRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
-import logic.use_cases.project.log_builder.createLog
+import net.thechance.logic.use_cases.audit_log.log_builder.createLog
 import logic.use_cases.project.projectValidations.checkIfFieldIsValid
 import logic.use_cases.project.projectValidations.checkIfProjectAlreadyExistInRepository
 import logic.use_cases.project.projectValidations.checkIfUserAuthorized
@@ -33,9 +34,11 @@ class CreateProjectUseCase(
 		projectRepository.createProject(project)
 
 		createLog(
-			project = project,
-			logMessage = "Project created successfully."
-		) {
+            logMessage = "Project created successfully.",
+            entityType = EntityType.PROJECT,
+            entityId = project.id,
+            userName = project.name
+        ) {
 			auditRepository.createAuditLog(it)
 		}
 	}
