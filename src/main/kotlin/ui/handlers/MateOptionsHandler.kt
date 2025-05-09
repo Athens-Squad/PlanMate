@@ -5,6 +5,7 @@ import ui.io.ConsoleIO
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.options.MateOptions
 import net.thechance.ui.utils.ProjectSelector
+import net.thechance.ui.utils.TextStyle
 import ui.featuresui.*
 
 class MateOptionsHandler(
@@ -15,7 +16,7 @@ class MateOptionsHandler(
 ) {
     suspend fun handle() {
         do {
-            consoleIO.printer.printWelcomeMessage("Hello Mr/Ms : ${session.currentUser.name}")
+            consoleIO.printer.printText("Hello Mr/Ms : ${session.currentUser.name}",TextStyle.WELCOME)
 
             consoleIO.printer.printOptions(MateOptions.entries)
 
@@ -23,7 +24,7 @@ class MateOptionsHandler(
 
             when (option) {
                 MateOptions.SHOW_ALL_PROJECTS.optionNumber -> showAllProjects()
-                MateOptions.EXIT.optionNumber -> consoleIO.printer.printGoodbyeMessage("We will miss you.")
+                MateOptions.EXIT.optionNumber -> consoleIO.printer.printText("We will miss you.",TextStyle.GOODBYE)
             }
         } while (option != MateOptions.EXIT.optionNumber)
     }
@@ -35,12 +36,12 @@ class MateOptionsHandler(
             val projects = projectsUi.getAllUserProjects(adminName)
 
             projects.forEach { project ->
-                consoleIO.printer.printPlainText(project.name)
+                consoleIO.printer.printText(project.name)
             }
 
             projectSelector.selectProject(projects)
         } catch (exception: Exception) {
-            consoleIO.printer.printError("Error : ${exception.message}")
+            consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
         }
     }
 }

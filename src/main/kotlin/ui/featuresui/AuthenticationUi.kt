@@ -6,6 +6,7 @@ import logic.use_cases.authentication.AuthenticationUseCases
 import logic.entities.UserType
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.options.AuthenticationOptions
+import net.thechance.ui.utils.TextStyle
 import ui.io.ConsoleIO
 
 
@@ -15,13 +16,13 @@ class AuthenticationUi(
     private val userSession: UserSession
 ) {
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        consoleIO.printer.printError("Unexpected error: ${throwable.message}")
+        consoleIO.printer.printText("Unexpected error: ${throwable.message}",TextStyle.ERROR)
     }
 
     private val authScope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
   fun runAuthenticationUi(navigateAfterLoggedInSuccessfully: () -> Unit) {
-        consoleIO.printer.printTitle("Select your option (1 or 2) : ")
+        consoleIO.printer.printText("Select your option (1 or 2) : ",TextStyle.TITLE)
         consoleIO.printer.printOptions(AuthenticationOptions.entries)
 
         try {
@@ -32,12 +33,12 @@ class AuthenticationUi(
                 AuthenticationOptions.REGISTER_AS_ADMIN.optionNumber -> handleRegisterAndLogin(navigateAfterLoggedInSuccessfully)
 
                 else -> {
-                    consoleIO.printer.printError("Invalid Input, Please Try Again!")
+                    consoleIO.printer.printText("Invalid Input, Please Try Again!",TextStyle.ERROR)
                     runAuthenticationUi { navigateAfterLoggedInSuccessfully() }
                 }
             }
         } catch (invalidInputException: Exception) {
-            consoleIO.printer.printError("Invalid Input, Please Try Again!")
+            consoleIO.printer.printText("Invalid Input, Please Try Again!",TextStyle.ERROR)
             runAuthenticationUi { navigateAfterLoggedInSuccessfully() }
         }
     }
@@ -47,7 +48,7 @@ class AuthenticationUi(
             try {
                 val user = login()
                 userSession.currentUser = user
-                consoleIO.printer.printCorrectOutput("Logged in Successfully.")
+                consoleIO.printer.printText("Logged in Successfully.",TextStyle.SUCCESS)
                 navigate()
             } catch (e: Exception) {
                 handleException(e)
@@ -57,7 +58,7 @@ class AuthenticationUi(
     }
 
     private suspend fun login(): User {
-        consoleIO.printer.printTitle("Login, Please Enter Your Info : ")
+        consoleIO.printer.printText("Login, Please Enter Your Info : ",TextStyle.TITLE)
         val userName = receiveUserInfo("Enter Your Username : ")
         val password = receiveUserInfo("Enter Your Password : ")
 
@@ -68,7 +69,7 @@ class AuthenticationUi(
         authScope.launch {
             try {
                 registerAdmin()
-                consoleIO.printer.printCorrectOutput("Registered Successfully.")
+                consoleIO.printer.printText("Registered Successfully.",TextStyle.SUCCESS)
                 handleLogin(navigate)
             } catch (e: Exception) {
                 handleException(e)
@@ -78,11 +79,11 @@ class AuthenticationUi(
     }
 
     private fun handleException(exception: Throwable) {
-        consoleIO.printer.printError(exception.message.toString())
+        consoleIO.printer.printText(exception.message.toString(),TextStyle.ERROR)
     }
 
     private suspend fun registerAdmin() {
-        consoleIO.printer.printTitle("Signup, Please Enter Your Info : ")
+        consoleIO.printer.printText("Signup, Please Enter Your Info : ",TextStyle.TITLE)
         val userName = receiveUserInfo("Enter Your Username : ")
         val password = receiveUserInfo("Enter Your Password : ")
 
@@ -96,7 +97,7 @@ class AuthenticationUi(
     }
 
     fun createMate() {
-        consoleIO.printer.printTitle("Create Mate Account, Please Enter Mate's Info : ")
+        consoleIO.printer.printText("Create Mate Account, Please Enter Mate's Info : ",TextStyle.TITLE)
         val userName = receiveUserInfo("Enter Mate's Username : ")
         val password = receiveUserInfo("Enter Mate's Password : ")
 
@@ -110,15 +111,15 @@ class AuthenticationUi(
                         type = UserType.MateUser(userSession.currentUser.name)
                     )
                 )
-                consoleIO.printer.printCorrectOutput("Mate Created Successfully!")
+                consoleIO.printer.printText("Mate Created Successfully!",TextStyle.SUCCESS)
             } catch (exception: Exception) {
-                consoleIO.printer.printError("Error : ${exception.message}")
+                consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
             }
         }
     }
 
    private  fun receiveUserInfo(message: String): String {
-        consoleIO.printer.printOption(message)
+        consoleIO.printer.printText(message,TextStyle.OPTION)
         return consoleIO.reader.readStringFromUser()
     }
 }

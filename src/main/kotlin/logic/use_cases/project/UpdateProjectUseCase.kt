@@ -1,10 +1,18 @@
 package logic.use_cases.project
 
 import logic.entities.Project
-import logic.repositories.*
-import logic.use_cases.project.projectValidations.*
-import data.projects.exceptions.ProjectsLogicExceptions.*
+import logic.repositories.AuditRepository
+import logic.repositories.ProjectsRepository
+import logic.repositories.UserRepository
 import logic.use_cases.project.log_builder.createLog
+import logic.use_cases.project.projectValidations.checkIfFieldIsValid
+import logic.use_cases.project.projectValidations.checkIfProjectExistInRepositoryAndReturn
+import logic.use_cases.project.projectValidations.checkIfUserAuthorized
+import logic.use_cases.project.projectValidations.checkIfUserIsProjectOwner
+import net.thechance.logic.exceptions.InvalidProjectNameException
+import net.thechance.logic.exceptions.InvalidUsernameForProjectException
+import net.thechance.logic.exceptions.NoProjectFoundException
+import net.thechance.logic.exceptions.NotAuthorizedUserException
 
 
 class UpdateProjectUseCase(

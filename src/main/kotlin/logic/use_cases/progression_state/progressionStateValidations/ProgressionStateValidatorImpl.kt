@@ -3,12 +3,11 @@ package logic.use_cases.progression_state.progressionStateValidations
 import logic.entities.ProgressionState
 import logic.repositories.ProjectsRepository
 import logic.repositories.ProgressionStateRepository
-import net.thechance.data.progression_state.exceptions.DomainException
-import net.thechance.data.progression_state.exceptions.InvalidProgressionStateFieldsException
-import net.thechance.data.progression_state.exceptions.NoProjectFoundForProgressionStateException
-import net.thechance.data.progression_state.exceptions.ProgressionStateAlreadyExistsException
-import net.thechance.data.progression_state.exceptions.ProgressionStateException
-import net.thechance.data.progression_state.exceptions.ProgressionStateNotFoundException
+import logic.exceptions.InvalidProgressionStateFieldsException
+import logic.exceptions.NoProjectFoundForProgressionStateException
+import logic.exceptions.ProgressionStateAlreadyExistsException
+import logic.exceptions.ProgressionStateException
+import logic.exceptions.ProgressionStateNotFoundException
 import net.thechance.logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
 
 
@@ -26,7 +25,7 @@ class ProgressionStateValidatorImpl(
 		}
 	}
 
-	override suspend fun validateAfterCreation(progressionStateId: String): DomainException? {
+	override suspend fun validateAfterCreation(progressionStateId: String): ProgressionStateException? {
 		val entity = progressionStateRepository.getProgressionStates().find { it.id == progressionStateId }
 			?: return ProgressionStateNotFoundException()
 

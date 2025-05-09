@@ -17,13 +17,13 @@ class ProjectSelector(
 ) {
     suspend fun selectProject(projects: List<Project>) {
         if(projects.isEmpty()){
-            consoleIO.printer.printError("No Projects Found")
+            consoleIO.printer.printText("No Projects Found",TextStyle.ERROR)
             return
         }
 
         try {
             do {
-                consoleIO.printer.printTitle("Select A Project :")
+                consoleIO.printer.printText("Select A Project :",TextStyle.TITLE)
                 val inputProjectName = consoleIO.reader.readStringFromUser()
 
                 val project = projectsUi.getProject(getProjectId(inputProjectName, projects))
@@ -32,7 +32,7 @@ class ProjectSelector(
 
             } while (inputProjectName == "0")
         } catch (exception: Exception) {
-            consoleIO.printer.printError("Error : ${exception.message}")
+            consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
         }
 
     }

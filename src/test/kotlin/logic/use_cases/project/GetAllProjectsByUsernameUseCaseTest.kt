@@ -12,7 +12,7 @@ import io.mockk.verify
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
-import data.projects.exceptions.ProjectsLogicExceptions.*
+import net.thechance.logic.exceptions.ProjectsLogicExceptions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 

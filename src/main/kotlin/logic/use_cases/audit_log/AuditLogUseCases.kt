@@ -1,7 +1,5 @@
 package logic.use_cases.audit_log
 
-import logic.use_cases.audit_log.CreateAuditLogUseCase
-
 data class AuditLogUseCases(
     val clearLogUseCase: ClearLogUseCase,
     val createAuditLogUseCase: CreateAuditLogUseCase,

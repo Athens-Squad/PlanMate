@@ -1,9 +1,7 @@
 package data.progression_state.repository
 
 import data.progression_state.data_source.ProgressionStateDataSource
-import logic.entities.ProgressionState
 import logic.repositories.ProgressionStateRepository
-import net.thechance.data.progression_state.mappers.toProgressionStateDto
 
 
 class ProgressionStateRepositoryImpl(

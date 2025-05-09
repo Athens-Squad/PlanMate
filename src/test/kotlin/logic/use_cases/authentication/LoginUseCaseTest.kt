@@ -6,6 +6,7 @@ import io.mockk.every
 import io.mockk.mockk
 import logic.repositories.AuthenticationRepository
 import data.authentication.utils.PasswordHashing
+import logic.exceptions.InvalidCredentialsException
 import io.mockk.coEvery
 import kotlinx.coroutines.test.runTest
 import logic.entities.User

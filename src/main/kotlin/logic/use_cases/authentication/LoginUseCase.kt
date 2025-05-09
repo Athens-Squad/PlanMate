@@ -3,7 +3,7 @@ package logic.use_cases.authentication
 import logic.entities.User
 import data.authentication.utils.PasswordHashing
 import logic.repositories.AuthenticationRepository
-import logic.use_cases.authentication.exceptions.InvalidCredentialsException
+import logic.exceptions.InvalidCredentialsException
 import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
 
 class LoginUseCase(

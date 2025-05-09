@@ -4,6 +4,7 @@ import logic.entities.ProgressionState
 import logic.use_cases.progression_state.ProgressionStatesUseCases
 import net.thechance.ui.options.progression_states.EditProgressionStateOptions
 import net.thechance.ui.options.progression_states.ProgressionStateOptions
+import net.thechance.ui.utils.TextStyle
 import ui.io.ConsoleIO
 
 class ProgressionStateUi(
@@ -16,14 +17,14 @@ class ProgressionStateUi(
                 .getProgressionStatesByProjectIdUseCase
                 .execute(projectId)
 
-            consoleIO.printer.printTitle("Select Option (1 to 4):")
+            consoleIO.printer.printText("Select Option (1 to 4):",TextStyle.TITLE)
             consoleIO.printer.printOptions(ProgressionStateOptions.entries)
             val inputStateOption = consoleIO.reader.readNumberFromUser()
 
             when (inputStateOption) {
                 ProgressionStateOptions.CREATE.optionNumber -> {
                     createProgressionState(projectId).also {
-                        consoleIO.printer.printCorrectOutput("created successful")
+                        consoleIO.printer.printText("created successful",TextStyle.SUCCESS)
                         return
                     }
                 }
@@ -32,7 +33,7 @@ class ProgressionStateUi(
                 ProgressionStateOptions.DELETE.optionNumber -> {
                     deleteProgressionState(progressionStates)
                         .also {
-                            consoleIO.printer.printCorrectOutput("State Deleted Successfully")
+                            consoleIO.printer.printText("State Deleted Successfully",TextStyle.SUCCESS)
                         }
                 }
             }
@@ -42,7 +43,7 @@ class ProgressionStateUi(
     }
 
     private suspend fun createProgressionState(projectId: String) {
-        consoleIO.printer.printTitle("Create State.")
+        consoleIO.printer.printText("Create State.",TextStyle.TITLE)
 
         val stateName = receiveStringInput("Enter State Name : ")
 
@@ -55,17 +56,18 @@ class ProgressionStateUi(
     }
 
     private suspend fun editProgressionState(progressionStates: List<ProgressionState>) {
-        consoleIO.printer.printTitle("Edit State")
+        consoleIO.printer.printText("Edit State",TextStyle.TITLE)
 
-        consoleIO.printer.printOption(
+        consoleIO.printer.printText(
             progressionStates.map {
                 it.name
-            }.toString()
+            }.toString(),
+            TextStyle.OPTION
         )
 
         val inputProgressionState = consoleIO.reader.readStringFromUser()
 
-        consoleIO.printer.printTitle("Select your option (1) : ")
+        consoleIO.printer.printText("Select your option (1) : ",TextStyle.TITLE)
 
         consoleIO.printer.printOptions(EditProgressionStateOptions.entries)
         val inputEditOption = consoleIO.reader.readNumberFromUser()
@@ -87,12 +89,13 @@ class ProgressionStateUi(
     }
 
     private suspend fun deleteProgressionState(progressionStates: List<ProgressionState>) {
-        consoleIO.printer.printTitle("Delete State")
+        consoleIO.printer.printText("Delete State",TextStyle.TITLE)
 
-        consoleIO.printer.printOption(
+        consoleIO.printer.printText(
             progressionStates.map {
                 it.name
-            }.toString()
+            }.toString(),
+            TextStyle.OPTION
         )
 
         val inputState = consoleIO.reader.readStringFromUser()
@@ -110,7 +113,7 @@ class ProgressionStateUi(
 
 
     private fun receiveStringInput(message: String): String {
-        consoleIO.printer.printOption(message)
+        consoleIO.printer.printText(message,TextStyle.OPTION)
         return consoleIO.reader.readStringFromUser()
     }
 

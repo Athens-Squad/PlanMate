@@ -1,14 +1,7 @@
 package logic.entities
 
-import net.thechance.data.aduit_log.utils.AuditLogColumnIndex.CREATEDAT
-import net.thechance.data.aduit_log.utils.AuditLogColumnIndex.ENTITYID
-import net.thechance.data.aduit_log.utils.AuditLogColumnIndex.ENTITYTYPE
-import net.thechance.data.aduit_log.utils.AuditLogColumnIndex.USERNAME
-import net.thechance.data.aduit_log.utils.AuditLogColumnIndex.DESCRIPTION
-import net.thechance.data.aduit_log.utils.AuditLogColumnIndex.ID
-import logic.CsvSerializable
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 data class AuditLog(
     val id: String = UUID.randomUUID().toString(),
@@ -17,26 +10,4 @@ data class AuditLog(
     val description: String,
     val userName: String,
     val createdAt: LocalDateTime
-): CsvSerializable {
-    override fun toCsvFields(): List<String> = listOf(
-        id,
-        entityType.toString(),
-        entityId,
-        description,
-        userName,
-        createdAt.toString()
-    )
-
-    companion object {
-        fun fromCsv(fields: List<String>): AuditLog {
-            return AuditLog(
-                id = fields[ID],
-                entityType = EntityType.valueOf(fields[ENTITYTYPE]),
-                entityId = fields[ENTITYID],
-                description = fields[DESCRIPTION],
-                userName = fields[USERNAME],
-                createdAt = LocalDateTime.parse(fields[CREATEDAT])
-            )
-        }
-    }
-}
+)

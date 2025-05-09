@@ -10,7 +10,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.entities.Project
 import logic.repositories.*
-import data.projects.exceptions.ProjectsLogicExceptions.*
+import net.thechance.logic.exceptions.ProjectsLogicExceptions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

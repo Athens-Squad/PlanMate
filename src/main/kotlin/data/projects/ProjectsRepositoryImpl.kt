@@ -2,7 +2,7 @@ package data.projects
 
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
-import net.thechance.data.projects.datasource.ProjectsDataSource
+import data.projects.data_source.ProjectsDataSource
 
 class ProjectsRepositoryImpl(
     private val projectsDataSource: ProjectsDataSource
