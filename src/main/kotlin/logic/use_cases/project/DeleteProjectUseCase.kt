@@ -1,11 +1,10 @@
 package logic.use_cases.project
 
+import logic.entities.AuditLog
 import logic.entities.EntityType
-import logic.repositories.AuditRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
 import logic.use_cases.audit_log.CreateAuditLogUseCase
-import net.thechance.logic.use_cases.audit_log.log_builder.createLog
 import logic.use_cases.project.projectValidations.checkIfFieldIsValid
 import logic.use_cases.project.projectValidations.checkIfProjectExistInRepositoryAndReturn
 import logic.use_cases.project.projectValidations.checkIfUserAuthorized
@@ -13,6 +12,7 @@ import logic.use_cases.project.projectValidations.checkIfUserIsProjectOwner
 import net.thechance.logic.exceptions.InvalidUsernameForProjectException
 import net.thechance.logic.exceptions.NoProjectFoundException
 import net.thechance.logic.exceptions.NotAuthorizedUserException
+import java.time.LocalDateTime
 
 
 class DeleteProjectUseCase(
@@ -35,13 +35,15 @@ class DeleteProjectUseCase(
             ?: throw NotAuthorizedUserException()
 
         projectRepository.deleteProject(projectId)
-        createLog(
-            entityType = EntityType.PROJECT,
-            entityId = project.id,
-            userName = project.createdBy,
-            logMessage = "Project deleted successfully."
-        ) {
-            createAuditLogUseCase.execute(it)
-        }
+
+        createAuditLogUseCase.execute(
+            AuditLog(
+                entityType = EntityType.PROJECT,
+                entityId = project.id,
+                description = "Project deleted successfully.",
+                userName = project.createdBy,
+                createdAt = LocalDateTime.now(),
+            )
+        )
     }
 }

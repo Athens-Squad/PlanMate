@@ -1,12 +1,11 @@
 package logic.use_cases.project
 
+import logic.entities.AuditLog
 import logic.entities.EntityType
 import logic.entities.Project
-import logic.repositories.AuditRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
 import logic.use_cases.audit_log.CreateAuditLogUseCase
-import net.thechance.logic.use_cases.audit_log.log_builder.createLog
 import logic.use_cases.project.projectValidations.checkIfFieldIsValid
 import logic.use_cases.project.projectValidations.checkIfProjectExistInRepositoryAndReturn
 import logic.use_cases.project.projectValidations.checkIfUserAuthorized
@@ -15,6 +14,7 @@ import net.thechance.logic.exceptions.InvalidProjectNameException
 import net.thechance.logic.exceptions.InvalidUsernameForProjectException
 import net.thechance.logic.exceptions.NoProjectFoundException
 import net.thechance.logic.exceptions.NotAuthorizedUserException
+import java.time.LocalDateTime
 
 
 class UpdateProjectUseCase(
@@ -41,13 +41,14 @@ class UpdateProjectUseCase(
 
         projectRepository.updateProject(updatedProject)
 
-        createLog(
-            entityType = EntityType.PROJECT,
-            entityId = updatedProject.id,
-            userName = updatedProject.createdBy,
-            logMessage = "Project updated successfully."
-        ) {
-            createAuditLogUseCase.execute(it)
-        }
+        createAuditLogUseCase.execute(
+            AuditLog(
+                entityType = EntityType.PROJECT,
+                entityId = updatedProject.id,
+                description = "Project updated successfully.",
+                userName = updatedProject.createdBy,
+                createdAt = LocalDateTime.now(),
+            )
+        )
     }
 }

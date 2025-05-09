@@ -1,12 +1,10 @@
 package logic.use_cases.task
 
 import logic.entities.AuditLog
-import logic.repositories.AuditRepository
-import logic.repositories.TasksRepository
 import logic.entities.EntityType
+import logic.repositories.TasksRepository
 import logic.use_cases.audit_log.CreateAuditLogUseCase
 import logic.use_cases.task.taskvalidations.TaskValidator
-import net.thechance.logic.use_cases.audit_log.log_builder.createLog
 import java.time.LocalDateTime
 
 
@@ -21,14 +19,15 @@ class DeleteTaskUseCase(
             taskRepository.deleteTask(taskId)
 
             // Create an audit log for task deletion
-            createLog(
-                entityType = EntityType.TASK,
-                entityId = taskId,
-                logMessage = "Task deleted successfully.",
-                userName = userName,
-            ) {
-                createAuditLogUseCase.execute(it)
-            }
+            createAuditLogUseCase.execute(
+                AuditLog(
+                    entityType = EntityType.TASK,
+                    entityId = taskId,
+                    description = "Task deleted successfully.",
+                    userName = userName,
+                    createdAt = LocalDateTime.now(),
+                )
+            )
         }
     }
 }

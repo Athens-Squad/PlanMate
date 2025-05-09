@@ -1,14 +1,12 @@
 package logic.use_cases.task
 
 import logic.entities.AuditLog
-import logic.entities.Task
-import logic.repositories.AuditRepository
-import logic.repositories.TasksRepository
 import logic.entities.EntityType
+import logic.entities.Task
+import logic.repositories.TasksRepository
 import logic.use_cases.audit_log.CreateAuditLogUseCase
 import logic.use_cases.task.taskvalidations.TaskValidator
 import java.time.LocalDateTime
-import net.thechance.logic.use_cases.audit_log.log_builder.createLog
 
 class CreateTaskUseCase(
     private val taskRepository: TasksRepository,
@@ -23,14 +21,15 @@ class CreateTaskUseCase(
             //create task
             taskRepository.createTask(task)
 
-            createLog(
-                entityType = EntityType.TASK,
-                entityId = task.id,
-                logMessage = "Task created successfully.",
-                userName = userName,
-            ) {
-                createAuditLogUseCase.execute(it)
-            }
+            createAuditLogUseCase.execute(
+                AuditLog(
+                    entityType = EntityType.TASK,
+                    entityId = task.id,
+                    description = "Task created successfully.",
+                    userName = userName,
+                    createdAt = LocalDateTime.now(),
+                )
+            )
 
         }
     }

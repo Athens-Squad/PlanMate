@@ -1,13 +1,11 @@
 package logic.use_cases.task
 
 import logic.entities.AuditLog
-import logic.entities.Task
-import logic.repositories.AuditRepository
-import logic.repositories.TasksRepository
 import logic.entities.EntityType
+import logic.entities.Task
+import logic.repositories.TasksRepository
 import logic.use_cases.audit_log.CreateAuditLogUseCase
 import logic.use_cases.task.taskvalidations.TaskValidator
-import net.thechance.logic.use_cases.audit_log.log_builder.createLog
 import java.time.LocalDateTime
 
 
@@ -28,14 +26,15 @@ class UpdateTaskUseCase(
             taskRepository.updateTask(updatedTask)
 
             //create log
-            createLog(
-                entityType = EntityType.TASK,
-                entityId = task.id,
-                logMessage = "Task updated successfully.",
-                userName = userName,
-            ) {
-                createAuditLogUseCase.execute(it)
-            }
+            createAuditLogUseCase.execute(
+                AuditLog(
+                    entityType = EntityType.TASK,
+                    entityId = task.id,
+                    description = "Project updated successfully.",
+                    userName = userName,
+                    createdAt = LocalDateTime.now(),
+                )
+            )
         }
     }
 }
