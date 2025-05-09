@@ -1,12 +1,12 @@
 package net.thechance.data.tasks.data_source.localCsvFile
 
-import logic.entities.Task
+import data.tasks.data_source.TasksDataSource
 import data.utils.csv_file_handle.CsvFileHandler
 import data.utils.csv_file_handle.CsvFileParser
-import data.tasks.data_source.TasksDataSource
-import net.thechance.data.tasks.dto.TaskCsvDto
-import net.thechance.data.tasks.mappers.toTask
-import net.thechance.data.tasks.mappers.toTaskCsvDto
+import logic.entities.Task
+import net.thechance.data.tasks.data_source.localCsvFile.dto.TaskCsvDto
+import net.thechance.data.tasks.data_source.localCsvFile.mapper.toTask
+import net.thechance.data.tasks.data_source.localCsvFile.mapper.toTaskCsvDto
 
 class TasksFileDataSource(
     private val tasksFileHandler: CsvFileHandler,

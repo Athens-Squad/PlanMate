@@ -6,9 +6,9 @@ import data.utils.csv_file_handle.CsvFileParser
 import logic.entities.User
 import logic.exceptions.UserAlreadyExistsException
 import logic.exceptions.UserNotFoundException
-import net.thechance.data.user.dto.UserCsvDto
-import net.thechance.data.user.mappers.toUser
-import net.thechance.data.user.mappers.toUserCsvDto
+import net.thechance.data.user.data_source.localCsvFile.dto.UserCsvDto
+import net.thechance.data.user.data_source.localCsvFile.mapper.toUser
+import net.thechance.data.user.data_source.localCsvFile.mapper.toUserCsvDto
 
 class UsersFileDataSource(
 	private val userFileHandler: CsvFileHandler,

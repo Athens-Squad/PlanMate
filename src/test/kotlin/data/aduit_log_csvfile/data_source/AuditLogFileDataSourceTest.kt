@@ -8,7 +8,7 @@ import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import logic.entities.AuditLog
 import net.thechance.data.aduit_log.data_source.AuditLogDataSource
-import net.thechance.data.aduit_log.data_source.AuditLogFileDataSource
+import net.thechance.data.aduit_log.data_source.local.dto.AuditLogFileDataSource
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 
