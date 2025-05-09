@@ -1,52 +1,64 @@
 package logic.use_cases.progression_state
 
+import com.google.common.truth.Truth.assertThat
+import helper.progression_state_helper.createDummyState
+import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import logic.repositories.ProgressionStateRepository
 import logic.entities.ProgressionState
+import net.thechance.data.progression_state.exceptions.ProgressionStateNotFoundException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 
 class GetStateByIdUseCaseTest {
 
- lateinit var getProgressionStateByIdUseCase: GetProgressionStateByIdUseCase
- val stateRepository: ProgressionStateRepository = mockk(relaxed = true)
+    lateinit var getProgressionStateByIdUseCase: GetProgressionStateByIdUseCase
+    val stateRepository: ProgressionStateRepository = mockk(relaxed = true)
 
 
- @BeforeEach
- fun setUp() {
-  getProgressionStateByIdUseCase = GetProgressionStateByIdUseCase(stateRepository)
- }
+    @BeforeEach
+    fun setUp() {
+        getProgressionStateByIdUseCase = GetProgressionStateByIdUseCase(stateRepository)
+    }
 
- @Test
- fun `should throw IllegalArgumentException when state ID does not exist`() {
-  // Given
-  val stateId = "999"
-  every { stateRepository.getStates() } returns Result.success(emptyList())
+    @Test
+    fun `should return progression state when found`() {
+        runTest {
+            // given
+            val progressionStateId = createDummyState.dummyState().id
 
-  // When & Then
-  val exception = assertFailsWith<IllegalArgumentException> {
-   getProgressionStateByIdUseCase.execute(stateId)
-  }
+            val expectedProgressionState = createDummyState.dummyState()
 
-  assertEquals("Project with ID $stateId does not exist.", exception.message)
- }
+            coEvery { stateRepository.getProgressionStates() } returns listOf (expectedProgressionState)
 
- @Test
- fun `should return state when state ID exists`() {
-  // Given
-  val stateId = "123"
-  val state = ProgressionState(id = stateId, name = "Test State" , projectId = "44")
-  every { stateRepository.getStates() } returns Result.success(listOf(state))
+            // when
+            val result = getProgressionStateByIdUseCase.execute(progressionStateId)
 
-  // When
-  val result = getProgressionStateByIdUseCase.execute(stateId).getOrThrow()
+            // then
+            assertThat(result).isEqualTo(expectedProgressionState)
+        }
+    }
 
-  // Then
-  assertEquals(state, result)
- }
+    @Test
+    fun `should throw Progression State Not Found Exception when not found`()
+    {
+        runTest {
+            // given
+            val progressionStateId = createDummyState.dummyState().id
+
+            coEvery { stateRepository.getProgressionStates() } returns emptyList() // No progression states available
+
+            // when & then
+            assertThrows<ProgressionStateNotFoundException> {
+                getProgressionStateByIdUseCase.execute(progressionStateId)
+            }
+        }
+    }
 
 
 }
