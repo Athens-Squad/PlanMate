@@ -4,6 +4,7 @@ import logic.entities.AuditLog
 import logic.repositories.AuditRepository
 import logic.repositories.TasksRepository
 import logic.entities.EntityType
+import logic.use_cases.audit_log.CreateAuditLogUseCase
 import logic.use_cases.task.taskvalidations.TaskValidator
 import net.thechance.logic.use_cases.audit_log.log_builder.createLog
 import java.time.LocalDateTime
@@ -11,7 +12,7 @@ import java.time.LocalDateTime
 
 class DeleteTaskUseCase(
     private val taskRepository: TasksRepository,
-    private val auditRepository: AuditRepository,
+    private val createAuditLogUseCase: CreateAuditLogUseCase,
     private val taskValidator: TaskValidator
 ) {
     suspend fun execute(taskId: String, userName: String) {
@@ -26,7 +27,7 @@ class DeleteTaskUseCase(
                 logMessage = "Task deleted successfully.",
                 userName = userName,
             ) {
-                auditRepository.createAuditLog(it)
+                createAuditLogUseCase.execute(it)
             }
         }
     }

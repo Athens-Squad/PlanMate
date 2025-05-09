@@ -5,13 +5,14 @@ import logic.entities.Task
 import logic.repositories.AuditRepository
 import logic.repositories.TasksRepository
 import logic.entities.EntityType
+import logic.use_cases.audit_log.CreateAuditLogUseCase
 import logic.use_cases.task.taskvalidations.TaskValidator
 import java.time.LocalDateTime
 import net.thechance.logic.use_cases.audit_log.log_builder.createLog
 
 class CreateTaskUseCase(
     private val taskRepository: TasksRepository,
-    private val auditRepository: AuditRepository,
+    private val createAuditLogUseCase: CreateAuditLogUseCase,
     private val taskValidator: TaskValidator
 ) {
     suspend fun execute(task: Task, userName: String) {
@@ -28,7 +29,7 @@ class CreateTaskUseCase(
                 logMessage = "Task created successfully.",
                 userName = userName,
             ) {
-                auditRepository.createAuditLog(it)
+                createAuditLogUseCase.execute(it)
             }
 
         }

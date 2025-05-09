@@ -5,6 +5,7 @@ import logic.entities.Project
 import logic.repositories.AuditRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
+import logic.use_cases.audit_log.CreateAuditLogUseCase
 import net.thechance.logic.use_cases.audit_log.log_builder.createLog
 import logic.use_cases.project.projectValidations.checkIfFieldIsValid
 import logic.use_cases.project.projectValidations.checkIfProjectAlreadyExistInRepository
@@ -17,7 +18,7 @@ import net.thechance.logic.exceptions.ProjectAlreadyExistException
 class CreateProjectUseCase(
 	private val projectRepository: ProjectsRepository,
 	private val userRepository: UserRepository,
-	private val auditRepository: AuditRepository
+	private val createAuditLogUseCase: CreateAuditLogUseCase,
 ) {
 	suspend fun execute(project: Project) {
 		project.apply {
@@ -37,9 +38,9 @@ class CreateProjectUseCase(
             logMessage = "Project created successfully.",
             entityType = EntityType.PROJECT,
             entityId = project.id,
-            userName = project.name
+            userName = project.createdBy
         ) {
-			auditRepository.createAuditLog(it)
+			createAuditLogUseCase.execute(it)
 		}
 	}
 }

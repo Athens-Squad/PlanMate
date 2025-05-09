@@ -5,6 +5,7 @@ import logic.entities.Task
 import logic.repositories.AuditRepository
 import logic.repositories.TasksRepository
 import logic.entities.EntityType
+import logic.use_cases.audit_log.CreateAuditLogUseCase
 import logic.use_cases.task.taskvalidations.TaskValidator
 import net.thechance.logic.use_cases.audit_log.log_builder.createLog
 import java.time.LocalDateTime
@@ -12,7 +13,7 @@ import java.time.LocalDateTime
 
 class UpdateTaskUseCase(
     private val taskRepository: TasksRepository,
-    private val auditRepository: AuditRepository,
+    private val createAuditLogUseCase: CreateAuditLogUseCase,
     private val taskValidator: TaskValidator
 ) {
 
@@ -33,7 +34,7 @@ class UpdateTaskUseCase(
                 logMessage = "Task updated successfully.",
                 userName = userName,
             ) {
-                auditRepository.createAuditLog(it)
+                createAuditLogUseCase.execute(it)
             }
         }
     }

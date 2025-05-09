@@ -5,6 +5,7 @@ import logic.entities.Project
 import logic.repositories.AuditRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
+import logic.use_cases.audit_log.CreateAuditLogUseCase
 import net.thechance.logic.use_cases.audit_log.log_builder.createLog
 import logic.use_cases.project.projectValidations.checkIfFieldIsValid
 import logic.use_cases.project.projectValidations.checkIfProjectExistInRepositoryAndReturn
@@ -19,7 +20,7 @@ import net.thechance.logic.exceptions.NotAuthorizedUserException
 class UpdateProjectUseCase(
     private val projectRepository: ProjectsRepository,
     private val userRepository: UserRepository,
-    private val auditRepository: AuditRepository
+    private val createAuditLogUseCase: CreateAuditLogUseCase,
 ) {
     suspend fun execute(updatedProject: Project) {
         updatedProject.apply {
@@ -43,10 +44,10 @@ class UpdateProjectUseCase(
         createLog(
             entityType = EntityType.PROJECT,
             entityId = updatedProject.id,
-            userName = updatedProject.name,
+            userName = updatedProject.createdBy,
             logMessage = "Project updated successfully."
         ) {
-            auditRepository.createAuditLog(it)
+            createAuditLogUseCase.execute(it)
         }
     }
 }
