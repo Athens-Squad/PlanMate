@@ -3,15 +3,11 @@ package ui.io
 import net.thechance.ui.options.AuthenticationOptions
 import net.thechance.ui.options.Option
 import net.thechance.ui.utils.TextStyle
-import ui.utils.Colors
 
-class Printer(
-    private val colors: Colors
-) {
-
+class Printer {
     fun printText(
         text: String,
-        textStyle : TextStyle = TextStyle.NORMAL,
+        textStyle: TextStyle = TextStyle.NORMAL,
         withNewLine: Boolean = true
     ) {
         val coloredText = textStyle.format(text)
