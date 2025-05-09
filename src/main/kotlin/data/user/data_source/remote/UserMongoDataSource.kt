@@ -3,14 +3,14 @@ package net.thechance.data.user.data_source.remote
 import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.user.data_source.UsersDataSource
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.withContext
-import logic.entities.User
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.toList
+import logic.entities.User
 import logic.use_cases.authentication.exceptions.UserAlreadyExistsException
 import logic.use_cases.authentication.exceptions.UserNotFoundException
+import net.thechance.data.user.dto.UserDto
+import net.thechance.data.user.mappers.toUser
+import net.thechance.data.user.mappers.toUserDto
 
 
 class UserMongoDataSource(private val userCollection:MongoCollection<UserDto>):UsersDataSource {
@@ -24,7 +24,7 @@ class UserMongoDataSource(private val userCollection:MongoCollection<UserDto>):U
 
         if (existing != null) throw UserAlreadyExistsException()
 
-        userCollection.insertOne(UserDto.fromUser(user))
+        userCollection.insertOne(user.toUserDto())
 
 
 

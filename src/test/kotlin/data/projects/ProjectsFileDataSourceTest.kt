@@ -1,8 +1,8 @@
 package data.projects
 
 import com.google.common.truth.Truth.assertThat
-import data.csv_file_handle.CsvFileHandler
-import data.csv_file_handle.CsvFileParser
+import data.utils.csv_file_handle.CsvFileHandler
+import data.utils.csv_file_handle.CsvFileParser
 import data.progression_state.data_source.ProgressionStateDataSource
 import data.tasks.data_source.TasksDataSource
 import helper.project_helper.createProject

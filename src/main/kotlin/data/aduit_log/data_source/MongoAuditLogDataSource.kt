@@ -5,13 +5,15 @@ import logic.entities.AuditLog
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.flow.map
 import net.thechance.data.aduit_log.dto.AuditLogDto
+import net.thechance.data.aduit_log.mappers.toAuditLog
+import net.thechance.data.aduit_log.mappers.toAuditLogDto
 import org.bson.Document
 
 class MongoAuditLogDataSource(
     private val auditLogCollection: MongoCollection<AuditLogDto>
 ) : AuditLogDataSource {
     override suspend fun createAuditLog(auditLog: AuditLog) {
-        auditLogCollection.insertOne(AuditLogDto.fromAuditLog(auditLog))
+        auditLogCollection.insertOne(auditLog.toAuditLogDto())
     }
 
     override suspend fun getAuditLogs(): List<AuditLog> {

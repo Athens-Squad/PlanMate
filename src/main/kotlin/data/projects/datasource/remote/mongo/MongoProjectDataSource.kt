@@ -10,6 +10,8 @@ import logic.entities.ProgressionState
 import logic.entities.Project
 import net.thechance.data.projects.datasource.ProjectsDataSource
 import net.thechance.data.projects.dto.ProjectDto
+import net.thechance.data.projects.mappers.toProject
+import net.thechance.data.projects.mappers.toProjectDto
 
 class MongoProjectDataSource(
     private val projectsCollection: MongoCollection<ProjectDto>,
@@ -17,13 +19,13 @@ class MongoProjectDataSource(
     private val statesDataSource: ProgressionStateDataSource
 ) : ProjectsDataSource {
     override suspend fun createProject(project: Project) {
-        val projectDto = ProjectDto.fromProject(project)
+        val projectDto = project.toProjectDto()
 
         projectsCollection.insertOne(projectDto)
     }
 
     override suspend fun updateProject(project: Project) {
-        val updatedProjectDto = ProjectDto.fromProject(project)
+        val updatedProjectDto = project.toProjectDto()
 
         val queryParams = Filters.eq("_id", project.id)
 

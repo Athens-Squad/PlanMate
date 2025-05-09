@@ -1,17 +1,20 @@
 package net.thechance.data.tasks.data_source.localCsvFile
 
 import logic.entities.Task
-import data.csv_file_handle.CsvFileHandler
-import data.csv_file_handle.CsvFileParser
+import data.utils.csv_file_handle.CsvFileHandler
+import data.utils.csv_file_handle.CsvFileParser
 import data.tasks.data_source.TasksDataSource
+import net.thechance.data.tasks.dto.TaskCsvDto
+import net.thechance.data.tasks.mappers.toTask
+import net.thechance.data.tasks.mappers.toTaskCsvDto
 
 class TasksFileDataSource(
     private val tasksFileHandler: CsvFileHandler,
-    private val csvFileParser: CsvFileParser<Task>
+    private val csvFileParser: CsvFileParser<TaskCsvDto>
 ) : TasksDataSource {
 
     override suspend fun createTask(task: Task) {
-        val record = csvFileParser.toCsvRecord(task)
+        val record = csvFileParser.toCsvRecord(task.toTaskCsvDto())
         tasksFileHandler.appendRecord(record)
     }
 
@@ -30,13 +33,13 @@ class TasksFileDataSource(
 
     override suspend fun getAllTasks(): List<Task> {
         return tasksFileHandler.readRecords()
-            .map { csvFileParser.parseRecord(it) }
+            .map { csvFileParser.parseRecord(it).toTask() }
     }
 
     override suspend fun updateTask(task: Task) {
         val updatedTasks = getAllTasks()
             .map { if (it.id == task.id) task else it }
-        val updatedRecords = updatedTasks.map { csvFileParser.toCsvRecord(it) }
+        val updatedRecords = updatedTasks.map { csvFileParser.toCsvRecord(it.toTaskCsvDto()) }
         tasksFileHandler.writeRecords(updatedRecords)
 
     }
@@ -44,7 +47,7 @@ class TasksFileDataSource(
     override suspend fun deleteTask(taskId: String) {
         val updatedTasks = getAllTasks()
             .filter { it.id != taskId }
-        val updatedRecords = updatedTasks.map { csvFileParser.toCsvRecord(it) }
+        val updatedRecords = updatedTasks.map { csvFileParser.toCsvRecord(it.toTaskCsvDto()) }
         tasksFileHandler.writeRecords(updatedRecords)
     }
 }

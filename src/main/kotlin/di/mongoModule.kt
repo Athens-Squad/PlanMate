@@ -7,7 +7,7 @@ import net.thechance.data.aduit_log.dto.AuditLogDto
 import net.thechance.data.progression_state.dto.ProgressionStateDto
 import net.thechance.data.projects.dto.ProjectDto
 import net.thechance.data.tasks.dto.TaskDto
-import net.thechance.data.user.data_source.remote.UserDto
+import net.thechance.data.user.dto.UserDto
 import net.thechance.data.utils.loadEnvironmentVariable
 import org.koin.core.qualifier.named
 import org.koin.dsl.module

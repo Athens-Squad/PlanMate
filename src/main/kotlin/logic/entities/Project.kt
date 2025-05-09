@@ -1,12 +1,6 @@
 package logic.entities
 
-import data.projects.utils.ProjectColumnIndex.NAME
-import data.projects.utils.ProjectColumnIndex.ID
-import data.projects.utils.ProjectColumnIndex.DESCRIPTION
-import data.projects.utils.ProjectColumnIndex.CREATED_BY
-import logic.CsvSerializable
-import java.util.UUID
-
+import java.util.*
 
 
 data class Project(
@@ -16,22 +10,4 @@ data class Project(
     val progressionStates: MutableList<ProgressionState> = mutableListOf(),
     val tasks: MutableList<Task> = mutableListOf(),
     val createdBy: String
-) : CsvSerializable {
-    override fun toCsvFields(): List<String> = listOf(
-        id,
-        name,
-        description,
-        createdBy
-    )
-
-    companion object {
-        fun fromCsv(fields: List<String>): Project {
-            return Project(
-                id = fields[ID],
-                name = fields[NAME],
-                description = fields[DESCRIPTION],
-                createdBy = fields[CREATED_BY]
-            )
-        }
-    }
-}
+)

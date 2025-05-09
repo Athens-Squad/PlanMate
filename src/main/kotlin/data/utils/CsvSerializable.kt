@@ -1,5 +1,4 @@
-package logic
-
+package net.thechance.data.utils
 
 interface CsvSerializable {
     companion object {
