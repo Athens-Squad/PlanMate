@@ -4,9 +4,6 @@ import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
 import data.progression_state.data_source.ProgressionStateDataSource
 import logic.entities.ProgressionState
-import net.thechance.data.progression_state.dto.ProgressionStateDto
-import net.thechance.data.progression_state.mappers.toProgressionState
-import net.thechance.data.progression_state.mappers.toProgressionStateDto
 
 class ProgressionStateFileDataSource(
 	private val progressionStatesFileHandler: CsvFileHandler,

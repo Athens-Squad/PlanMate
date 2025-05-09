@@ -1,6 +1,5 @@
 package net.thechance.di
 
-import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
 import data.progression_state.data_source.ProgressionStateDataSource
@@ -10,13 +9,10 @@ import data.user.data_source.UsersDataSource
 import logic.entities.*
 import net.thechance.data.aduit_log.data_source.AuditLogDataSource
 import net.thechance.data.aduit_log.data_source.MongoAuditLogDataSource
-import net.thechance.data.aduit_log.dto.AuditLogDto
 import net.thechance.data.authentication.UserSession
 import net.thechance.data.projects.datasource.ProjectsDataSource
 import net.thechance.data.projects.datasource.remote.mongo.MongoProjectDataSource
-import net.thechance.data.projects.dto.ProjectDto
 import net.thechance.data.tasks.data_source.remote.mongo.MongoTaskDataSource
-import net.thechance.data.user.data_source.remote.UserDto
 import net.thechance.data.user.data_source.remote.UserMongoDataSource
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
