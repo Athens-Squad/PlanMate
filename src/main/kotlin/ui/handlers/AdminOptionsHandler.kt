@@ -5,6 +5,7 @@ import ui.io.ConsoleIO
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.options.AdminOptions
 import net.thechance.ui.utils.ProjectSelector
+import net.thechance.ui.utils.TextStyle
 import ui.featuresui.*
 
 class AdminOptionsHandler(
@@ -15,7 +16,7 @@ class AdminOptionsHandler(
     private val session: UserSession
 ) {
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        consoleIO.printer.printError("Unexpected error: ${throwable.message}")
+        consoleIO.printer.printText("Unexpected error: ${throwable.message}",TextStyle.ERROR)
     }
     private val projectsScope: CoroutineScope =
         CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
@@ -23,7 +24,7 @@ class AdminOptionsHandler(
 
     suspend fun handle() {
         do {
-            consoleIO.printer.printWelcomeMessage("Hello Mr/Ms : ${session.currentUser.name}")
+            consoleIO.printer.printText("Hello Mr/Ms : ${session.currentUser.name}",TextStyle.WELCOME)
 
             consoleIO.printer.printOptions(AdminOptions.entries)
 
@@ -34,7 +35,7 @@ class AdminOptionsHandler(
                 AdminOptions.CREATE_PROJECT.optionNumber -> projectsUi.createProject()
                 AdminOptions.CREATE_MATE.optionNumber ->
                     authenticationUi.createMate()
-                AdminOptions.EXIT.optionNumber -> consoleIO.printer.printGoodbyeMessage("We will miss you.")
+                AdminOptions.EXIT.optionNumber -> consoleIO.printer.printText("We will miss you.",TextStyle.GOODBYE)
             }
 
         } while (option != AdminOptions.EXIT.optionNumber)
@@ -45,12 +46,12 @@ class AdminOptionsHandler(
             val projects = projectsUi.getAllUserProjects(session.currentUser.name)
 
             projects.forEach { project ->
-                consoleIO.printer.printPlainText(project.name)
+                consoleIO.printer.printText(project.name)
             }
 
             projectSelector.selectProject(projects)
         } catch (exception: Exception) {
-            consoleIO.printer.printError("Error : ${exception.message}")
+            consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
         }
     }
 }

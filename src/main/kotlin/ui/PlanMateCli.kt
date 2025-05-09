@@ -5,6 +5,7 @@ import logic.entities.UserType
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.handlers.AdminOptionsHandler
 import net.thechance.ui.handlers.MateOptionsHandler
+import net.thechance.ui.utils.TextStyle
 import ui.featuresui.*
 import ui.io.ConsoleIO
 
@@ -16,7 +17,7 @@ class PlanMateCli(
     private val mateOptionsHandler: MateOptionsHandler
 ) {
     fun run() {
-        consoleIO.printer.printWelcomeMessage("Welcome to Athens Plan Mate...")
+        consoleIO.printer.printText("Welcome to Athens Plan Mate...",TextStyle.WELCOME)
         authenticationUi.runAuthenticationUi { startAuthenticationUi() }
     }
 
