@@ -4,6 +4,7 @@ import kotlinx.coroutines.*
 import logic.entities.AuditLog
 import logic.use_cases.audit_log.AuditLogUseCases
 import net.thechance.ui.options.audit_log.AuditLogOptions
+import net.thechance.ui.utils.TextStyle
 import ui.io.ConsoleIO
 
 class AuditLogUi(
@@ -11,19 +12,19 @@ class AuditLogUi(
     private val auditLogUseCases: AuditLogUseCases
 ) {
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        consoleIO.printer.printError("Unexpected error: ${throwable.message}")
+        consoleIO.printer.printText("Unexpected error: ${throwable.message}",TextStyle.ERROR)
     }
     private val logScope: CoroutineScope =
         CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
 
     suspend fun getTaskHistory(taskId: String): List<AuditLog> {
-        consoleIO.printer.printTitle("Here is The History of Your Task")
+        consoleIO.printer.printText("Here is The History of Your Task",TextStyle.TITLE)
         return auditLogUseCases.getAuditLogsByTaskIdUseCase.execute(taskId)
     }
 
     suspend fun getProjectHistory(projectId: String): List<AuditLog> {
-        consoleIO.printer.printTitle("Here is The History of Your Project")
+        consoleIO.printer.printText("Here is The History of Your Project",TextStyle.TITLE)
         return auditLogUseCases.getAuditLogsByProjectIdUseCase.execute(projectId)
     }
 
@@ -33,7 +34,7 @@ class AuditLogUi(
 
 
     fun showHistoryOption() {
-        consoleIO.printer.printTitle("Select Option (1 , 2 )")
+        consoleIO.printer.printText("Select Option (1 , 2 )",TextStyle.TITLE)
         consoleIO.printer.printOptions(AuditLogOptions.entries)
         val inputHistoryOption = consoleIO.reader.readNumberFromUser()
 
@@ -42,9 +43,9 @@ class AuditLogUi(
                 logScope.launch {
                     try {
                         clearLog()
-                        consoleIO.printer.printCorrectOutput("History Deleted Successfully.")
+                        consoleIO.printer.printText("History Deleted Successfully.",TextStyle.SUCCESS)
                     } catch (exception: Exception) {
-                        consoleIO.printer.printError("Error : ${exception.message}")
+                        consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
                     }
                 }
 

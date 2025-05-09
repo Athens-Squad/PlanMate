@@ -6,6 +6,7 @@ import logic.entities.Project
 import net.thechance.ui.options.project.ProjectMateOptions
 import ui.io.ConsoleIO
 import net.thechance.ui.options.project.ProjectOptions
+import net.thechance.ui.utils.TextStyle
 import ui.featuresui.*
 
 class ProjectOptionsHandler(
@@ -16,7 +17,7 @@ class ProjectOptionsHandler(
 	private val auditLogUi: AuditLogUi,
 ) {
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        consoleIO.printer.printError("Unexpected error: ${throwable.message}")
+        consoleIO.printer.printText("Unexpected error: ${throwable.message}",TextStyle.ERROR)
     }
     private val projectsScope: CoroutineScope =
         CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
@@ -28,7 +29,7 @@ class ProjectOptionsHandler(
         this.project = project
 
         do {
-            consoleIO.printer.printTitle("Select Option (1 to 7):")
+            consoleIO.printer.printText("Select Option (1 to 7):",TextStyle.TITLE)
             consoleIO.printer.printOptions(ProjectOptions.entries)
 
             val option = consoleIO.reader.readNumberFromUser()
@@ -48,7 +49,7 @@ class ProjectOptionsHandler(
         this.project = project
 
         do {
-            consoleIO.printer.printTitle("Select Option (1 to 4):")
+            consoleIO.printer.printText("Select Option (1 to 4):",TextStyle.TITLE)
             consoleIO.printer.printOptions(ProjectMateOptions.entries)
 
             val option = consoleIO.reader.readNumberFromUser()
@@ -69,12 +70,12 @@ class ProjectOptionsHandler(
     private suspend fun createTask() {
         val progressionStates = progressionStateUi.getProgressionStatesByProjectId(project.id)
         if(progressionStates.isEmpty()){
-            consoleIO.printer.printError("please create state first")
+            consoleIO.printer.printText("please create state first",TextStyle.ERROR)
             return
         }
         tasksUi.createTask(progressionStates, project.id)
 
-        consoleIO.printer.printCorrectOutput("Task Created Successfully.")
+        consoleIO.printer.printText("Task Created Successfully.",TextStyle.SUCCESS)
     }
 
     private suspend fun showHistory() {
@@ -82,22 +83,22 @@ class ProjectOptionsHandler(
             projectsScope.launch {
                 val history = auditLogUi.getProjectHistory(project.id)
                 if(history.isEmpty()){
-                    consoleIO.printer.printError("no history found")
+                    consoleIO.printer.printText("no history found",TextStyle.ERROR)
                     return@launch
                 }
                 history.forEach { log->
-                    consoleIO.printer.printInfoLine(log.toString())
+                    consoleIO.printer.printText(log.toString(), TextStyle.INFO)
                 }
                 auditLogUi.showHistoryOption()
             }
 
         } catch (exception : Exception){
-            consoleIO.printer.printError(exception.message.toString())
+            consoleIO.printer.printText(exception.message.toString(),TextStyle.ERROR)
         }
     }
 
     private fun deleteProject() {
         projectsUi.deleteProject(project.id)
-        consoleIO.printer.printCorrectOutput("Project Deleted Successfully")
+        consoleIO.printer.printText("Project Deleted Successfully",TextStyle.SUCCESS)
     }
 }
