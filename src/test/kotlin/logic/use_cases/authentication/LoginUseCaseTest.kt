@@ -6,8 +6,7 @@ import io.mockk.every
 import io.mockk.mockk
 import logic.repositories.AuthenticationRepository
 import data.authentication.utils.PasswordHashing
-import logic.use_cases.authentication.LoginUseCase
-import logic.use_cases.authentication.exceptions.InvalidCredentialsException
+import logic.exceptions.InvalidCredentialsException
 import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows

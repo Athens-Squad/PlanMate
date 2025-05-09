@@ -1,9 +1,8 @@
 package logic.use_cases.authentication
 
+import data.authentication.utils.PasswordHashing
 import logic.entities.User
 import logic.repositories.UserRepository
-import data.authentication.utils.PasswordHashing
-import logic.entities.UserType
 import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
 
 class RegisterAsAdminUseCase(

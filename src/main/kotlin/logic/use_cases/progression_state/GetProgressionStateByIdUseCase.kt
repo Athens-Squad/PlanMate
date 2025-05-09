@@ -2,7 +2,7 @@ package logic.use_cases.progression_state
 
 import logic.repositories.ProgressionStateRepository
 import logic.entities.ProgressionState
-import net.thechance.data.progression_state.exceptions.ProgressionStateNotFoundException
+import logic.exceptions.ProgressionStateNotFoundException
 
 class GetProgressionStateByIdUseCase(
 	private val repository: ProgressionStateRepository,
