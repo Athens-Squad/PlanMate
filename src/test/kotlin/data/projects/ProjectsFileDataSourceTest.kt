@@ -1,8 +1,8 @@
 package data.projects
 
 import com.google.common.truth.Truth.assertThat
-import data.csv_file_handle.CsvFileHandler
-import data.csv_file_handle.CsvFileParser
+import data.utils.csv_file_handle.CsvFileHandler
+import data.utils.csv_file_handle.CsvFileParser
 import data.progression_state.data_source.ProgressionStateDataSource
 import data.tasks.data_source.TasksDataSource
 import helper.project_helper.createProject
@@ -13,7 +13,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import logic.entities.Project
-import net.thechance.data.projects.datasource.ProjectsDataSource
+import data.projects.data_source.ProjectsDataSource
 import net.thechance.data.projects.datasource.localcsvfile.ProjectsFileDataSource
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach

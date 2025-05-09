@@ -2,13 +2,13 @@ package data.aduit_log_csvfile.data_source
 
 import com.google.common.truth.Truth.assertThat
 import data.aduit_log_csvfile.dummyAuditLog
-import data.csv_file_handle.CsvFileHandler
-import data.csv_file_handle.CsvFileParser
+import data.utils.csv_file_handle.CsvFileHandler
+import data.utils.csv_file_handle.CsvFileParser
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import logic.entities.AuditLog
 import net.thechance.data.aduit_log.data_source.AuditLogDataSource
-import net.thechance.data.aduit_log.data_source.AuditLogFileDataSource
+import net.thechance.data.aduit_log.data_source.local.dto.AuditLogFileDataSource
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 

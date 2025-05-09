@@ -1,7 +1,6 @@
 package logic.use_cases.progression_state
 
 
-import logic.entities.ProgressionState
 import logic.repositories.ProgressionStateRepository
 import net.thechance.logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
 

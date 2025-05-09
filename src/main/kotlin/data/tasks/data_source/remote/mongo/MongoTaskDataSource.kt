@@ -7,9 +7,9 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import logic.entities.Task
-import net.thechance.data.tasks.dto.TaskDto
-import net.thechance.data.tasks.mappers.toTask
-import net.thechance.data.tasks.mappers.toTaskDto
+import net.thechance.data.tasks.data_source.remote.mongo.dto.TaskDto
+import data.tasks.data_source.remote.mongo.mapper.toTask
+import data.tasks.data_source.remote.mongo.mapper.toTaskDto
 
 class MongoTaskDataSource(
     private val taskCollection: MongoCollection<TaskDto>
