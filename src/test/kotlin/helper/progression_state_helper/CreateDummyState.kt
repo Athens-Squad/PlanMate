@@ -1,4 +1,4 @@
-package helper.task_helper
+package helper.progression_state_helper
 
 import logic.entities.ProgressionState
 
