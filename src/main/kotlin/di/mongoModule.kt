@@ -8,10 +8,22 @@ import data.projects.data_source.remote.mongo.dto.ProjectDto
 import net.thechance.data.tasks.data_source.remote.mongo.dto.TaskDto
 import net.thechance.data.user.data_source.remote.mongo.dto.UserDto
 import net.thechance.data.utils.loadEnvironmentVariable
+import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val mongoModule = module {
+
+    fun <T : Any> Module.mongoCollection(
+        collectionName: String,
+        bindingName: String,
+        documentClass: Class<T>
+    ) {
+        single(named(bindingName)) {
+            get<MongoDatabase>().getCollection(collectionName, documentClass)
+        }
+    }
+
     single<MongoClient> {
         MongoClient.create(loadEnvironmentVariable("MONGODB_URI"))
     }
@@ -20,19 +32,30 @@ val mongoModule = module {
         get<MongoClient>().getDatabase("planmate")
     }
 
-    single(named("projectsCollection")) { get<MongoDatabase>().getCollection<ProjectDto>("projects") }
-
-    single(named("progressionStatesCollection")) {
-        get<MongoDatabase>().getCollection("progression_states", ProgressionStateDto::class.java)
-    }
-
-    single(named("tasksCollection")) { get<MongoDatabase>().getCollection<TaskDto>("tasks") }
-
-    single(named("auditLogsCollection")) {
-        get<MongoDatabase>().getCollection("audit_log", AuditLogDto::class.java)
-    }
-    single(named("usersCollection")) { get<MongoDatabase>().getCollection<UserDto>("users", UserDto::class.java) }
-
-
+    mongoCollection(
+        collectionName = "projects",
+        bindingName = "projectsCollection",
+        documentClass = ProjectDto::class.java
+    )
+    mongoCollection(
+        collectionName = "progression_states",
+        bindingName = "progressionStatesCollection",
+        documentClass = ProgressionStateDto::class.java
+    )
+    mongoCollection(
+        collectionName = "tasks",
+        bindingName = "tasksCollection",
+        documentClass = TaskDto::class.java
+    )
+    mongoCollection(
+        collectionName = "audit_log",
+        bindingName = "auditLogsCollection",
+        documentClass = AuditLogDto::class.java
+    )
+    mongoCollection(
+        collectionName = "users",
+        bindingName = "usersCollection",
+        documentClass = UserDto::class.java
+    )
 
 }

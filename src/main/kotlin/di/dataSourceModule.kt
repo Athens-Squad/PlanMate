@@ -9,6 +9,7 @@ import data.utils.csv_file_handle.CsvFileParser
 import net.thechance.data.aduit_log.data_source.AuditLogDataSource
 import net.thechance.data.aduit_log.data_source.remote.mongo.MongoAuditLogDataSource
 import data.aduit_log.data_source.localCsvFile.dto.AuditLogCsvDto
+import data.progression_state.data_source.localCsvFile.dto.ProgressionStateCsvDto
 import net.thechance.data.authentication.UserSession
 import data.projects.data_source.ProjectsDataSource
 import data.projects.data_source.remote.mongo.MongoProjectDataSource
@@ -17,43 +18,63 @@ import net.thechance.data.tasks.data_source.remote.mongo.MongoTaskDataSource
 import net.thechance.data.tasks.data_source.localCsvFile.dto.TaskCsvDto
 import net.thechance.data.user.data_source.remote.mongo.UserMongoDataSource
 import net.thechance.data.user.data_source.localCsvFile.dto.UserCsvDto
+import net.thechance.data.utils.CsvSerializable
+import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
 
 val dataSourceModule = module {
-	single(named("tasksCsvFile")) { File("data_files/tasks.csv") }
-	single(named("tasksFileHandler")) { CsvFileHandler(get(named("tasksCsvFile"))) }
-	single(named("tasksFileParser")) { CsvFileParser(factory = TaskCsvDto.Companion::fromCsv) }
-	single<TasksDataSource> {
-		MongoTaskDataSource(
-			taskCollection = get(named("tasksCollection"))
-		)
+
+	fun <T : CsvSerializable> Module.csvFileSetup(
+		filePath: String,
+		namedPrefix: String,
+		factory: (List<String>) -> T
+	) {
+		single(named("${namedPrefix}CsvFile")) { File(filePath) }
+		single(named("${namedPrefix}FileHandler")) {
+			CsvFileHandler(get(named("${namedPrefix}CsvFile")))
+		}
+		single(named("${namedPrefix}FileParser")) {
+			CsvFileParser(factory = factory)
+		}
 	}
 
-	single(named("usersCsvFile")) { File("data_files/users.csv") }
-	single(named("usersFileHandler")) { CsvFileHandler(get(named("usersCsvFile"))) }
-	single(named("usersFileParser")) { CsvFileParser(factory = UserCsvDto.Companion::fromCsv) }
+	csvFileSetup(
+		filePath = "data_files/tasks.csv",
+		namedPrefix = "tasks",
+		factory = TaskCsvDto.Companion::fromCsv
+	)
+	csvFileSetup(
+		filePath = "data_files/users.csv",
+		namedPrefix = "users",
+		factory = UserCsvDto.Companion::fromCsv
+	)
+	csvFileSetup(
+		filePath = "data_files/audit_log.csv",
+		namedPrefix = "auditLog",
+		factory = AuditLogCsvDto.Companion::fromCsv
+	)
+	csvFileSetup(
+		filePath = "data_files/projects.csv",
+		namedPrefix = "projects",
+		factory = ProjectCsvDto.Companion::fromCsv
+	)
+	csvFileSetup(
+		filePath = "data_files/states.csv",
+		namedPrefix = "progressionStates",
+		factory = ProgressionStateCsvDto.Companion::fromCsv
+	)
+
+
 	single { UserSession() }
 	single<UsersDataSource> {
 		UserMongoDataSource(get(named("usersCollection")))
 	}
 
-	single(named("auditLogCsvFile")) { File("data_files/audit_log.csv") }
-	single(named("AuditLogFileHandler")) { CsvFileHandler(get(named("auditLogCsvFile"))) }
-	single(named("AuditLogFileParser")) { CsvFileParser(factory = AuditLogCsvDto.Companion::fromCsv) }
-	single<AuditLogDataSource> {
-		MongoAuditLogDataSource(get(named("auditLogsCollection")))
-	}
-
-	single(named("projectsCsvFile")) { File("data_files/projects.csv") }
-	single(named("projectsFileHandler")) { CsvFileHandler(get(named("projectsCsvFile"))) }
-	single(named("projectsFileParser")) { CsvFileParser(factory = ProjectCsvDto.Companion::fromCsv) }
-	single<ProjectsDataSource> {
-		MongoProjectDataSource(
-			projectsCollection = get(named("projectsCollection")),
-			tasksDataSource = get<TasksDataSource>(),
-			statesDataSource = get<ProgressionStateDataSource>()
+	single<TasksDataSource> {
+		MongoTaskDataSource(
+			taskCollection = get(named("tasksCollection"))
 		)
 	}
 
@@ -62,4 +83,21 @@ val dataSourceModule = module {
 			progressionStatesCollection = get(named("progressionStatesCollection"))
 		)
 	}
+
+	single<AuditLogDataSource> {
+		MongoAuditLogDataSource(get(named("auditLogsCollection")))
+	}
+
+	single<ProjectsDataSource> {
+		MongoProjectDataSource(
+			projectsCollection = get(named("projectsCollection")),
+			tasksDataSource = get<TasksDataSource>(),
+			statesDataSource = get<ProgressionStateDataSource>()
+		)
+	}
+
+
+
+
 }
+
