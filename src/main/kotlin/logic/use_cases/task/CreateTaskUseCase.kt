@@ -14,23 +14,17 @@ class CreateTaskUseCase(
     private val taskValidator: TaskValidator
 ) {
     suspend fun execute(task: Task, userName: String) {
-        taskValidator.doIfTaskNotExistsOrThrow(task) {
-            //validate task
-            taskValidator.validateTaskBeforeCreation(task)
+        taskValidator.validateTaskBeforeCreation(task)
+	    taskRepository.createTask(task)
 
-            //create task
-            taskRepository.createTask(task)
-
-            createAuditLogUseCase.execute(
-                AuditLog(
-                    entityType = EntityType.TASK,
-                    entityId = task.id,
-                    description = "Task created successfully.",
-                    userName = userName,
-                    createdAt = LocalDateTime.now(),
-                )
-            )
-
-        }
+	    createAuditLogUseCase.execute(
+		    AuditLog(
+			    entityType = EntityType.TASK,
+			    entityId = task.id,
+			    description = "Task created successfully.",
+			    userName = userName,
+			    createdAt = LocalDateTime.now(),
+		    )
+	    )
     }
 }

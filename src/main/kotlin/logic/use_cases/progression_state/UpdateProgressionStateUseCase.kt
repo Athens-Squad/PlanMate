@@ -10,10 +10,7 @@ class UpdateProgressionStateUseCase(
 	private val progressionStateValidator: ProgressionStateValidator
 ) {
 	suspend fun execute(updatedProgressionState: ProgressionState) {
-		progressionStateValidator
-			.validateAfterCreation(updatedProgressionState.id)
-			?.let { throw it }
-
+		progressionStateValidator.validateAfterCreation(updatedProgressionState.id)
 		repository.updateProgressionState(updatedProgressionState)
 	}
 }

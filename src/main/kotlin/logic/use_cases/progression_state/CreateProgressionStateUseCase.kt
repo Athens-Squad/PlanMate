@@ -1,7 +1,7 @@
 package logic.use_cases.progression_state
 
-import logic.repositories.ProgressionStateRepository
 import logic.entities.ProgressionState
+import logic.repositories.ProgressionStateRepository
 import net.thechance.logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
 
 class CreateProgressionStateUseCase(
@@ -9,10 +9,7 @@ class CreateProgressionStateUseCase(
 	private val progressionStateValidator: ProgressionStateValidator
 ) {
     suspend fun execute(progressionState: ProgressionState) {
-		progressionStateValidator
-			.validateBeforeCreation(progressionState)
-			?.let { throw it }
-
+		progressionStateValidator.validateBeforeCreation(progressionState)
 	    repository.createProgressionState(progressionState)
     }
 }

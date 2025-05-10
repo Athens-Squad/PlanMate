@@ -13,7 +13,6 @@ import logic.repositories.*
 import net.thechance.logic.exceptions.ProjectsLogicExceptions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 class UpdateProjectUseCaseTest {
 

@@ -9,10 +9,7 @@ class DeleteProgressionStateUseCase(
 	private val progressionStateValidator: ProgressionStateValidator
 ) {
 	suspend fun execute(progressionStateId: String) {
-		progressionStateValidator
-			.validateAfterCreation(progressionStateId)
-			?.let { throw it }
-
+		progressionStateValidator.validateAfterCreation(progressionStateId)
 		repository.deleteProgressionState(progressionStateId)
 	}
 }

@@ -16,25 +16,17 @@ class UpdateTaskUseCase(
 ) {
 
     suspend fun execute(updatedTask: Task, userName: String) {
+        taskValidator.validateTaskAfterCreation(updatedTask.id)
+	    taskRepository.updateTask(updatedTask)
 
-        //update only if task exists
-        taskValidator.doIfTaskExistsOrThrow(updatedTask.id) { task ->
-
-            //validate updatedTask
-            taskValidator.validateTaskBeforeUpdating(task, updatedTask)
-
-            taskRepository.updateTask(updatedTask)
-
-            //create log
-            createAuditLogUseCase.execute(
-                AuditLog(
-                    entityType = EntityType.TASK,
-                    entityId = task.id,
-                    description = "Project updated successfully.",
-                    userName = userName,
-                    createdAt = LocalDateTime.now(),
-                )
-            )
-        }
+	    createAuditLogUseCase.execute(
+		    AuditLog(
+			    entityType = EntityType.TASK,
+			    entityId = updatedTask.id,
+			    description = "Project updated successfully.",
+			    userName = userName,
+			    createdAt = LocalDateTime.now(),
+		    )
+	    )
     }
 }

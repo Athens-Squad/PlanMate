@@ -1,9 +1,19 @@
 package logic.exceptions
 
 
-
 open class TasksException(message: String): Exception(message)
 
-class InvalidTaskException(message: String?): TasksException("Invalid Task!:     $message")
-class CannotCompleteTaskOperationException(message: String?): TasksException("Cannot Complete Task Operation. $message")
-class CannotUpdateTaskException(message: String?): TasksException("Cannot update the Task!:   $message")
+class NoProjectFoundForTaskException() :
+	TasksException("No Project Found For Task")
+
+class NoProgressionStateFoundForTaskException() :
+	TasksException("No ProgressionState Found For Task")
+
+class TaskNotFoundException() :
+	TasksException("Task Not Found")
+
+class TaskAlreadyExistsException() :
+	TasksException("Task Already Exists")
+
+class InvalidTaskFieldsException() :
+	TasksException("Invalid Task Fields")
