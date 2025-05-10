@@ -5,6 +5,7 @@ import ui.io.ConsoleIO
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.options.AdminOptions
 import net.thechance.ui.utils.ProjectSelector
+import net.thechance.ui.utils.TextStyle
 import ui.featuresui.*
 
 class AdminOptionsHandler(
@@ -15,15 +16,15 @@ class AdminOptionsHandler(
     private val session: UserSession
 ) {
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        consoleIO.printer.printError("Unexpected error: ${throwable.message}")
+        consoleIO.printer.printText("Unexpected error: ${throwable.message}",TextStyle.ERROR)
     }
     private val projectsScope: CoroutineScope =
         CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
 
-    fun handle() {
+    suspend fun handle() {
         do {
-            consoleIO.printer.printWelcomeMessage("Hello Mr/Ms : ${session.currentUser.name}")
+            consoleIO.printer.printText("Hello Mr/Ms : ${session.currentUser.name}",TextStyle.WELCOME)
 
             consoleIO.printer.printOptions(AdminOptions.entries)
 
@@ -31,39 +32,26 @@ class AdminOptionsHandler(
 
             when (option) {
                 AdminOptions.SHOW_ALL_PROJECTS.optionNumber -> showAllProjects()
-                AdminOptions.CREATE_PROJECT.optionNumber -> createProject()
-                AdminOptions.CREATE_MATE.optionNumber -> createMate()
-                AdminOptions.EXIT.optionNumber -> consoleIO.printer.printGoodbyeMessage("We will miss you.")
+                AdminOptions.CREATE_PROJECT.optionNumber -> projectsUi.createProject()
+                AdminOptions.CREATE_MATE.optionNumber ->
+                    authenticationUi.createMate()
+                AdminOptions.EXIT.optionNumber -> consoleIO.printer.printText("We will miss you.",TextStyle.GOODBYE)
             }
 
         } while (option != AdminOptions.EXIT.optionNumber)
     }
 
-    private fun showAllProjects() {
-        projectsScope.launch {
-            try {
-                val projects = projectsUi.getAllUserProjects(session.currentUser.name)
+    private suspend fun showAllProjects() {
+        try {
+            val projects = projectsUi.getAllUserProjects(session.currentUser.name)
 
-                projects.forEach { project ->
-                    consoleIO.printer.printPlainText(project.name)
-                }
-
-                projectSelector.selectProject(projects)
-            } catch (exception: Exception) {
-                consoleIO.printer.printError("Error : ${exception.message}")
+            projects.forEach { project ->
+                consoleIO.printer.printText(project.name)
             }
+
+            projectSelector.selectProject(projects)
+        } catch (exception: Exception) {
+            consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
         }
-
-    }
-
-    private fun createMate() {
-        authenticationUi.createMate(session.currentUser.name)
-        consoleIO.printer.printCorrectOutput("Mate Created Successfully!")
-
-    }
-
-    private fun createProject() {
-        projectsUi.createProject()
-        consoleIO.printer.printCorrectOutput("Project Created Successfully!")
     }
 }

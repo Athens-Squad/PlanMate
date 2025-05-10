@@ -1,11 +1,11 @@
 package net.thechance.ui.handlers
 
-import kotlinx.coroutines.*
 import logic.entities.UserType
 import ui.io.ConsoleIO
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.options.MateOptions
 import net.thechance.ui.utils.ProjectSelector
+import net.thechance.ui.utils.TextStyle
 import ui.featuresui.*
 
 class MateOptionsHandler(
@@ -14,16 +14,9 @@ class MateOptionsHandler(
     private val projectSelector: ProjectSelector,
     private val session: UserSession
 ) {
-    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        consoleIO.printer.printError("Unexpected error: ${throwable.message}")
-    }
-    private val projectsScope: CoroutineScope =
-        CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
-
-
-    fun handle() {
+    suspend fun handle() {
         do {
-            consoleIO.printer.printWelcomeMessage("Hello Mr/Ms : ${session.currentUser.name}")
+            consoleIO.printer.printText("Hello Mr/Ms : ${session.currentUser.name}",TextStyle.WELCOME)
 
             consoleIO.printer.printOptions(MateOptions.entries)
 
@@ -31,26 +24,24 @@ class MateOptionsHandler(
 
             when (option) {
                 MateOptions.SHOW_ALL_PROJECTS.optionNumber -> showAllProjects()
-                MateOptions.EXIT.optionNumber -> consoleIO.printer.printGoodbyeMessage("We will miss you.")
+                MateOptions.EXIT.optionNumber -> consoleIO.printer.printText("We will miss you.",TextStyle.GOODBYE)
             }
         } while (option != MateOptions.EXIT.optionNumber)
     }
 
-    private fun showAllProjects() {
+    private suspend fun showAllProjects() {
         val adminName = (session.currentUser.type as UserType.MateUser).adminName
-        projectsScope.launch {
-            try {
-                val projects = projectsUi.getAllUserProjects(adminName)
 
-                projects.forEach { project ->
-                    consoleIO.printer.printPlainText(project.name)
-                }
+        try {
+            val projects = projectsUi.getAllUserProjects(adminName)
 
-                projectSelector.selectProject(projects)
-            } catch (exception: Exception) {
-                consoleIO.printer.printError("Error : ${exception.message}")
+            projects.forEach { project ->
+                consoleIO.printer.printText(project.name)
             }
-        }
 
+            projectSelector.selectProject(projects)
+        } catch (exception: Exception) {
+            consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
+        }
     }
 }

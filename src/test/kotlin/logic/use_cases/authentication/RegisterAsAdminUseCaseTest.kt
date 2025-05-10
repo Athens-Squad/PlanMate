@@ -1,18 +1,17 @@
 package logic.use_cases.authentication
 
-import com.google.common.truth.Truth.assertThat
-import io.mockk.every
-import io.mockk.mockk
-import logic.entities.User
-import logic.repositories.UserRepository
 import data.authentication.utils.PasswordHashing
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
+import logic.entities.User
 import logic.entities.UserType
-import logic.use_cases.authentication.RegisterAsAdminUseCase
+import logic.repositories.UserRepository
 import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
-import kotlin.test.assertTrue
 
 class RegisterAsAdminUseCaseTest {
 
@@ -26,115 +25,170 @@ class RegisterAsAdminUseCaseTest {
         userRepository = mockk(relaxed = true)
         passwordHashing = PasswordHashing()
         userValidator = mockk()
-        registerAsAdminUseCase = RegisterAsAdminUseCase(userRepository,passwordHashing)
-    }
-
-    @Test
-    fun `should return true when create user success and get user by user name failed`() {
-        //Given
-        val user = User(name = "mohamed", password = "ABCabc123@#4", type = UserType.AdminUser)
-        every { userRepository.createUser(user) } returns Result.success(Unit)
-        every { userRepository.getUserByUsername(user.name) } returns Result.failure(Exception())
-        //when
-        val execute = registerAsAdminUseCase.execute(user)
-        //then
-        assertThat(execute).isEqualTo(Result.success(Unit))
-    }
-
-    ///
-    @Test
-    fun `throw exception when create user failed and get user by username failed`() {
-        //Given
-        val user = User(name = "mohamed", password = "ABCabc123@#4", type = UserType.AdminUser)
-        every { userRepository.createUser(user.copy(password = passwordHashing.hash(user.password))) } returns Result.failure(Exception())
-        every { userRepository.getUserByUsername(user.name) } returns Result.failure(Exception())
-        //when
-        val execute = registerAsAdminUseCase.execute(user)
-        //then
-        assertThat(execute.exceptionOrNull()).isInstanceOf(Exception::class.java)
-    }
-
-    @Test
-    fun `should throw when username already exist`() {
-        //Given
-        val user = User(name = "mohamed", password = "ABCabc123@#4", type = UserType.AdminUser)
-        every { userRepository.getUserByUsername(user.name).isSuccess } returns true
-        //when
-        val execute = registerAsAdminUseCase.execute(user)
-        //then
-        assertThat(execute.exceptionOrNull()).isInstanceOf(Exception::class.java)
+        registerAsAdminUseCase = RegisterAsAdminUseCase(userRepository, passwordHashing, userValidator)
     }
 
     @Test
     fun `should throw exception when username is empty`() {
-        //Given
-        val user = User(
-            name = "",
-            password = "absc3223@A",
-            type = UserType.AdminUser
-        )
-        //when
-        val execute = registerAsAdminUseCase.execute(user)
-        //then
-        assertThat(execute.exceptionOrNull()).isInstanceOf(Exception::class.java)
+        runTest {
+            //Given
+            val userName = ""
+            val password = "ABCabc123@#4"
+            val userType = UserType.AdminUser
+            val hashPassword = passwordHashing.hash(password)
+            val user = User(name = userName, password = hashPassword, type = userType)
+            coEvery { userValidator.isUsernameNotValid(any()) } returns true
+            coEvery { userValidator.isPasswordNotValid(any()) } returns false
+            coEvery { userValidator.isTypeNotAdmin(any()) } returns false
+            coEvery { userValidator.userNameExist(any()) } returns false
+
+            //then
+            assertThrows<Exception> {  registerAsAdminUseCase.execute(user) }
+        }
     }
 
 
     @Test
     fun `should throw exception when username is only spaces`() {
-        //Given
-        val user = User(
-            name = "      ",
-            password = "absc3223@A",
-            type = UserType.AdminUser
-        )
-        //when
-        val execute = registerAsAdminUseCase.execute(user)
-        //then
-        assertThat(execute.exceptionOrNull()).isInstanceOf(Exception::class.java)
+        runTest {
+            //Given
+            val userName = "      "
+            val password = "ABCabc123@#4"
+            val userType = UserType.AdminUser
+            val hashPassword = passwordHashing.hash(password)
+            val user = User(name = userName, password = hashPassword, type = userType)
+            coEvery { userValidator.isUsernameNotValid(any()) } returns true
+            coEvery { userValidator.isPasswordNotValid(any()) } returns false
+            coEvery { userValidator.isTypeNotAdmin(any()) } returns false
+            coEvery { userValidator.userNameExist(any()) } returns false
+
+            //then
+            assertThrows<Exception> {  registerAsAdminUseCase.execute(user) }
+        }
     }
 
 
     @Test
     fun `should throw exception when password less than 8 characters`() {
-        //Given
-        val user = User(
-            name = "ahmed ali",
-            password = "agr",
-            type = UserType.AdminUser
-        )
-        //when
-        val execute = registerAsAdminUseCase.execute(user)
-        //then
-        assertThat(execute.exceptionOrNull()).isInstanceOf(Exception::class.java)
+        runTest {
+            //Given
+            val userName = "mohamed"
+            val password = "ABCabc"
+            val userType = UserType.AdminUser
+            val hashPassword = passwordHashing.hash(password)
+            val user = User(name = userName, password = hashPassword, type = userType)
+            coEvery { userValidator.isUsernameNotValid(any()) } returns false
+            coEvery { userValidator.isPasswordNotValid(any()) } returns true
+            coEvery { userValidator.isTypeNotAdmin(any()) } returns false
+            coEvery { userValidator.userNameExist(any()) } returns false
+
+            //then
+            assertThrows<Exception> {  registerAsAdminUseCase.execute(user) }
+        }
     }
 
     @Test
     fun `should throw exception when password more than 20 characters`() {
-        //Given
-        val user = User(
-            name = "ahmed ali",
-            password = "1@Abcdefghijklmnopqrstuvwxyz",
-            type = UserType.AdminUser
-        )
-        //when
-        val execute = registerAsAdminUseCase.execute(user)
-        //then
-        assertThat(execute.exceptionOrNull()).isInstanceOf(Exception::class.java)
+        runTest {
+            //Given
+            val userName = "ahmed ali"
+            val password = "1@Abcdefghijklmnopqrstuvwxyz"
+            val userType = UserType.AdminUser
+            val hashPassword = passwordHashing.hash(password)
+            val user = User(name = userName, password = hashPassword, type = userType)
+
+            coEvery { userValidator.isUsernameNotValid(any()) } returns false
+            coEvery { userValidator.isPasswordNotValid(any()) } returns true
+            coEvery { userValidator.isTypeNotAdmin(any()) } returns false
+            coEvery { userValidator.userNameExist(any()) } returns false
+
+
+            //then
+            assertThrows<Exception> {  registerAsAdminUseCase.execute(user) }
+        }
+
+    }
+
+        @Test
+    fun `should throw exception when user type isn't admin`() {
+        runTest {
+            //Given
+            val userName = "ahmed ali"
+            val password = "1@Abcdefg"
+            val userType = UserType.MateUser("")
+            val hashPassword = passwordHashing.hash(password)
+            val user = User(name = userName, password = hashPassword, type = userType)
+            coEvery { userValidator.isUsernameNotValid(any()) } returns false
+            coEvery { userValidator.isPasswordNotValid(any()) } returns false
+            coEvery { userValidator.isTypeNotAdmin(any()) } returns true
+            coEvery { userValidator.userNameExist(any()) } returns false
+
+            //then
+            assertThrows<Exception> {  registerAsAdminUseCase.execute(user) }
+        }
+    }
+
+        @Test
+    fun `should throw when username already exist`() {
+        runTest {
+            //Given
+            val userName = "mohamed"
+            val password = "ABCabc123@#4"
+            val userType = UserType.AdminUser
+            val hashPassword = passwordHashing.hash(password)
+            val user = User(name = userName, password = hashPassword, type = userType)
+            coEvery { userValidator.isUsernameNotValid(any()) } returns false
+            coEvery { userValidator.isPasswordNotValid(any()) } returns false
+            coEvery { userValidator.isTypeNotAdmin(any()) } returns false
+            coEvery { userValidator.userNameExist(any()) } returns true
+
+            //then
+            assertThrows<Exception> {  registerAsAdminUseCase.execute(user) }
+        }
     }
 
     @Test
-    fun `should throw exception when user type isn't admin`() {
-        //Given
-        val user = User(
-            name = "ahmed ali",
-            password = "aAB@1AB2AB",
-            type = UserType.MateUser("")
-        )
-        //when
-        val execute = registerAsAdminUseCase.execute(user)
-        //then
-        assertThat(execute.exceptionOrNull()).isInstanceOf(Exception::class.java)
+    fun `should return true when create user success`() {
+        runTest {
+            //Given
+            val userName = "mohamed"
+            val password =  "ABCabc123@#4"
+            val userType = UserType.AdminUser
+            val hashPassword = passwordHashing.hash(password)
+            val user = User(name = userName, password = hashPassword, type = userType)
+            coEvery { userValidator.isUsernameNotValid(any()) } returns false
+            coEvery { userValidator.isPasswordNotValid(any()) } returns false
+            coEvery { userValidator.isTypeNotAdmin(any()) } returns false
+            coEvery { userValidator.userNameExist(any()) } returns false
+           // when
+            registerAsAdminUseCase.execute(user)
+            //then
+            coVerify(exactly = 1) { userRepository.createUser(any())  }
+        }
+
+    }
+
+    ///
+    @Test
+    fun `throw exception when create user failed`() {
+        runTest {
+            //Given
+            val userName = "mohamed"
+            val password = "ABCabc123@#4"
+            val userType = UserType.AdminUser
+            val hashPassword = passwordHashing.hash(password)
+            val user = User(name = userName, password = hashPassword, type = userType)
+            coEvery { userValidator.isUsernameNotValid(any()) } returns false
+            coEvery { userValidator.isPasswordNotValid(any()) } returns false
+            coEvery { userValidator.isTypeNotAdmin(any()) } returns false
+            coEvery { userValidator.userNameExist(any()) } returns false
+            coEvery { userRepository.createUser(any()) } throws Exception()
+
+            //then
+            assertThrows<Exception> {  registerAsAdminUseCase.execute(user) }
+
+        }
+
     }
 
 

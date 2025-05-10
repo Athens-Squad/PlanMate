@@ -1,7 +1,6 @@
 package helper.progression_state_helper
 
-import net.thechance.data.progression_state.dto.ProgressionStateDto
-import java.util.UUID
+import net.thechance.data.progression_state.data_source.remote.mongo.dto.ProgressionStateDto
 
 object FakeProgressionStateData {
 

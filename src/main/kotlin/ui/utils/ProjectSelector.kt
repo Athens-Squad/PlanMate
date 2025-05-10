@@ -15,50 +15,41 @@ class ProjectSelector(
     private val showProjectSwimlanes: ShowProjectSwimlanes,
     private val session: UserSession
 ) {
-    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        consoleIO.printer.printError("Unexpected error: ${throwable.message}")
-    }
-    private val projectsScope: CoroutineScope =
-        CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
-
-
-    fun selectProject(projects: List<Project>) {
+    suspend fun selectProject(projects: List<Project>) {
         if(projects.isEmpty()){
-            consoleIO.printer.printError("No Projects Found")
+            consoleIO.printer.printText("No Projects Found",TextStyle.ERROR)
             return
         }
 
-        projectsScope.launch {
-            try {
-                do {
-                    consoleIO.printer.printTitle("Select A Project :")
-                    val inputProjectName = consoleIO.reader.readStringFromUser()
+        try {
+            do {
+                consoleIO.printer.printText("Select A Project :",TextStyle.TITLE)
+                val inputProjectName = consoleIO.reader.readStringFromUser()
 
-                    val project = projectsUi.getProject(getProjectId(inputProjectName, projects))
+                val project = projectsUi.getProject(getProjectId(inputProjectName, projects))
 
-                    printProjectInfo(project)
+                handleProject(project)
 
-                    if (session.currentUser.type is UserType.AdminUser) {
-                        projectOptionsHandler.handleAdmin(project)
-                    }
-
-                    if (session.currentUser.type is UserType.MateUser) {
-                        projectOptionsHandler.handleMate(project)
-                    }
-
-                } while (inputProjectName == "0")
-            } catch (exception: Exception) {
-                consoleIO.printer.printError("Error : ${exception.message}")
-            }
+            } while (inputProjectName == "0")
+        } catch (exception: Exception) {
+            consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
         }
 
+    }
+    private suspend fun handleProject(project: Project) {
+        showProjectSwimlanes(project)
+
+        if (session.currentUser.type is UserType.AdminUser) {
+            projectOptionsHandler.handleAdmin(project)
+        }
+
+        if (session.currentUser.type is UserType.MateUser) {
+            projectOptionsHandler.handleMate(project)
+        }
     }
 
     private fun getProjectId(inputProjectName: String, projects: List<Project>): String {
         return projects.first { it.name == inputProjectName }.id
     }
 
-    private fun printProjectInfo(project: Project) {
-        showProjectSwimlanes(project)
-    }
 }

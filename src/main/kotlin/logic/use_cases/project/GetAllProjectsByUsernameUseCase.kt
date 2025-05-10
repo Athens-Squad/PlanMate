@@ -3,10 +3,12 @@ package logic.use_cases.project
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
-import data.projects.exceptions.ProjectsLogicExceptions.*
 import logic.use_cases.project.projectValidations.checkIfFieldIsValid
 import logic.use_cases.project.projectValidations.checkIfUserAuthorized
 import logic.use_cases.project.projectValidations.checkIfUserIsProjectOwner
+import net.thechance.logic.exceptions.InvalidUsernameForProjectException
+import net.thechance.logic.exceptions.NoProjectFoundException
+import net.thechance.logic.exceptions.NotAuthorizedUserException
 
 class GetAllProjectsByUsernameUseCase(
     private val projectRepository: ProjectsRepository,

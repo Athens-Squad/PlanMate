@@ -3,12 +3,11 @@ package data.projects
 import helper.project_helper.createProject
 import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
-import net.thechance.data.projects.datasource.ProjectsDataSource
+import data.projects.data_source.ProjectsDataSource
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
