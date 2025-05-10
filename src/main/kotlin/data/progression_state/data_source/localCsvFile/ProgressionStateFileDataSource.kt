@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package data.progression_state.data_source.localCsvFile
 
 import data.progression_state.data_source.ProgressionStateDataSource
@@ -7,6 +9,8 @@ import logic.entities.ProgressionState
 import data.progression_state.data_source.localCsvFile.dto.ProgressionStateCsvDto
 import data.progression_state.data_source.localCsvFile.mapper.toProgressionState
 import data.progression_state.data_source.localCsvFile.mapper.toProgressionStateCsvDto
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class ProgressionStateFileDataSource(
 	private val progressionStatesFileHandler: CsvFileHandler,
@@ -27,7 +31,7 @@ class ProgressionStateFileDataSource(
 		progressionStatesFileHandler.writeRecords(updatedRecords)
 	}
 
-	override suspend fun deleteProgressionState(progressionStateId: String) {
+	override suspend fun deleteProgressionState(progressionStateId: Uuid) {
 		val updatedState = getProgressionStates()
 			.filter { it.id != progressionStateId }
 		val updatedRecords = updatedState.map {
@@ -44,7 +48,7 @@ class ProgressionStateFileDataSource(
 			}
 	}
 
-	override suspend fun getProgressionStatesByProjectId(projectId: String): List<ProgressionState> {
+	override suspend fun getProgressionStatesByProjectId(projectId: Uuid): List<ProgressionState> {
 		return progressionStatesFileHandler.readRecords()
 			.map {
 				csvFileParser.parseRecord(it)

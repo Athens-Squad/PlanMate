@@ -24,7 +24,7 @@ class GetAllProjectsByUsernameUseCase(
 
         return projectRepository.getProjects()
             .filter {  project ->
-                checkIfUserIsProjectOwner(username, project.createdBy)
+                checkIfUserIsProjectOwner(username, project.createdByUserName)
             }
             .ifEmpty { throw NoProjectFoundException() }
     }

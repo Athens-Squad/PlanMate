@@ -1,4 +1,4 @@
-package net.thechance.data.utils
+package net.thechance.data.utils.csv_file_handle
 
 interface CsvSerializable {
     companion object {

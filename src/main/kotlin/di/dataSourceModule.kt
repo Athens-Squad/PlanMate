@@ -18,7 +18,7 @@ import net.thechance.data.tasks.data_source.remote.mongo.MongoTaskDataSource
 import net.thechance.data.tasks.data_source.localCsvFile.dto.TaskCsvDto
 import net.thechance.data.user.data_source.remote.mongo.UserMongoDataSource
 import net.thechance.data.user.data_source.localCsvFile.dto.UserCsvDto
-import net.thechance.data.utils.CsvSerializable
+import net.thechance.data.utils.csv_file_handle.CsvSerializable
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
 import org.koin.dsl.module

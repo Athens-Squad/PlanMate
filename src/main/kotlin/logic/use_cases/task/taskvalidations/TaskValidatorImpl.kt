@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.use_cases.task.taskvalidations
 
 import logic.entities.ProgressionState
@@ -6,13 +8,15 @@ import logic.exceptions.*
 import logic.repositories.ProgressionStateRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TasksRepository
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class TaskValidatorImpl(
     private val tasksRepository: TasksRepository,
     private val projectsRepository: ProjectsRepository,
     private val statesRepository: ProgressionStateRepository
 ) : TaskValidator {
-    override suspend fun doIfTaskExistsOrThrow(taskId: String, action: suspend (Task) -> Unit) {
+    override suspend fun doIfTaskExistsOrThrow(taskId: Uuid, action: suspend (Task) -> Unit) {
         try {
             val task = tasksRepository.getTaskById(taskId)
             action(task)
@@ -64,7 +68,7 @@ class TaskValidatorImpl(
         // Validate task fields (title, description, currentState)
         if (task.title.isBlank()) throw InvalidTaskException("Task title cannot be empty.")
         if (task.description.isBlank()) throw InvalidTaskException("Task description cannot be empty.")
-        if (task.currentProgressionState.id.isBlank() || task.currentProgressionState.name.isBlank())
+        if (task.currentProgressionState.id.toString().isBlank() || task.currentProgressionState.name.isBlank())
             throw InvalidTaskException("Task currentState cannot be empty.")
 
     }
@@ -80,13 +84,13 @@ class TaskValidatorImpl(
 
     }
 
-    private suspend fun validateProjectExists(projectId: String) {
+    private suspend fun validateProjectExists(projectId: Uuid) {
         projectsRepository.getProjects().find { it.id == projectId }
             ?: throw InvalidTaskException("Project with ID $projectId does not exist.")
 
     }
 
-    private suspend fun validateTaskState(currentProgressionState: ProgressionState, projectId: String) {
+    private suspend fun validateTaskState(currentProgressionState: ProgressionState, projectId: Uuid) {
         statesRepository.getProgressionStates()
             .find { it.id == currentProgressionState.id && it.projectId == projectId }
             ?: throw InvalidTaskException("State '${currentProgressionState.name}' is not valid for the given project.")

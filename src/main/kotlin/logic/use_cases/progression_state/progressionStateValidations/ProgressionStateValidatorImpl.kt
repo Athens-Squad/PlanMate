@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.use_cases.progression_state.progressionStateValidations
 
 import logic.entities.ProgressionState
@@ -9,6 +11,8 @@ import logic.exceptions.ProgressionStateAlreadyExistsException
 import logic.exceptions.ProgressionStateException
 import logic.exceptions.ProgressionStateNotFoundException
 import net.thechance.logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 class ProgressionStateValidatorImpl(
@@ -25,7 +29,7 @@ class ProgressionStateValidatorImpl(
 		}
 	}
 
-	override suspend fun validateAfterCreation(progressionStateId: String): ProgressionStateException? {
+	override suspend fun validateAfterCreation(progressionStateId: Uuid): ProgressionStateException? {
 		val entity = progressionStateRepository.getProgressionStates().find { it.id == progressionStateId }
 			?: return ProgressionStateNotFoundException()
 
@@ -37,7 +41,7 @@ class ProgressionStateValidatorImpl(
 	}
 
 	private fun ProgressionState.checkIsFieldsAreValid(): Boolean {
-		return id.isNotBlank() && name.isNotBlank() && projectId.isNotBlank()
+		return id.toString().isNotBlank() && name.isNotBlank() && projectId.toString().isNotBlank()
 	}
 
 	private suspend fun ProgressionState.checkIfProgressionStateExists(): Boolean {

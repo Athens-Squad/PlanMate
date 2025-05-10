@@ -1,13 +1,15 @@
 package logic.entities
 
-import java.util.*
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
+@OptIn(ExperimentalUuidApi::class)
 data class Project(
-    val id: String = UUID.randomUUID().toString(),
+    val id: Uuid = Uuid.random(),
     val name: String,
     val description: String,
     val progressionStates: MutableList<ProgressionState> = mutableListOf(),
     val tasks: MutableList<Task> = mutableListOf(),
-    val createdBy: String
+    val createdByUserName: String
 )

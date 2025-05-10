@@ -1,11 +1,12 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.entities
 
-import java.util.*
-
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 data class User(
-	val id: String = UUID.randomUUID().toString(),
+	val id: Uuid = Uuid.random(),
 	val name: String,
-	val password: String,
 	val type: UserType
 )

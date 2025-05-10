@@ -1,7 +1,10 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.ui.utils
 
 import logic.entities.Project
 import ui.io.ConsoleIO
+import kotlin.uuid.ExperimentalUuidApi
 
 class ShowProjectSwimlanes(private val consoleIO: ConsoleIO) {
 

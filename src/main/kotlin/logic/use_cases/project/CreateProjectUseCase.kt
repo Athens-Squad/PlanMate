@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.use_cases.project
 
 import logic.entities.AuditLog
@@ -14,6 +16,7 @@ import net.thechance.logic.exceptions.InvalidUsernameForProjectException
 import net.thechance.logic.exceptions.NotAuthorizedUserException
 import net.thechance.logic.exceptions.ProjectAlreadyExistException
 import java.time.LocalDateTime
+import kotlin.uuid.ExperimentalUuidApi
 
 class CreateProjectUseCase(
     private val projectRepository: ProjectsRepository,
@@ -22,10 +25,10 @@ class CreateProjectUseCase(
 ) {
     suspend fun execute(project: Project) {
         project.apply {
-            createdBy.checkIfFieldIsValid().takeIf { it } ?: throw InvalidUsernameForProjectException()
+            createdByUserName.checkIfFieldIsValid().takeIf { it } ?: throw InvalidUsernameForProjectException()
             name.checkIfFieldIsValid().takeIf { it } ?: throw InvalidProjectNameException()
 
-            checkIfUserAuthorized(createdBy) { userRepository.getUserByUsername(createdBy) }
+            checkIfUserAuthorized(createdByUserName) { userRepository.getUserByUsername(createdByUserName) }
                 .takeIf { it } ?: throw NotAuthorizedUserException()
 
             checkIfProjectAlreadyExistInRepository(id) { projectRepository.getProjects() }
@@ -39,7 +42,7 @@ class CreateProjectUseCase(
                 entityType = EntityType.PROJECT,
                 entityId = project.id,
                 description = "Project created successfully.",
-                userName = project.createdBy,
+                userName = project.createdByUserName,
                 createdAt = LocalDateTime.now(),
             )
         )

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package data.projects.data_source.remote.mongo
 
 import com.mongodb.client.model.Filters
@@ -12,6 +14,8 @@ import data.projects.data_source.ProjectsDataSource
 import data.projects.data_source.remote.mongo.dto.ProjectDto
 import data.projects.data_source.remote.mongo.mapper.toProject
 import data.projects.data_source.remote.mongo.mapper.toProjectDto
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class MongoProjectDataSource(
     private val projectsCollection: MongoCollection<ProjectDto>,
@@ -27,13 +31,13 @@ class MongoProjectDataSource(
     override suspend fun updateProject(project: Project) {
         val updatedProjectDto = project.toProjectDto()
 
-        val queryParams = Filters.eq("_id", project.id)
+        val queryParams = Filters.eq("_id", updatedProjectDto.id)
 
         projectsCollection.replaceOne(queryParams, updatedProjectDto)
     }
 
-    override suspend fun deleteProject(projectId: String) {
-        val queryParams = Filters.eq("_id", projectId)
+    override suspend fun deleteProject(projectId: Uuid) {
+        val queryParams = Filters.eq("_id", projectId.toString())
 
         projectsCollection.deleteOne(queryParams)
     }

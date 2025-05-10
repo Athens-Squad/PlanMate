@@ -1,14 +1,17 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package ui.featuresui
 
 
 import kotlinx.coroutines.*
 import logic.entities.Project
-import logic.entities.UserType
 import logic.use_cases.project.ProjectUseCases
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.options.project.EditProjectOptions
 import net.thechance.ui.utils.TextStyle
 import ui.io.ConsoleIO
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class ProjectsUi(
     private val projectUseCases: ProjectUseCases,
@@ -33,7 +36,7 @@ class ProjectsUi(
                     Project(
                         name = projectName,
                         description = projectDescription,
-                        createdBy = session.currentUser.name
+                        createdByUserName = session.currentUser.name
                     )
                 )
                 consoleIO.printer.printText("Project created successfully.",TextStyle.SUCCESS)
@@ -77,7 +80,7 @@ class ProjectsUi(
         projectUseCases.updateProjectUseCase.execute(project.copy(name = projectName))
     }
 
-    fun deleteProject(projectId: String) {
+    fun deleteProject(projectId: Uuid) {
         projectsScope.launch {
             try {
                 projectUseCases.deleteProjectUseCase
@@ -90,7 +93,7 @@ class ProjectsUi(
 
 
 
-    suspend fun getProject(projectId: String): Project {
+    suspend fun getProject(projectId: Uuid): Project {
         return projectUseCases.getProjectByIdUseCase.execute(projectId)
     }
 

@@ -1,23 +1,26 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package data.aduit_log.data_source.localCsvFile.dto
 
 import logic.entities.EntityType
 import net.thechance.data.aduit_log.utils.AuditLogColumnIndex
-import net.thechance.data.utils.CsvSerializable
+import net.thechance.data.utils.csv_file_handle.CsvSerializable
 import java.time.LocalDateTime
-import java.util.UUID
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 data class AuditLogCsvDto(
-	val id: String = UUID.randomUUID().toString(),
+	val id: Uuid = Uuid.random(),
 	val entityType: EntityType,
-	val entityId: String,
+	val entityId: Uuid,
 	val description: String,
 	val userName: String,
 	val createdAt: LocalDateTime
 ): CsvSerializable {
 	override fun toCsvFields(): List<String> = listOf(
-		id,
+		id.toString(),
 		entityType.toString(),
-		entityId,
+		entityId.toString(),
 		description,
 		userName,
 		createdAt.toString()
@@ -26,9 +29,9 @@ data class AuditLogCsvDto(
 	companion object {
 		fun fromCsv(fields: List<String>): AuditLogCsvDto {
 			return AuditLogCsvDto(
-				id = fields[AuditLogColumnIndex.ID],
+				id = Uuid.parse(fields[AuditLogColumnIndex.ID]),
 				entityType = EntityType.valueOf(fields[AuditLogColumnIndex.ENTITYTYPE]),
-				entityId = fields[AuditLogColumnIndex.ENTITYID],
+				entityId = Uuid.parse(fields[AuditLogColumnIndex.ENTITYID]),
 				description = fields[AuditLogColumnIndex.DESCRIPTION],
 				userName = fields[AuditLogColumnIndex.USERNAME],
 				createdAt = LocalDateTime.parse(fields[AuditLogColumnIndex.CREATEDAT])

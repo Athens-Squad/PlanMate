@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package data.progression_state.data_source.remote.mongo
 
 import com.mongodb.client.model.Filters
@@ -10,6 +12,8 @@ import logic.entities.ProgressionState
 import net.thechance.data.progression_state.data_source.remote.mongo.dto.ProgressionStateDto
 import data.progression_state.data_source.remote.mongo.mapper.toProgressionState
 import data.progression_state.data_source.remote.mongo.mapper.toProgressionStateDto
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class ProgressionStateDatabaseDataSource(
 	private val progressionStatesCollection: MongoCollection<ProgressionStateDto>
@@ -32,7 +36,7 @@ class ProgressionStateDatabaseDataSource(
 		)
 	}
 
-	override suspend fun deleteProgressionState(progressionStateId: String) {
+	override suspend fun deleteProgressionState(progressionStateId: Uuid) {
 		progressionStatesCollection.deleteOne(
 			filter = Filters.eq("_id", progressionStateId)
 		)
@@ -43,7 +47,7 @@ class ProgressionStateDatabaseDataSource(
 			.map { it.toProgressionState() }
 	}
 
-	override suspend fun getProgressionStatesByProjectId(projectId: String): List<ProgressionState> {
+	override suspend fun getProgressionStatesByProjectId(projectId: Uuid): List<ProgressionState> {
 		return progressionStatesCollection.find(Filters.eq("projectId", projectId))
 			.toList()
 			.map { it.toProgressionState() }

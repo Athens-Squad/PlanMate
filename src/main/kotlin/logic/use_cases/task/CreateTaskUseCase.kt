@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.use_cases.task
 
 import logic.entities.AuditLog
@@ -7,6 +9,7 @@ import logic.repositories.TasksRepository
 import logic.use_cases.audit_log.CreateAuditLogUseCase
 import logic.use_cases.task.taskvalidations.TaskValidator
 import java.time.LocalDateTime
+import kotlin.uuid.ExperimentalUuidApi
 
 class CreateTaskUseCase(
     private val taskRepository: TasksRepository,

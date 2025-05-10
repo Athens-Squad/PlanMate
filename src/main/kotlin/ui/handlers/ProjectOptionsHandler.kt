@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.ui.handlers
 
 
@@ -8,6 +10,7 @@ import ui.io.ConsoleIO
 import net.thechance.ui.options.project.ProjectOptions
 import net.thechance.ui.utils.TextStyle
 import ui.featuresui.*
+import kotlin.uuid.ExperimentalUuidApi
 
 class ProjectOptionsHandler(
 	private val consoleIO: ConsoleIO,
@@ -78,7 +81,7 @@ class ProjectOptionsHandler(
         consoleIO.printer.printText("Task Created Successfully.",TextStyle.SUCCESS)
     }
 
-    private suspend fun showHistory() {
+    private fun showHistory() {
         try {
             projectsScope.launch {
                 val history = auditLogUi.getProjectHistory(project.id)

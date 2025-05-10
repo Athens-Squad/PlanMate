@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.ui.utils
 
 import kotlinx.coroutines.*
@@ -7,6 +9,8 @@ import net.thechance.data.authentication.UserSession
 import net.thechance.ui.handlers.ProjectOptionsHandler
 import ui.featuresui.ProjectsUi
 import ui.io.ConsoleIO
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class ProjectSelector(
     private val consoleIO: ConsoleIO,
@@ -48,7 +52,7 @@ class ProjectSelector(
         }
     }
 
-    private fun getProjectId(inputProjectName: String, projects: List<Project>): String {
+    private fun getProjectId(inputProjectName: String, projects: List<Project>): Uuid {
         return projects.first { it.name == inputProjectName }.id
     }
 

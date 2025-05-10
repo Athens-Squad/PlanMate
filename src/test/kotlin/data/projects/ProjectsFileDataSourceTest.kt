@@ -14,7 +14,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import logic.entities.Project
 import data.projects.data_source.ProjectsDataSource
-import net.thechance.data.projects.datasource.localcsvfile.ProjectsFileDataSource
+import data.projects.data_source.localcsvfile.ProjectsFileDataSource
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

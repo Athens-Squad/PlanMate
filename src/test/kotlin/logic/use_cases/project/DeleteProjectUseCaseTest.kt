@@ -40,7 +40,7 @@ class DeleteProjectUseCaseTest {
     @Test
     fun `should delete project successfully, when project is valid`() {
         val validProject = fakeProject.copy(
-            createdBy = adminUser.name
+            createdByUserName = adminUser.name
         )
         every { userRepository.getUserByUsername(adminUser.name) } returns Result.success(adminUser)
         every { projectRepository.getProjects() } returns Result.success(listOf(validProject))
@@ -59,7 +59,7 @@ class DeleteProjectUseCaseTest {
     @Test
     fun `should delete project failed, when user is not the owner of project`() {
         val invalidProject = fakeProject.copy(
-            createdBy = "diffrent user"
+            createdByUserName = "diffrent user"
         )
         every { userRepository.getUserByUsername(adminUser.name) } returns Result.success(adminUser)
         every { projectRepository.getProjects() } returns Result.success(listOf(invalidProject))
