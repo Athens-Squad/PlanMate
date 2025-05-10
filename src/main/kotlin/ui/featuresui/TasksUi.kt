@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package ui.featuresui
 
 import kotlinx.coroutines.*
@@ -9,6 +11,8 @@ import net.thechance.ui.options.tasks.EditTaskOptions
 import net.thechance.ui.options.tasks.TaskOptions
 import net.thechance.ui.utils.TextStyle
 import ui.io.ConsoleIO
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class TasksUi(
     private val consoleIO: ConsoleIO,
@@ -22,7 +26,7 @@ class TasksUi(
     private val tasksCoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
 
-    suspend fun manageTasks(tasks: MutableList<Task>, projectId: String, progressionStates: List<ProgressionState>) {
+    suspend fun manageTasks(tasks: MutableList<Task>, projectId: Uuid, progressionStates: List<ProgressionState>) {
         tasksCoroutineScope.launch {
             try {
                 do {
@@ -44,7 +48,7 @@ class TasksUi(
         }.join()
     }
 
-    private fun handleTaskOptions(task: Task, projectId: String, progressionStates: List<ProgressionState>) {
+    private fun handleTaskOptions(task: Task, projectId: Uuid, progressionStates: List<ProgressionState>) {
         try {
             do {
                 consoleIO.printer.printText("Select Option (1 to 4):",TextStyle.TITLE)
@@ -78,7 +82,7 @@ class TasksUi(
         }
     }
 
-    fun createTask(progressionStates: List<ProgressionState>, projectId: String) {
+    fun createTask(progressionStates: List<ProgressionState>, projectId: Uuid) {
         consoleIO.printer.printText("Create Task",TextStyle.TITLE)
         val taskName = receiveStringInput("Enter Task Name : ")
         val taskDescription = receiveStringInput("Enter Task Description : ")
@@ -107,16 +111,14 @@ class TasksUi(
         }
     }
 
-    private fun editTask(progressionStates: List<ProgressionState>, task: Task, projectId: String) {
+    private fun editTask(progressionStates: List<ProgressionState>, task: Task, projectId: Uuid) {
         consoleIO.printer.printText("Edit Task",TextStyle.TITLE)
 
         consoleIO.printer.printText("Select your option (1 to 3) : ",TextStyle.TITLE)
 
         consoleIO.printer.printOptions(EditTaskOptions.entries)
 
-        val inputEditOption = consoleIO.reader.readNumberFromUser()
-
-        when (inputEditOption) {
+        when (val inputEditOption = consoleIO.reader.readNumberFromUser()) {
             EditTaskOptions.NAME.optionNumber -> editTaskName(task)
             EditTaskOptions.DESCRIPTION.optionNumber -> editTaskDescription(task)
             EditTaskOptions.PROGRESSION_STATE.optionNumber -> editTaskProgressionState(
@@ -132,7 +134,7 @@ class TasksUi(
     private fun editTaskProgressionState(
         task: Task,
         progressionStates: List<ProgressionState>,
-        projectId: String
+        projectId: Uuid
     ) {
 
         consoleIO.printer.printText("Select Your Task Progression State",TextStyle.TITLE)
@@ -202,7 +204,7 @@ class TasksUi(
     }
 
 
-    private fun getTaskId(inputTaskName: String, tasks: List<Task>): String {
+    private fun getTaskId(inputTaskName: String, tasks: List<Task>): Uuid {
         return tasks.first { it.title == inputTaskName }.id
 
     }

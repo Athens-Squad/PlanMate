@@ -1,9 +1,13 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.data.aduit_log.data_source.remote.mongo.mapper
 
 import logic.entities.AuditLog
 import logic.entities.EntityType
 import net.thechance.data.aduit_log.data_source.remote.mongo.dto.AuditLogDto
 import java.time.LocalDateTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 fun AuditLogDto.toAuditLog() = AuditLog(
 	id = id,

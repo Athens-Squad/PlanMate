@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.use_cases.project
 
 import logic.entities.AuditLog
@@ -13,6 +15,8 @@ import net.thechance.logic.exceptions.InvalidUsernameForProjectException
 import net.thechance.logic.exceptions.NoProjectFoundException
 import net.thechance.logic.exceptions.NotAuthorizedUserException
 import java.time.LocalDateTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 class DeleteProjectUseCase(
@@ -20,18 +24,18 @@ class DeleteProjectUseCase(
     private val userRepository: UserRepository,
     private val createAuditLogUseCase: CreateAuditLogUseCase,
 ) {
-    suspend fun execute(projectId: String, username: String) {
+    suspend fun execute(projectId: Uuid, username: String) {
         username.apply {
             checkIfFieldIsValid().takeIf { it } ?: throw InvalidUsernameForProjectException()
             checkIfUserAuthorized(username) { userRepository.getUserByUsername(it) }
                 .takeIf { it } ?: throw NotAuthorizedUserException()
         }
 
-        projectId.checkIfFieldIsValid().takeIf { it } ?: throw NoProjectFoundException()
+        projectId.toString().checkIfFieldIsValid().takeIf { it } ?: throw NoProjectFoundException()
         val project = checkIfProjectExistInRepositoryAndReturn(projectId) { projectRepository.getProjects() }
             ?: throw NoProjectFoundException()
 
-        checkIfUserIsProjectOwner(username, project.createdBy).takeIf { it }
+        checkIfUserIsProjectOwner(username, project.createdByUserName).takeIf { it }
             ?: throw NotAuthorizedUserException()
 
         projectRepository.deleteProject(projectId)
@@ -41,7 +45,7 @@ class DeleteProjectUseCase(
                 entityType = EntityType.PROJECT,
                 entityId = project.id,
                 description = "Project deleted successfully.",
-                userName = project.createdBy,
+                userName = project.createdByUserName,
                 createdAt = LocalDateTime.now(),
             )
         )

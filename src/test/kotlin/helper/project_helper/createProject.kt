@@ -19,5 +19,5 @@ fun createProject(
     description = description,
     progressionStates = states,
     tasks = tasks,
-    createdBy = createdBy
+    createdByUserName = createdBy
 )

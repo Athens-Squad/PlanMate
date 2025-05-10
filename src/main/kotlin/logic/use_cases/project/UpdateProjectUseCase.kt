@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.use_cases.project
 
 import logic.entities.AuditLog
@@ -15,6 +17,7 @@ import net.thechance.logic.exceptions.InvalidUsernameForProjectException
 import net.thechance.logic.exceptions.NoProjectFoundException
 import net.thechance.logic.exceptions.NotAuthorizedUserException
 import java.time.LocalDateTime
+import kotlin.uuid.ExperimentalUuidApi
 
 
 class UpdateProjectUseCase(
@@ -24,18 +27,18 @@ class UpdateProjectUseCase(
 ) {
     suspend fun execute(updatedProject: Project) {
         updatedProject.apply {
-            createdBy.checkIfFieldIsValid().takeIf { it } ?: throw InvalidUsernameForProjectException()
+            createdByUserName.checkIfFieldIsValid().takeIf { it } ?: throw InvalidUsernameForProjectException()
 
             name.checkIfFieldIsValid().takeIf { it } ?: throw InvalidProjectNameException()
 
-            checkIfUserAuthorized(createdBy) { userRepository.getUserByUsername(it) }
+            checkIfUserAuthorized(createdByUserName) { userRepository.getUserByUsername(it) }
                 .takeIf { it } ?: throw NotAuthorizedUserException()
 
             val project =
                 checkIfProjectExistInRepositoryAndReturn(updatedProject.id) { projectRepository.getProjects() }
                     ?: throw NoProjectFoundException()
 
-            checkIfUserIsProjectOwner(project.createdBy, updatedProject.createdBy).takeIf { it }
+            checkIfUserIsProjectOwner(project.createdByUserName, updatedProject.createdByUserName).takeIf { it }
                 ?: throw NotAuthorizedUserException()
         }
 
@@ -46,7 +49,7 @@ class UpdateProjectUseCase(
                 entityType = EntityType.PROJECT,
                 entityId = updatedProject.id,
                 description = "Project updated successfully.",
-                userName = updatedProject.createdBy,
+                userName = updatedProject.createdByUserName,
                 createdAt = LocalDateTime.now(),
             )
         )

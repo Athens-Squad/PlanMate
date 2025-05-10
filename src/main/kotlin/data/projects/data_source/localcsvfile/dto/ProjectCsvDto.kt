@@ -1,33 +1,36 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package data.projects.data_source.localcsvfile.dto
 
 import data.projects.utils.ProjectColumnIndex
 import logic.entities.ProgressionState
 import logic.entities.Task
-import net.thechance.data.utils.CsvSerializable
-import java.util.UUID
+import net.thechance.data.utils.csv_file_handle.CsvSerializable
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 data class ProjectCsvDto(
-	val id: String = UUID.randomUUID().toString(),
+	val id: Uuid = Uuid.random(),
 	val name: String,
 	val description: String,
 	val progressionStates: MutableList<ProgressionState> = mutableListOf(),
 	val tasks: MutableList<Task> = mutableListOf(),
-	val createdBy: String
+	val createdByUserName: String
 ) : CsvSerializable {
 	override fun toCsvFields(): List<String> = listOf(
-		id,
+		id.toString(),
 		name,
 		description,
-		createdBy
+		createdByUserName
 	)
 
 	companion object {
 		fun fromCsv(fields: List<String>): ProjectCsvDto {
 			return ProjectCsvDto(
-				id = fields[ProjectColumnIndex.ID],
+				id = Uuid.parse(fields[ProjectColumnIndex.ID]),
 				name = fields[ProjectColumnIndex.NAME],
 				description = fields[ProjectColumnIndex.DESCRIPTION],
-				createdBy = fields[ProjectColumnIndex.CREATED_BY]
+				createdByUserName = fields[ProjectColumnIndex.CREATED_BY]
 			)
 		}
 	}

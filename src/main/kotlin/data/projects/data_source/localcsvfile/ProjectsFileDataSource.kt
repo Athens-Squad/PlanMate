@@ -1,4 +1,4 @@
-package net.thechance.data.projects.datasource.localcsvfile
+package data.projects.data_source.localcsvfile
 
 import data.progression_state.data_source.ProgressionStateDataSource
 import data.tasks.data_source.TasksDataSource
@@ -9,7 +9,10 @@ import data.projects.data_source.ProjectsDataSource
 import data.projects.data_source.localcsvfile.dto.ProjectCsvDto
 import data.projects.data_source.localcsvfile.mapper.toProject
 import data.projects.data_source.localcsvfile.mapper.toProjectCsvDto
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 class ProjectsFileDataSource(
 	private val projectsFileHandler: CsvFileHandler,
 	private val csvFileParser: CsvFileParser<ProjectCsvDto>,
@@ -30,7 +33,7 @@ class ProjectsFileDataSource(
         projectsFileHandler.writeRecords(updatedRecords)
     }
 
-    override suspend fun deleteProject(projectId: String) {
+    override suspend fun deleteProject(projectId: Uuid) {
         val updatedProjects = getProjects()
             .filterNot { it.id == projectId}
 

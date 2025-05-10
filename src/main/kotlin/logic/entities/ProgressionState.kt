@@ -1,10 +1,13 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.entities
 
-import java.util.*
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 data class ProgressionState(
-	val id: String = UUID.randomUUID().toString(),
+	val id: Uuid = Uuid.random(),
 	val name: String,
-	val projectId: String,
+	val projectId: Uuid,
 )

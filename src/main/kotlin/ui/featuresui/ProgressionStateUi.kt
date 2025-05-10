@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package ui.featuresui
 
 import logic.entities.ProgressionState
@@ -6,12 +8,14 @@ import net.thechance.ui.options.progression_states.EditProgressionStateOptions
 import net.thechance.ui.options.progression_states.ProgressionStateOptions
 import net.thechance.ui.utils.TextStyle
 import ui.io.ConsoleIO
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class ProgressionStateUi(
     private val consoleIO: ConsoleIO,
     private val progressionStatesUseCases: ProgressionStatesUseCases
 ) {
-    suspend fun manageStates(projectId: String) {
+    suspend fun manageStates(projectId: Uuid) {
         do {
             val progressionStates = progressionStatesUseCases
                 .getProgressionStatesByProjectIdUseCase
@@ -42,7 +46,7 @@ class ProgressionStateUi(
         )
     }
 
-    private suspend fun createProgressionState(projectId: String) {
+    private suspend fun createProgressionState(projectId: Uuid) {
         consoleIO.printer.printText("Create State.",TextStyle.TITLE)
 
         val stateName = receiveStringInput("Enter State Name : ")
@@ -84,7 +88,7 @@ class ProgressionStateUi(
                 )
             }
 
-            else -> Exception("Invalid Input!")
+            else -> throw Exception("Invalid Input!")
         }
     }
 
@@ -107,7 +111,7 @@ class ProgressionStateUi(
 	        }
     }
 
-    suspend fun getProgressionStatesByProjectId(projectId: String):List<ProgressionState> {
+    suspend fun getProgressionStatesByProjectId(projectId: Uuid):List<ProgressionState> {
         return progressionStatesUseCases.getProgressionStatesByProjectIdUseCase.execute(projectId)
     }
 
@@ -117,7 +121,7 @@ class ProgressionStateUi(
         return consoleIO.reader.readStringFromUser()
     }
 
-    private fun getProgressionStateId(inputStateName: String, progressionStates: List<ProgressionState>): String {
+    private fun getProgressionStateId(inputStateName: String, progressionStates: List<ProgressionState>): Uuid {
         return progressionStates.first { it.name == inputStateName }.id
     }
 

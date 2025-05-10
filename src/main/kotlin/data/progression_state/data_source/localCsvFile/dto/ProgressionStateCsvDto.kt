@@ -1,26 +1,29 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package data.progression_state.data_source.localCsvFile.dto
 
 import data.progression_state.utils.ProgressionStateColumIndex
-import net.thechance.data.utils.CsvSerializable
-import java.util.UUID
+import net.thechance.data.utils.csv_file_handle.CsvSerializable
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 data class ProgressionStateCsvDto(
-	val id: String = UUID.randomUUID().toString(),
+	val id: Uuid = Uuid.random(),
 	val name: String,
-	val projectId: String,
+	val projectId: Uuid,
 ) : CsvSerializable {
 	override fun toCsvFields(): List<String> = listOf(
-		id,
+		id.toString(),
 		name,
-		projectId
+		projectId.toString()
 	)
 
 	companion object {
 		fun fromCsv(fields: List<String>): ProgressionStateCsvDto {
 			return ProgressionStateCsvDto(
-				id = fields[ProgressionStateColumIndex.ID],
+				id = Uuid.parse(fields[ProgressionStateColumIndex.ID]),
 				name = fields[ProgressionStateColumIndex.NAME],
-				projectId = fields[ProgressionStateColumIndex.PROJECT_ID]
+				projectId = Uuid.parse(fields[ProgressionStateColumIndex.PROJECT_ID])
 			)
 		}
 	}

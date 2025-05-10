@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package ui.featuresui
 
 import kotlinx.coroutines.*
@@ -6,6 +8,8 @@ import logic.use_cases.audit_log.AuditLogUseCases
 import net.thechance.ui.options.audit_log.AuditLogOptions
 import net.thechance.ui.utils.TextStyle
 import ui.io.ConsoleIO
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class AuditLogUi(
     private val consoleIO: ConsoleIO,
@@ -18,12 +22,12 @@ class AuditLogUi(
         CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
 
-    suspend fun getTaskHistory(taskId: String): List<AuditLog> {
+    suspend fun getTaskHistory(taskId: Uuid): List<AuditLog> {
         consoleIO.printer.printText("Here is The History of Your Task",TextStyle.TITLE)
         return auditLogUseCases.getAuditLogsByTaskIdUseCase.execute(taskId)
     }
 
-    suspend fun getProjectHistory(projectId: String): List<AuditLog> {
+    suspend fun getProjectHistory(projectId: Uuid): List<AuditLog> {
         consoleIO.printer.printText("Here is The History of Your Project",TextStyle.TITLE)
         return auditLogUseCases.getAuditLogsByProjectIdUseCase.execute(projectId)
     }
