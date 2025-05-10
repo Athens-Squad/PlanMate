@@ -17,7 +17,7 @@ class TaskValidatorImpl(
             val task = tasksRepository.getTaskById(taskId)
             action(task)
         } catch (_: Exception) {
-            throw CannotCompleteTaskOperationException("Cannot find the task!")
+            throw TaskCreationFailedException("No task found with ID '$taskId'.")
         }
 
     }
@@ -25,7 +25,7 @@ class TaskValidatorImpl(
     override suspend fun doIfTaskNotExistsOrThrow(task: Task,  action: suspend() -> Unit) {
         try {
             tasksRepository.getTaskById(task.id)
-            throw CannotCompleteTaskOperationException("There is existing task with same id")
+            throw TaskCreationFailedException("A task with ID '${task.id}' already exists.")
 
         } catch (_: Exception) {
             action()
@@ -49,11 +49,11 @@ class TaskValidatorImpl(
     override suspend fun validateTaskBeforeUpdating(task: Task, updatedTask: Task) {
         //validate taskId
         if (task.id != updatedTask.id)
-            throw CannotUpdateTaskException("Cannot change taskId!")
+            throw TaskUpdateFailedException("Task ID cannot be changed during an update.")
 
         //validate projectId
         if (task.projectId != updatedTask.projectId)
-            throw CannotUpdateTaskException("Cannot change project!")
+            throw TaskUpdateFailedException("Cannot change the project associated with this task.")
 
         validateTaskFieldsIsNotBlankOrThrow(updatedTask)
 
@@ -65,7 +65,7 @@ class TaskValidatorImpl(
         if (task.title.isBlank()) throw InvalidTaskException("Task title cannot be empty.")
         if (task.description.isBlank()) throw InvalidTaskException("Task description cannot be empty.")
         if (task.currentProgressionState.id.isBlank() || task.currentProgressionState.name.isBlank())
-            throw InvalidTaskException("Task currentState cannot be empty.")
+            throw InvalidTaskException("Progression state ID and name must not be blank.")
 
     }
 
@@ -75,7 +75,7 @@ class TaskValidatorImpl(
         val taskExists = tasksRepository.getTasksByProjectId(task.projectId)
             .find { it.title == task.title } != null
         if (taskExists) {
-            throw InvalidTaskException("Task with the same title already exist in this project.")
+            throw InvalidTaskException("A task with the title '${task.title}' already exists in project '${task.projectId}'.")
         }
 
     }

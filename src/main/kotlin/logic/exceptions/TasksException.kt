@@ -4,6 +4,11 @@ package logic.exceptions
 
 open class TasksException(message: String): Exception(message)
 
-class InvalidTaskException(message: String?): TasksException("Invalid Task!:     $message")
-class CannotCompleteTaskOperationException(message: String?): TasksException("Cannot create the Task!:   $message")
-class CannotUpdateTaskException(message: String?): TasksException("Cannot update the Task!:   $message")
+class InvalidTaskException(reason: String) :
+    TasksException("Task validation failed: $reason")
+
+class TaskCreationFailedException(reason: String) :
+    TasksException("Task creation failed: $reason")
+
+class TaskUpdateFailedException(reason: String) :
+    TasksException("Task update failed: $reason")

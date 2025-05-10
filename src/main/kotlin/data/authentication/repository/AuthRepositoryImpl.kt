@@ -3,7 +3,7 @@ package data.authentication.repository
 import data.user.data_source.UsersDataSource
 import logic.entities.User
 import logic.repositories.AuthenticationRepository
-import logic.use_cases.authentication.exceptions.UserNotFoundException
+import net.thechance.logic.exceptions.UserNotFoundException
 
 class AuthRepositoryImpl(
    private val usersFileDataSource: UsersDataSource

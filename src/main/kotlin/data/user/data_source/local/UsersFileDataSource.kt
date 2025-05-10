@@ -1,10 +1,11 @@
-package data.user.data_source
+package net.thechance.data.user.data_source.local
 
 import logic.entities.User
 import data.csv_file_handle.CsvFileHandler
 import data.csv_file_handle.CsvFileParser
-import logic.use_cases.authentication.exceptions.UserAlreadyExistsException
-import logic.use_cases.authentication.exceptions.UserNotFoundException
+import data.user.data_source.UsersDataSource
+import net.thechance.logic.exceptions.UserAlreadyExistsException
+import net.thechance.logic.exceptions.UserNotFoundException
 
 class UsersFileDataSource(
     private val userFileHandler: CsvFileHandler,

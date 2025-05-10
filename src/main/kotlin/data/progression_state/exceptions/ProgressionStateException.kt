@@ -1,6 +1,6 @@
 package net.thechance.data.progression_state.exceptions
 
-sealed class ProgressionStateException(message: String): DomainException(message)
+open class ProgressionStateException(message: String): DomainException(message)
 
 class NoProjectFoundForProgressionStateException() :
 	ProgressionStateException("No Project Found For Progression State")
