@@ -1,23 +1,17 @@
 package logic.use_cases.authentication
 
 import com.google.common.truth.Truth.assertThat
-import helper.createUser
-import io.mockk.every
-import io.mockk.mockk
-import logic.repositories.AuthenticationRepository
 import data.authentication.utils.PasswordHashing
-import logic.exceptions.InvalidCredentialsException
+import helper.authentication_helper.FakeUser
 import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import logic.entities.User
-import logic.entities.UserType
-import logic.use_cases.authentication.LoginUseCase
-import logic.use_cases.authentication.exceptions.InvalidCredentialsException
+import logic.exceptions.UserNotFoundException
+import logic.repositories.AuthenticationRepository
 import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
 
 class LoginUseCaseTest {
 
@@ -38,48 +32,36 @@ class LoginUseCaseTest {
     @Test
     fun `should login successfully when correct username and password are given`() {
         runTest {
-            val username = "Malak"
-            val password = "123Password"
-            val hashedPassword = passwordHashing.hash((password))
-            val expectedUser = User(
-                name = username,
-                password = hashedPassword,
-                type = UserType.AdminUser
-            )
-            coEvery {  userValidator.isUsernameNotValid(username) } returns false
-            coEvery { userValidator.isPasswordNotValid(password) } returns false
-            coEvery {   authenticationRepository.login(username = username, password = hashedPassword) } returns expectedUser
+            val expectedUser = FakeUser.createUser
+            coEvery {  userValidator.isUsernameNotValid(any()) } returns false
+            coEvery { userValidator.isPasswordNotValid(any()) } returns false
+            coEvery {   authenticationRepository.login(any(), any()) } returns expectedUser
 
-            val result = loginUseCase.execute(username, password)
+            val result = loginUseCase.execute(expectedUser.name, expectedUser.password)
 
-            assertThat(result.name).isEqualTo(expectedUser.name)
+            assertThat(result).isEqualTo(expectedUser)
         }
     }
 
     @Test
-    fun `login should fail when incorrect password is given`() {
+    fun `login should fail when password is only spaces`() {
         runTest {
-            val username = "Malak1"
-            val password = "   "
+            val user = FakeUser.createUser.copy(password="     ")
+            coEvery { userValidator.isPasswordNotValid(user.password)} returns true
+            coEvery { userValidator.isUsernameNotValid(any()) } returns false
 
-            coEvery { userValidator.isPasswordNotValid(password)} returns true
-            coEvery { userValidator.isUsernameNotValid(username) } returns false
-
-            assertThrows<Exception> { loginUseCase.execute(username, password) }
+            assertThrows<Exception> { loginUseCase.execute(user.name, user.password) }
         }
     }
 
     @Test
     fun `login should fail when incorrect username is given (user not found)`() {
         runTest {
-            val username = "Malak1"
-            val password = "123Password"
-            val hashedPassword = passwordHashing.hash((password))
+            val user = FakeUser.createUser
+            coEvery { authenticationRepository.login(username = user.name, password = user.password) } throws
+                    UserNotFoundException()
 
-            coEvery { authenticationRepository.login(username = username, password = hashedPassword) } throws
-                    InvalidCredentialsException()
-
-            assertThrows<Exception> { loginUseCase.execute(username, password) }
+            assertThrows<Exception> { loginUseCase.execute(user.name, user.password) }
         }
 
     }
@@ -87,13 +69,10 @@ class LoginUseCaseTest {
     @Test
     fun `login should fail when username field is empty`() {
         runTest {
-            val username = ""
-            val password = "123Password"
-            val hashedPassword = passwordHashing.hash((password))
+            val user = FakeUser.createUser.copy(name = "")
+            coEvery { userValidator.isUsernameNotValid(user.name) } returns true
 
-            coEvery { userValidator.isUsernameNotValid(username) } returns true
-
-            assertThrows<Exception> { loginUseCase.execute(username, hashedPassword) }
+            assertThrows<Exception> { loginUseCase.execute(user.name, user.password) }
         }
 
     }
@@ -101,14 +80,12 @@ class LoginUseCaseTest {
     @Test
     fun `login should fail when password field is empty`() {
         runTest {
-            val username = "Malak"
-            val password = ""
-            val hashedPassword = passwordHashing.hash((password))
+            val user = FakeUser.createUser.copy(password = "")
 
-            coEvery { userValidator.isPasswordNotValid(password) } returns true
-            coEvery { userValidator.isUsernameNotValid(username)  } returns false
+            coEvery { userValidator.isPasswordNotValid(user.password) } returns true
+            coEvery { userValidator.isUsernameNotValid(any())  } returns false
 
-            assertThrows<Exception> { loginUseCase.execute(username, hashedPassword) }
+            assertThrows<Exception> { loginUseCase.execute(user.name, user.password) }
         }
 
     }
