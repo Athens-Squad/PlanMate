@@ -10,6 +10,3 @@ class UserNotFoundException:
 
 class UserAlreadyExistsException:
 	AuthenticationException( "User already exists")
-
-class UnableToRegisterUserException:
-	AuthenticationException("Cannot register!")
