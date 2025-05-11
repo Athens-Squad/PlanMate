@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalUuidApi::class)
+@file:OptIn(ExperimentalUuidApi::class, ExperimentalUuidApi::class, ExperimentalUuidApi::class)
 
 package net.thechance.logic.use_cases.project.projectValidations
 
@@ -14,7 +14,7 @@ class ProjectValidatorImpl(
 	private val userRepository: UserRepository,
 	private val projectsRepository: ProjectsRepository
 ): ProjectValidator {
-	@OptIn(ExperimentalUuidApi::class)
+
 	override suspend fun validateProjectBeforeCreation(project: Project, username: String): Boolean {
 		return when {
 			username.checkIfUsernameIsNotValid() -> { throw InvalidUsernameForProjectException() }
@@ -25,7 +25,7 @@ class ProjectValidatorImpl(
 		}
 	}
 
-	@OptIn(ExperimentalUuidApi::class)
+
 	override suspend fun validateProjectAfterCreation(projectId: Uuid, username: String): Boolean {
 		return when {
 			username.checkIfUsernameIsNotValid() -> { throw InvalidUsernameForProjectException() }

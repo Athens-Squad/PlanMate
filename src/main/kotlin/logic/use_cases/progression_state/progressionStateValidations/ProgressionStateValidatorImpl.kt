@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalUuidApi::class)
+@file:OptIn(ExperimentalUuidApi::class, ExperimentalUuidApi::class, ExperimentalUuidApi::class)
 
 package logic.use_cases.progression_state.progressionStateValidations
 
@@ -14,7 +14,6 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 
-@OptIn(ExperimentalUuidApi::class)
 class ProgressionStateValidatorImpl(
     private val projectsRepository: ProjectsRepository,
     private val progressionStateRepository: ProgressionStateRepository
@@ -29,7 +28,7 @@ class ProgressionStateValidatorImpl(
 		}
 	}
 
-	@OptIn(ExperimentalUuidApi::class)
+
 	override suspend fun validateAfterCreation(progressionStateId: Uuid): Boolean {
 		val entity = progressionStateRepository.getProgressionStates().find { it.id == progressionStateId }
 			?: throw ProgressionStateNotFoundException()
