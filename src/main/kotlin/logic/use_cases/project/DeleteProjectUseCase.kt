@@ -10,8 +10,8 @@ import logic.use_cases.project.projectValidations.checkIfProjectExistInRepositor
 import logic.use_cases.project.projectValidations.checkIfUserAuthorized
 import logic.use_cases.project.projectValidations.checkIfUserIsProjectOwner
 import net.thechance.logic.exceptions.InvalidUsernameForProjectException
-import net.thechance.logic.exceptions.NoProjectFoundException
 import net.thechance.logic.exceptions.NotAuthorizedUserException
+import net.thechance.logic.exceptions.ProjectNotFoundException
 import java.time.LocalDateTime
 
 
@@ -27,9 +27,9 @@ class DeleteProjectUseCase(
                 .takeIf { it } ?: throw NotAuthorizedUserException()
         }
 
-        projectId.checkIfFieldIsValid().takeIf { it } ?: throw NoProjectFoundException()
+        projectId.checkIfFieldIsValid().takeIf { it } ?: throw ProjectNotFoundException()
         val project = checkIfProjectExistInRepositoryAndReturn(projectId) { projectRepository.getProjects() }
-            ?: throw NoProjectFoundException()
+            ?: throw ProjectNotFoundException()
 
         checkIfUserIsProjectOwner(username, project.createdBy).takeIf { it }
             ?: throw NotAuthorizedUserException()

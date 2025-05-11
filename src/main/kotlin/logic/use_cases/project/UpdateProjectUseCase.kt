@@ -10,10 +10,7 @@ import logic.use_cases.project.projectValidations.checkIfFieldIsValid
 import logic.use_cases.project.projectValidations.checkIfProjectExistInRepositoryAndReturn
 import logic.use_cases.project.projectValidations.checkIfUserAuthorized
 import logic.use_cases.project.projectValidations.checkIfUserIsProjectOwner
-import net.thechance.logic.exceptions.InvalidProjectNameException
-import net.thechance.logic.exceptions.InvalidUsernameForProjectException
-import net.thechance.logic.exceptions.NoProjectFoundException
-import net.thechance.logic.exceptions.NotAuthorizedUserException
+import net.thechance.logic.exceptions.*
 import java.time.LocalDateTime
 
 
@@ -33,7 +30,7 @@ class UpdateProjectUseCase(
 
             val project =
                 checkIfProjectExistInRepositoryAndReturn(updatedProject.id) { projectRepository.getProjects() }
-                    ?: throw NoProjectFoundException()
+                    ?: throw ProjectNotFoundException()
 
             checkIfUserIsProjectOwner(project.createdBy, updatedProject.createdBy).takeIf { it }
                 ?: throw NotAuthorizedUserException()

@@ -7,8 +7,8 @@ import logic.use_cases.project.projectValidations.checkIfFieldIsValid
 import logic.use_cases.project.projectValidations.checkIfUserAuthorized
 import logic.use_cases.project.projectValidations.checkIfUserIsProjectOwner
 import net.thechance.logic.exceptions.InvalidUsernameForProjectException
-import net.thechance.logic.exceptions.NoProjectFoundException
 import net.thechance.logic.exceptions.NotAuthorizedUserException
+import net.thechance.logic.exceptions.ProjectNotFoundException
 
 class GetAllProjectsByUsernameUseCase(
     private val projectRepository: ProjectsRepository,
@@ -26,6 +26,6 @@ class GetAllProjectsByUsernameUseCase(
             .filter {  project ->
                 checkIfUserIsProjectOwner(username, project.createdBy)
             }
-            .ifEmpty { throw NoProjectFoundException() }
+            .ifEmpty { throw ProjectNotFoundException() }
     }
 }

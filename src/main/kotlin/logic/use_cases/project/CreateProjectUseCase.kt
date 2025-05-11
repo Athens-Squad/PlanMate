@@ -9,10 +9,7 @@ import logic.use_cases.audit_log.CreateAuditLogUseCase
 import logic.use_cases.project.projectValidations.checkIfFieldIsValid
 import logic.use_cases.project.projectValidations.checkIfProjectAlreadyExistInRepository
 import logic.use_cases.project.projectValidations.checkIfUserAuthorized
-import net.thechance.logic.exceptions.InvalidProjectNameException
-import net.thechance.logic.exceptions.InvalidUsernameForProjectException
-import net.thechance.logic.exceptions.NotAuthorizedUserException
-import net.thechance.logic.exceptions.ProjectAlreadyExistException
+import net.thechance.logic.exceptions.*
 import java.time.LocalDateTime
 
 class CreateProjectUseCase(
@@ -29,7 +26,7 @@ class CreateProjectUseCase(
                 .takeIf { it } ?: throw NotAuthorizedUserException()
 
             checkIfProjectAlreadyExistInRepository(id) { projectRepository.getProjects() }
-                .takeIf { it } ?: throw ProjectAlreadyExistException()
+                .takeIf { it } ?: throw ProjectAlreadyExistsException()
         }
 
         projectRepository.createProject(project)

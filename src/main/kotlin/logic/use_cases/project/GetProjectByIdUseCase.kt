@@ -5,7 +5,7 @@ import logic.repositories.ProjectsRepository
 import logic.use_cases.project.projectValidations.checkIfFieldIsValid
 import logic.use_cases.project.projectValidations.checkIfProjectExistInRepositoryAndReturn
 import net.thechance.logic.exceptions.InvalidProjectNameException
-import net.thechance.logic.exceptions.NoProjectFoundException
+import net.thechance.logic.exceptions.ProjectNotFoundException
 
 class GetProjectByIdUseCase(
 	private val projectRepository: ProjectsRepository,
@@ -17,6 +17,6 @@ class GetProjectByIdUseCase(
 		}
 
 		return checkIfProjectExistInRepositoryAndReturn(projectId) { projectRepository.getProjects() }
-			?: throw NoProjectFoundException()
+			?: throw ProjectNotFoundException()
 	}
 }
