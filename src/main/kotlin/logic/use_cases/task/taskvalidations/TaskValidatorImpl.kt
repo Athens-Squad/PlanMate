@@ -25,6 +25,7 @@ class TaskValidatorImpl(
 		}
 	}
 
+	@OptIn(ExperimentalUuidApi::class)
 	override suspend fun validateTaskAfterCreation(
 		taskId: Uuid
 	): Boolean {

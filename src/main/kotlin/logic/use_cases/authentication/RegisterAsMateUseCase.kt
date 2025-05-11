@@ -15,15 +15,13 @@ class RegisterAsMateUseCase(
 
 ) {
     suspend fun execute(mateUser: User, password: String) {
-        if (
+
             userValidator.isUsernameNotValid(mateUser.name) ||
             userValidator.isPasswordNotValid(password) ||
             userValidator.isTypeNotMate(mateUser.type) ||
             userValidator.isMateAdminIdNotValid(mateUser.type) ||
             userValidator.userNameExist(mateUser.name)
-        ) {
-            throw Exception("Cannot Register!")
-        }
+
         val hashedPassword = passwordHashing.hash(password)
         userRepository.createUser(mateUser, hashedPassword)
 

@@ -16,6 +16,7 @@ class AuditLogValidatorImpl : AuditLogValidator {
 		}
 	}
 
+	@OptIn(ExperimentalUuidApi::class)
 	override fun validateAfterCreation(entityId: Uuid): Boolean {
 		return when {
 			entityId.toString().isBlank() -> throw InvalidEntityIdForAuditLog()
