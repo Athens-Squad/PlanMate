@@ -19,8 +19,6 @@ import kotlin.uuid.Uuid
 
 class MongoProjectDataSource(
     private val projectsCollection: MongoCollection<ProjectDto>,
-    private val tasksDataSource: TasksDataSource,
-    private val statesDataSource: ProgressionStateDataSource
 ) : ProjectsDataSource {
     override suspend fun createProject(project: Project) {
         val projectDto = project.toProjectDto()
@@ -43,6 +41,7 @@ class MongoProjectDataSource(
     }
 
     override suspend fun getProjects(): List<Project> {
+        println("Here")
         return projectsCollection.find()
             .map {
                 it.toProject()

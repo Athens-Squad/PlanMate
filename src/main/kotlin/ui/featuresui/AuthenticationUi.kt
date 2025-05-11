@@ -1,15 +1,15 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package ui.featuresui
+package net.thechance.ui.featuresui
 
 import kotlinx.coroutines.*
 import logic.entities.User
 import logic.use_cases.authentication.AuthenticationUseCases
 import logic.entities.UserType
 import net.thechance.data.authentication.UserSession
+import net.thechance.ui.core.io.ConsoleIO
+import net.thechance.ui.core.io.TextStyle
 import net.thechance.ui.options.AuthenticationOptions
-import net.thechance.ui.utils.TextStyle
-import ui.io.ConsoleIO
 import kotlin.uuid.ExperimentalUuidApi
 
 
@@ -24,7 +24,7 @@ class AuthenticationUi(
 
     private val authScope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
-    fun runAuthenticationUi(navigateAfterLoggedInSuccessfully: () -> Unit) {
+    private fun runAuthenticationUi(navigateAfterLoggedInSuccessfully: () -> Unit) {
         consoleIO.printer.printText("Select your option (1 or 2) : ", TextStyle.TITLE)
         consoleIO.printer.printOptions(AuthenticationOptions.entries)
 
@@ -101,25 +101,22 @@ class AuthenticationUi(
         )
     }
 
-    fun createMate() {
+    suspend fun createMate() {
         consoleIO.printer.printText("Create Mate Account, Please Enter Mate's Info : ", TextStyle.TITLE)
         val userName = receiveUserInfo("Enter Mate's Username : ")
         val password = receiveUserInfo("Enter Mate's Password : ")
 
-
-        authScope.launch {
-            try {
-                authenticationUseCases.registerAsMateUseCase.execute(
-                    mateUser = User(
-                        name = userName,
-                        type = UserType.MateUser(userSession.currentUser.name)
-                    ),
-                    password = password
-                )
-                consoleIO.printer.printText("Mate Created Successfully!", TextStyle.SUCCESS)
-            } catch (exception: Exception) {
-                consoleIO.printer.printText("Error : ${exception.message}", TextStyle.ERROR)
-            }
+        try {
+            authenticationUseCases.registerAsMateUseCase.execute(
+                mateUser = User(
+                    name = userName,
+                    type = UserType.MateUser(userSession.currentUser.name)
+                ),
+                password = password
+            )
+            consoleIO.printer.printText("Mate Created Successfully!", TextStyle.SUCCESS)
+        } catch (exception: Exception) {
+            consoleIO.printer.printText("Error : ${exception.message}", TextStyle.ERROR)
         }
     }
 

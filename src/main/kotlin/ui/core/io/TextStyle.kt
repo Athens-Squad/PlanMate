@@ -1,4 +1,4 @@
-package net.thechance.ui.utils
+package net.thechance.ui.core.io
 
 enum class TextStyle(private val color: String) {
     TITLE("\u001B[36m"),       // Cyan

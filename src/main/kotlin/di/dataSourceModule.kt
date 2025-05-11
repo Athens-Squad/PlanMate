@@ -90,9 +90,7 @@ val dataSourceModule = module {
 
 	single<ProjectsDataSource> {
 		MongoProjectDataSource(
-			projectsCollection = get(named("projectsCollection")),
-			tasksDataSource = get<TasksDataSource>(),
-			statesDataSource = get<ProgressionStateDataSource>()
+			projectsCollection = get(named("projectsCollection"))
 		)
 	}
 

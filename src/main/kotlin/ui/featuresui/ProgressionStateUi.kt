@@ -1,13 +1,13 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package ui.featuresui
+package net.thechance.ui.featuresui
 
 import logic.entities.ProgressionState
 import logic.use_cases.progression_state.ProgressionStatesUseCases
+import net.thechance.ui.core.io.ConsoleIO
+import net.thechance.ui.core.io.TextStyle
 import net.thechance.ui.options.progression_states.EditProgressionStateOptions
 import net.thechance.ui.options.progression_states.ProgressionStateOptions
-import net.thechance.ui.utils.TextStyle
-import ui.io.ConsoleIO
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -21,7 +21,7 @@ class ProgressionStateUi(
                 .getProgressionStatesByProjectIdUseCase
                 .execute(projectId)
 
-            consoleIO.printer.printText("Select Option (1 to 4):",TextStyle.TITLE)
+            consoleIO.printer.printText("Select Option (1 to 4):", TextStyle.TITLE)
             consoleIO.printer.printOptions(ProgressionStateOptions.entries)
             val inputStateOption = consoleIO.reader.readNumberFromUser()
 

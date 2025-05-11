@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package ui.featuresui
+package net.thechance.ui.featuresui
 
 
 import kotlinx.coroutines.*
@@ -11,9 +11,9 @@ import logic.use_cases.progression_state.ProgressionStatesUseCases
 import logic.use_cases.project.ProjectUseCases
 import logic.use_cases.task.TasksUseCases
 import net.thechance.data.authentication.UserSession
+import net.thechance.ui.core.io.ConsoleIO
+import net.thechance.ui.core.io.TextStyle
 import net.thechance.ui.options.project.EditProjectOptions
-import net.thechance.ui.utils.TextStyle
-import ui.io.ConsoleIO
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -25,7 +25,7 @@ class ProjectsUi(
     private val consoleIO: ConsoleIO
 ) {
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        consoleIO.printer.printText("Unexpected error: ${throwable.message}",TextStyle.ERROR)
+        consoleIO.printer.printText("Unexpected error: ${throwable.message}", TextStyle.ERROR)
     }
     private val projectsScope: CoroutineScope =
         CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)

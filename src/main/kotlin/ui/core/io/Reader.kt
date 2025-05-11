@@ -1,4 +1,4 @@
-package ui.io
+package net.thechance.ui.core.io
 
 class Reader {
     fun readStringFromUser(): String {

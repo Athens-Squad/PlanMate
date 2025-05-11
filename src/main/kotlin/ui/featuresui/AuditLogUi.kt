@@ -1,13 +1,13 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package ui.featuresui
+package net.thechance.ui.featuresui
 
 import kotlinx.coroutines.*
 import logic.entities.AuditLog
 import logic.use_cases.audit_log.AuditLogUseCases
+import net.thechance.ui.core.io.ConsoleIO
+import net.thechance.ui.core.io.TextStyle
 import net.thechance.ui.options.audit_log.AuditLogOptions
-import net.thechance.ui.utils.TextStyle
-import ui.io.ConsoleIO
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -16,7 +16,7 @@ class AuditLogUi(
     private val auditLogUseCases: AuditLogUseCases
 ) {
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        consoleIO.printer.printText("Unexpected error: ${throwable.message}",TextStyle.ERROR)
+        consoleIO.printer.printText("Unexpected error: ${throwable.message}", TextStyle.ERROR)
     }
     private val logScope: CoroutineScope =
         CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)

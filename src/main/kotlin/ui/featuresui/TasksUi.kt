@@ -1,28 +1,30 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package ui.featuresui
+package net.thechance.ui.featuresui
 
 import kotlinx.coroutines.*
 import logic.entities.ProgressionState
 import logic.entities.Task
+import logic.use_cases.progression_state.GetProgressionStatesByProjectIdUseCase
 import logic.use_cases.task.TasksUseCases
 import net.thechance.data.authentication.UserSession
+import net.thechance.ui.core.io.ConsoleIO
+import net.thechance.ui.core.io.TextStyle
 import net.thechance.ui.options.tasks.EditTaskOptions
 import net.thechance.ui.options.tasks.TaskOptions
-import net.thechance.ui.utils.TextStyle
-import ui.io.ConsoleIO
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class TasksUi(
     private val consoleIO: ConsoleIO,
     private val tasksUseCases: TasksUseCases,
+    private val getProgressionStatesByProjectIdUseCase: GetProgressionStatesByProjectIdUseCase,
     private val auditLogUi: AuditLogUi,
     private val session: UserSession
 ) {
-    private val exceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler({ _, throwable: Throwable ->
+    private val exceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler { _, throwable: Throwable ->
         consoleIO.printer.printText(throwable.message.toString(),TextStyle.ERROR)
-    })
+    }
     private val tasksCoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
 
@@ -82,11 +84,16 @@ class TasksUi(
         }
     }
 
-    fun createTask(progressionStates: List<ProgressionState>, projectId: Uuid) {
-        consoleIO.printer.printText("Create Task",TextStyle.TITLE)
+    suspend fun createTask(projectId: Uuid) {
+        consoleIO.printer.printText("Create Task", TextStyle.TITLE)
         val taskName = receiveStringInput("Enter Task Name : ")
         val taskDescription = receiveStringInput("Enter Task Description : ")
 
+        val progressionStates = getProgressionStatesByProjectIdUseCase.execute(projectId)
+        if(progressionStates.isEmpty()){
+            consoleIO.printer.printText("please create state first",TextStyle.ERROR)
+            return
+        }
         consoleIO.printer.printText("Select Your Task Progression State",TextStyle.TITLE)
 
         consoleIO.printer.printText(
