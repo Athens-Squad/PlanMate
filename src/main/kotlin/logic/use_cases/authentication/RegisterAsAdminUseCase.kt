@@ -2,6 +2,7 @@ package logic.use_cases.authentication
 
 import data.authentication.utils.PasswordHashing
 import logic.entities.User
+import logic.exceptions.UnableToRegisterUserException
 import logic.repositories.UserRepository
 import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
 
@@ -19,15 +20,12 @@ class RegisterAsAdminUseCase(
             userValidator.isTypeNotAdmin(adminUser.type) ||
             userValidator.userNameExist(adminUser.name)
         ) {
-            throw Exception("Cannot Register!")
+            throw UnableToRegisterUserException()
         }
 
         val hashedPassword = passwordHashing.hash(adminUser.password)
         val adminUserWithHashedPassword = adminUser.copy(password = hashedPassword)
 
         userRepository.createUser(adminUserWithHashedPassword)
-
     }
-
-
 }

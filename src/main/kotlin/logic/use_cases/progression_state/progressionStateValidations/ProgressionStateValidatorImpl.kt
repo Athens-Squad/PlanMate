@@ -6,7 +6,6 @@ import logic.repositories.ProgressionStateRepository
 import logic.exceptions.InvalidProgressionStateFieldsException
 import logic.exceptions.NoProjectFoundForProgressionStateException
 import logic.exceptions.ProgressionStateAlreadyExistsException
-import logic.exceptions.ProgressionStateException
 import logic.exceptions.ProgressionStateNotFoundException
 import net.thechance.logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
 
@@ -16,23 +15,23 @@ class ProgressionStateValidatorImpl(
     private val progressionStateRepository: ProgressionStateRepository
 ) : ProgressionStateValidator {
 
-	override suspend fun validateBeforeCreation(progressionState: ProgressionState): ProgressionStateException? {
+	override suspend fun validateBeforeCreation(progressionState: ProgressionState): Boolean {
 		return when {
-			!progressionState.checkIsFieldsAreValid() -> InvalidProgressionStateFieldsException()
-			!progressionState.checkIfProjectExists() -> NoProjectFoundForProgressionStateException()
-			progressionState.checkIfProgressionStateExists() -> ProgressionStateAlreadyExistsException()
-			else -> { null }
+			!progressionState.checkIsFieldsAreValid() -> throw InvalidProgressionStateFieldsException()
+			!progressionState.checkIfProjectExists() -> throw NoProjectFoundForProgressionStateException()
+			progressionState.checkIfProgressionStateExists() -> throw ProgressionStateAlreadyExistsException()
+			else -> { true }
 		}
 	}
 
-	override suspend fun validateAfterCreation(progressionStateId: String): ProgressionStateException? {
+	override suspend fun validateAfterCreation(progressionStateId: String): Boolean {
 		val entity = progressionStateRepository.getProgressionStates().find { it.id == progressionStateId }
-			?: return ProgressionStateNotFoundException()
+			?: throw ProgressionStateNotFoundException()
 
 		return when {
-			!entity.checkIsFieldsAreValid() -> InvalidProgressionStateFieldsException()
-			!entity.checkIfProjectExists() -> NoProjectFoundForProgressionStateException()
-			else -> { null }
+			!entity.checkIsFieldsAreValid() -> throw InvalidProgressionStateFieldsException()
+			!entity.checkIfProjectExists() -> throw NoProjectFoundForProgressionStateException()
+			else -> { true }
 		}
 	}
 

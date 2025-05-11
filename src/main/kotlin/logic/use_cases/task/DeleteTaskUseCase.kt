@@ -14,20 +14,17 @@ class DeleteTaskUseCase(
     private val taskValidator: TaskValidator
 ) {
     suspend fun execute(taskId: String, userName: String) {
-        taskValidator.doIfTaskExistsOrThrow(taskId) {
-            // Delete the task
-            taskRepository.deleteTask(taskId)
+        taskValidator.validateTaskAfterCreation(taskId)
+	    taskRepository.deleteTask(taskId)
 
-            // Create an audit log for task deletion
-            createAuditLogUseCase.execute(
-                AuditLog(
-                    entityType = EntityType.TASK,
-                    entityId = taskId,
-                    description = "Task deleted successfully.",
-                    userName = userName,
-                    createdAt = LocalDateTime.now(),
-                )
-            )
-        }
+	    createAuditLogUseCase.execute(
+		    AuditLog(
+			    entityType = EntityType.TASK,
+			    entityId = taskId,
+			    description = "Task deleted successfully.",
+			    userName = userName,
+			    createdAt = LocalDateTime.now(),
+		    )
+	    )
     }
 }

@@ -2,6 +2,7 @@ package logic.use_cases.authentication
 
 import data.authentication.utils.PasswordHashing
 import logic.entities.User
+import logic.exceptions.UnableToRegisterUserException
 import logic.repositories.UserRepository
 import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
 
@@ -19,16 +20,12 @@ class RegisterAsMateUseCase(
             userValidator.isMateAdminIdNotValid(mateUser.type) ||
             userValidator.userNameExist(mateUser.name)
         ) {
-            throw Exception("Cannot Register!")
+            throw UnableToRegisterUserException()
         }
         val hashedPassword = passwordHashing.hash(mateUser.password)
         val mateUserWithHashedPassword = mateUser.copy(password = hashedPassword)
         userRepository.createUser(mateUserWithHashedPassword)
-
-
     }
-
-
 }
 
 
