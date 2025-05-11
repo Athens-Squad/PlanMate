@@ -6,8 +6,8 @@ import net.thechance.data.authentication.UserSession
 import net.thechance.ui.core.Presenter
 import net.thechance.ui.core.io.ConsoleIO
 import net.thechance.ui.core.io.TextStyle
-import net.thechance.ui.options.MateOptions
 import net.thechance.ui.featuresui.ProjectsUi
+import net.thechance.ui.options.MateOptions
 
 class MatePresenter(
     private val consoleIO: ConsoleIO,

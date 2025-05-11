@@ -2,15 +2,15 @@
 
 package net.thechance.data.utils
 
-import org.bson.codecs.Codec
-import org.bson.codecs.configuration.CodecProvider
-import org.bson.codecs.configuration.CodecRegistry
-import kotlin.uuid.Uuid
 import org.bson.BsonReader
 import org.bson.BsonWriter
+import org.bson.codecs.Codec
 import org.bson.codecs.DecoderContext
 import org.bson.codecs.EncoderContext
+import org.bson.codecs.configuration.CodecProvider
+import org.bson.codecs.configuration.CodecRegistry
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class UuidCodec : Codec<Uuid> {
     override fun encode(writer: BsonWriter, value: Uuid, encoderContext: EncoderContext) {

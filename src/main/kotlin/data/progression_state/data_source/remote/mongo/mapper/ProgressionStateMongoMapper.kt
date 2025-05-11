@@ -8,17 +8,17 @@ import kotlin.uuid.ExperimentalUuidApi
 
 
 fun ProgressionStateDto.toProgressionState(): ProgressionState {
-	return ProgressionState(
-		id = id,
-		name = name,
-		projectId = projectId
-	)
+    return ProgressionState(
+        id = id,
+        name = name,
+        projectId = projectId
+    )
 }
 
 fun ProgressionState.toProgressionStateDto(): ProgressionStateDto {
-	return ProgressionStateDto(
-		id = id,
-		name = name,
-		projectId = projectId
-	)
+    return ProgressionStateDto(
+        id = id,
+        name = name,
+        projectId = projectId
+    )
 }

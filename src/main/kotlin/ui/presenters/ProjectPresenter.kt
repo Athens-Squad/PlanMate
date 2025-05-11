@@ -8,12 +8,12 @@ import logic.entities.Project
 import logic.entities.Task
 import net.thechance.ui.core.io.ConsoleIO
 import net.thechance.ui.core.io.TextStyle
-import net.thechance.ui.options.project.ProjectMateOptions
-import net.thechance.ui.options.project.ProjectOptions
 import net.thechance.ui.featuresui.AuditLogUi
 import net.thechance.ui.featuresui.ProgressionStateUi
 import net.thechance.ui.featuresui.ProjectsUi
 import net.thechance.ui.featuresui.TasksUi
+import net.thechance.ui.options.project.ProjectMateOptions
+import net.thechance.ui.options.project.ProjectOptions
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

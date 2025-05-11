@@ -2,7 +2,9 @@
 
 package logic.use_cases.project.projectValidations
 
-import logic.entities.*
+import logic.entities.Project
+import logic.entities.User
+import logic.entities.UserType
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

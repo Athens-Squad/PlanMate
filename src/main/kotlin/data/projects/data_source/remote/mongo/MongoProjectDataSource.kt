@@ -4,16 +4,13 @@ package data.projects.data_source.remote.mongo
 
 import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
-import data.progression_state.data_source.ProgressionStateDataSource
-import data.tasks.data_source.TasksDataSource
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
-import logic.entities.ProgressionState
-import logic.entities.Project
 import data.projects.data_source.ProjectsDataSource
 import data.projects.data_source.remote.mongo.dto.ProjectDto
 import data.projects.data_source.remote.mongo.mapper.toProject
 import data.projects.data_source.remote.mongo.mapper.toProjectDto
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
+import logic.entities.Project
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

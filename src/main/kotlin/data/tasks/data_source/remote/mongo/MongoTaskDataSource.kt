@@ -5,13 +5,13 @@ package net.thechance.data.tasks.data_source.remote.mongo
 import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.tasks.data_source.TasksDataSource
+import data.tasks.data_source.remote.mongo.mapper.toTask
+import data.tasks.data_source.remote.mongo.mapper.toTaskDto
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.toList
 import logic.entities.Task
 import net.thechance.data.tasks.data_source.remote.mongo.dto.TaskDto
-import data.tasks.data_source.remote.mongo.mapper.toTask
-import data.tasks.data_source.remote.mongo.mapper.toTaskDto
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -25,7 +25,8 @@ class MongoTaskDataSource(
 
     override suspend fun getTaskById(taskId: Uuid): Task {
         val queryParams = Filters.eq("_id", taskId)
-        val taskDto = taskCollection.find(queryParams).firstOrNull()?: throw NoSuchElementException("No task found with ID: $taskId")
+        val taskDto = taskCollection.find(queryParams).firstOrNull()
+            ?: throw NoSuchElementException("No task found with ID: $taskId")
         return taskDto.toTask()
     }
 
@@ -43,6 +44,7 @@ class MongoTaskDataSource(
             .toList()
 
     }
+
     override suspend fun updateTask(task: Task) {
         val updatedTaskDto = task.toTaskDto()
         val queryParams = Filters.eq("_id", task.id)

@@ -2,9 +2,9 @@
 
 package data.projects
 
+import data.projects.data_source.ProjectsDataSource
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
-import data.projects.data_source.ProjectsDataSource
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -24,6 +24,6 @@ class ProjectsRepositoryImpl(
     }
 
     override suspend fun getProjects(): List<Project> {
-       return projectsDataSource.getProjects()
+        return projectsDataSource.getProjects()
     }
 }

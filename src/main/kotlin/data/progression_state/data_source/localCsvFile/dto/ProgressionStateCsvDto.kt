@@ -8,23 +8,23 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 data class ProgressionStateCsvDto(
-	val id: Uuid = Uuid.random(),
-	val name: String,
-	val projectId: Uuid,
+    val id: Uuid = Uuid.random(),
+    val name: String,
+    val projectId: Uuid,
 ) : CsvSerializable {
-	override fun toCsvFields(): List<String> = listOf(
-		id.toString(),
-		name,
-		projectId.toString()
-	)
+    override fun toCsvFields(): List<String> = listOf(
+        id.toString(),
+        name,
+        projectId.toString()
+    )
 
-	companion object {
-		fun fromCsv(fields: List<String>): ProgressionStateCsvDto {
-			return ProgressionStateCsvDto(
-				id = Uuid.parse(fields[ProgressionStateColumIndex.ID]),
-				name = fields[ProgressionStateColumIndex.NAME],
-				projectId = Uuid.parse(fields[ProgressionStateColumIndex.PROJECT_ID])
-			)
-		}
-	}
+    companion object {
+        fun fromCsv(fields: List<String>): ProgressionStateCsvDto {
+            return ProgressionStateCsvDto(
+                id = Uuid.parse(fields[ProgressionStateColumIndex.ID]),
+                name = fields[ProgressionStateColumIndex.NAME],
+                projectId = Uuid.parse(fields[ProgressionStateColumIndex.PROJECT_ID])
+            )
+        }
+    }
 }

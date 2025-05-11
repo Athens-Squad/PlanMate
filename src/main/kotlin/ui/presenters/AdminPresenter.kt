@@ -5,9 +5,9 @@ import net.thechance.data.authentication.UserSession
 import net.thechance.ui.core.Presenter
 import net.thechance.ui.core.io.ConsoleIO
 import net.thechance.ui.core.io.TextStyle
-import net.thechance.ui.options.AdminOptions
 import net.thechance.ui.featuresui.AuthenticationUi
 import net.thechance.ui.featuresui.ProjectsUi
+import net.thechance.ui.options.AdminOptions
 
 class AdminPresenter(
     private val consoleIO: ConsoleIO,

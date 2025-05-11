@@ -4,8 +4,8 @@ package net.thechance.ui.featuresui
 
 import kotlinx.coroutines.*
 import logic.entities.User
-import logic.use_cases.authentication.AuthenticationUseCases
 import logic.entities.UserType
+import logic.use_cases.authentication.AuthenticationUseCases
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.core.io.ConsoleIO
 import net.thechance.ui.core.io.TextStyle

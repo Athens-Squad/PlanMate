@@ -3,11 +3,11 @@ package net.thechance.logic.use_cases.authentication.uservalidation
 import logic.entities.UserType
 import logic.repositories.UserRepository
 
-class UserValidatorImpl (
+class UserValidatorImpl(
     private val userRepository: UserRepository
-):UserValidator{
+) : UserValidator {
     override suspend fun isUsernameNotValid(username: String): Boolean {
-      return  username.isEmpty() || username.trim().isEmpty()
+        return username.isEmpty() || username.trim().isEmpty()
 
     }
 
@@ -16,25 +16,25 @@ class UserValidatorImpl (
     }
 
     override suspend fun isTypeNotAdmin(userType: UserType): Boolean {
-         return  userType is UserType.MateUser
+        return userType is UserType.MateUser
     }
 
     override suspend fun isTypeNotMate(userType: UserType): Boolean {
-            return userType is UserType.AdminUser
+        return userType is UserType.AdminUser
     }
 
     override suspend fun isMateAdminIdNotValid(userType: UserType): Boolean {
-   return userType is UserType.MateUser && userType.adminName.trim().isEmpty()
+        return userType is UserType.MateUser && userType.adminName.trim().isEmpty()
 
 
     }
 
     override suspend fun userNameExist(username: String): Boolean {
-         return try {
-             userRepository.getUserByUsername(username)
-             true
-         } catch (e: Exception) {
-             false
-         }
+        return try {
+            userRepository.getUserByUsername(username)
+            true
+        } catch (e: Exception) {
+            false
+        }
     }
 }

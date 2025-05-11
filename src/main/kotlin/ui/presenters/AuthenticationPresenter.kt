@@ -55,8 +55,8 @@ class AuthenticationPresenter(
             authUseCases.registerAsAdminUseCase.execute(
                 User(
                     name = name,
-                    type = UserType.AdminUser)
-                , pass
+                    type = UserType.AdminUser
+                ), pass
             )
             consoleIo.printer.printText("Registration successful!", TextStyle.SUCCESS)
             handleLogin()

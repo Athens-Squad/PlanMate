@@ -5,7 +5,7 @@ import net.thechance.ui.options.Option
 enum class EditProjectOptions(
     override val optionNumber: Int,
     override val optionTitle: String
-): Option {
+) : Option {
     NAME(
         1,
         "Edit Project Name"

@@ -3,9 +3,9 @@ package net.thechance.di
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import data.projects.data_source.remote.mongo.dto.ProjectDto
 import net.thechance.data.aduit_log.data_source.remote.mongo.dto.AuditLogDto
 import net.thechance.data.progression_state.data_source.remote.mongo.dto.ProgressionStateDto
-import data.projects.data_source.remote.mongo.dto.ProjectDto
 import net.thechance.data.tasks.data_source.remote.mongo.dto.TaskDto
 import net.thechance.data.user.data_source.remote.mongo.dto.UserDto
 import net.thechance.data.utils.MongoProvider

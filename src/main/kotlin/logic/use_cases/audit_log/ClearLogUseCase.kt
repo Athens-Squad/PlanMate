@@ -4,6 +4,6 @@ import logic.repositories.AuditRepository
 
 class ClearLogUseCase(private val auditRepository: AuditRepository) {
     suspend fun execute() {
-         auditRepository.clearLog()
+        auditRepository.clearLog()
     }
 }

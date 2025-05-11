@@ -10,28 +10,28 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 data class ProjectCsvDto(
-	val id: Uuid = Uuid.random(),
-	val name: String,
-	val description: String,
-	val progressionStates: MutableList<ProgressionState> = mutableListOf(),
-	val tasks: MutableList<Task> = mutableListOf(),
-	val createdByUserName: String
+    val id: Uuid = Uuid.random(),
+    val name: String,
+    val description: String,
+    val progressionStates: MutableList<ProgressionState> = mutableListOf(),
+    val tasks: MutableList<Task> = mutableListOf(),
+    val createdByUserName: String
 ) : CsvSerializable {
-	override fun toCsvFields(): List<String> = listOf(
-		id.toString(),
-		name,
-		description,
-		createdByUserName
-	)
+    override fun toCsvFields(): List<String> = listOf(
+        id.toString(),
+        name,
+        description,
+        createdByUserName
+    )
 
-	companion object {
-		fun fromCsv(fields: List<String>): ProjectCsvDto {
-			return ProjectCsvDto(
-				id = Uuid.parse(fields[ProjectColumnIndex.ID]),
-				name = fields[ProjectColumnIndex.NAME],
-				description = fields[ProjectColumnIndex.DESCRIPTION],
-				createdByUserName = fields[ProjectColumnIndex.CREATED_BY]
-			)
-		}
-	}
+    companion object {
+        fun fromCsv(fields: List<String>): ProjectCsvDto {
+            return ProjectCsvDto(
+                id = Uuid.parse(fields[ProjectColumnIndex.ID]),
+                name = fields[ProjectColumnIndex.NAME],
+                description = fields[ProjectColumnIndex.DESCRIPTION],
+                createdByUserName = fields[ProjectColumnIndex.CREATED_BY]
+            )
+        }
+    }
 }

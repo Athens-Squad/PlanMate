@@ -31,7 +31,7 @@ class ProjectsUi(
         CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
     fun createProject() {
-        consoleIO.printer.printText("Create Project.",TextStyle.TITLE)
+        consoleIO.printer.printText("Create Project.", TextStyle.TITLE)
 
         val projectName = receiveStringInput("Enter Project Name : ")
         val projectDescription = receiveStringInput("Enter Project Description : ")
@@ -45,30 +45,30 @@ class ProjectsUi(
                         createdByUserName = session.currentUser.name
                     )
                 )
-                consoleIO.printer.printText("Project created successfully.",TextStyle.SUCCESS)
+                consoleIO.printer.printText("Project created successfully.", TextStyle.SUCCESS)
             } catch (exception: Exception) {
-                consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
+                consoleIO.printer.printText("Error : ${exception.message}", TextStyle.ERROR)
             }
         }
     }
 
     suspend fun editProject(project: Project) {
-        consoleIO.printer.printText("Edit Project",TextStyle.TITLE)
+        consoleIO.printer.printText("Edit Project", TextStyle.TITLE)
 
-        consoleIO.printer.printText("Select your option (1 or 2) : ",TextStyle.TITLE)
+        consoleIO.printer.printText("Select your option (1 or 2) : ", TextStyle.TITLE)
 
         consoleIO.printer.printOptions(EditProjectOptions.entries)
 
         val inputEditOption = consoleIO.reader.readNumberFromUser()
 
-            try {
-                when(inputEditOption) {
-                    EditProjectOptions.NAME.optionNumber ->  editProjectName(project)
-                    EditProjectOptions.DESCRIPTION.optionNumber -> editProjectDescription(project)
-                    else -> throw Exception("Invalid Input!")
-                }
-            } catch (exception: Exception) {
-                consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
+        try {
+            when (inputEditOption) {
+                EditProjectOptions.NAME.optionNumber -> editProjectName(project)
+                EditProjectOptions.DESCRIPTION.optionNumber -> editProjectDescription(project)
+                else -> throw Exception("Invalid Input!")
+            }
+        } catch (exception: Exception) {
+            consoleIO.printer.printText("Error : ${exception.message}", TextStyle.ERROR)
         }
 
     }
@@ -92,7 +92,7 @@ class ProjectsUi(
                 projectUseCases.deleteProjectUseCase
                     .execute(projectId, session.currentUser.name)
             } catch (exception: Exception) {
-                consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
+                consoleIO.printer.printText("Error : ${exception.message}", TextStyle.ERROR)
             }
         }
     }
@@ -114,7 +114,7 @@ class ProjectsUi(
     }
 
     private fun receiveStringInput(message: String): String {
-        consoleIO.printer.printText(message,TextStyle.OPTION)
+        consoleIO.printer.printText(message, TextStyle.OPTION)
         return consoleIO.reader.readStringFromUser()
     }
 }

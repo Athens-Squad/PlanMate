@@ -12,11 +12,11 @@ import org.koin.dsl.module
 
 val appModule = module {
 
-	single<TaskValidator> { TaskValidatorImpl(get(), get(), get()) }
-	single<ProgressionStateValidator> { ProgressionStateValidatorImpl(get(), get()) }
-	single<UserValidator> { UserValidatorImpl(get()) }
+    single<TaskValidator> { TaskValidatorImpl(get(), get(), get()) }
+    single<ProgressionStateValidator> { ProgressionStateValidatorImpl(get(), get()) }
+    single<UserValidator> { UserValidatorImpl(get()) }
 
-	single { PasswordHashing() }
+    single { PasswordHashing() }
 
 
 }

@@ -7,7 +7,7 @@ import kotlin.uuid.Uuid
 
 
 data class ProgressionState(
-	val id: Uuid = Uuid.random(),
-	val name: String,
-	val projectId: Uuid,
+    val id: Uuid = Uuid.random(),
+    val name: String,
+    val projectId: Uuid,
 )

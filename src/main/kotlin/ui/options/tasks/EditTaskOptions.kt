@@ -2,10 +2,10 @@ package net.thechance.ui.options.tasks
 
 import net.thechance.ui.options.Option
 
-enum class EditTaskOptions (
+enum class EditTaskOptions(
     override val optionNumber: Int,
     override val optionTitle: String
-): Option {
+) : Option {
     NAME(
         1,
         "Edit Task Name"

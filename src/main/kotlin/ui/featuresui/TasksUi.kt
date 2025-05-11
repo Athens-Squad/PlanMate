@@ -23,7 +23,7 @@ class TasksUi(
     private val session: UserSession
 ) {
     private val exceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler { _, throwable: Throwable ->
-        consoleIO.printer.printText(throwable.message.toString(),TextStyle.ERROR)
+        consoleIO.printer.printText(throwable.message.toString(), TextStyle.ERROR)
     }
     private val tasksCoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
@@ -32,7 +32,7 @@ class TasksUi(
         tasksCoroutineScope.launch {
             try {
                 do {
-                    consoleIO.printer.printText("Select A Task :",TextStyle.TITLE)
+                    consoleIO.printer.printText("Select A Task :", TextStyle.TITLE)
                     var inputTaskName = consoleIO.reader.readStringFromUser()
                     val taskId = getTaskId(inputTaskName, tasks)
                     val task = tasksUseCases.getTaskByIdUseCase.execute(taskId)
@@ -40,12 +40,12 @@ class TasksUi(
                     task.showTaskDetails()
 
                     handleTaskOptions(task, projectId, progressionStates)
-                    consoleIO.printer.printText("0 : Back",TextStyle.OPTION)
+                    consoleIO.printer.printText("0 : Back", TextStyle.OPTION)
                     inputTaskName = consoleIO.reader.readStringFromUser()
 
                 } while (inputTaskName != "0")
             } catch (exception: Exception) {
-                consoleIO.printer.printText(exception.message.toString(),TextStyle.ERROR)
+                consoleIO.printer.printText(exception.message.toString(), TextStyle.ERROR)
             }
         }.join()
     }
@@ -53,7 +53,7 @@ class TasksUi(
     private fun handleTaskOptions(task: Task, projectId: Uuid, progressionStates: List<ProgressionState>) {
         try {
             do {
-                consoleIO.printer.printText("Select Option (1 to 4):",TextStyle.TITLE)
+                consoleIO.printer.printText("Select Option (1 to 4):", TextStyle.TITLE)
                 consoleIO.printer.printOptions(TaskOptions.entries)
 
                 val inputTaskOption = consoleIO.reader.readNumberFromUser()
@@ -66,21 +66,21 @@ class TasksUi(
                                 auditLogUi.getTaskHistory(task.id)
                                 auditLogUi.showHistoryOption()
                             } catch (exception: Exception) {
-                                consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
+                                consoleIO.printer.printText("Error : ${exception.message}", TextStyle.ERROR)
                             }
                         }
                     }
 
                     TaskOptions.DELETE.optionNumber -> {
                         deleteTask(task)
-                        consoleIO.printer.printText("Task Deleted Successfully",TextStyle.SUCCESS)
+                        consoleIO.printer.printText("Task Deleted Successfully", TextStyle.SUCCESS)
                     }
                 }
             } while (inputTaskOption != TaskOptions.BACK.optionNumber ||
                 inputTaskOption != TaskOptions.DELETE.optionNumber
             )
         } catch (exception: Exception) {
-            consoleIO.printer.printText(exception.message.toString(),TextStyle.ERROR)
+            consoleIO.printer.printText(exception.message.toString(), TextStyle.ERROR)
         }
     }
 
@@ -90,11 +90,11 @@ class TasksUi(
         val taskDescription = receiveStringInput("Enter Task Description : ")
 
         val progressionStates = getProgressionStatesByProjectIdUseCase.execute(projectId)
-        if(progressionStates.isEmpty()){
-            consoleIO.printer.printText("please create state first",TextStyle.ERROR)
+        if (progressionStates.isEmpty()) {
+            consoleIO.printer.printText("please create state first", TextStyle.ERROR)
             return
         }
-        consoleIO.printer.printText("Select Your Task Progression State",TextStyle.TITLE)
+        consoleIO.printer.printText("Select Your Task Progression State", TextStyle.TITLE)
 
         consoleIO.printer.printText(
             progressionStates.map {
@@ -119,9 +119,9 @@ class TasksUi(
     }
 
     private fun editTask(progressionStates: List<ProgressionState>, task: Task, projectId: Uuid) {
-        consoleIO.printer.printText("Edit Task",TextStyle.TITLE)
+        consoleIO.printer.printText("Edit Task", TextStyle.TITLE)
 
-        consoleIO.printer.printText("Select your option (1 to 3) : ",TextStyle.TITLE)
+        consoleIO.printer.printText("Select your option (1 to 3) : ", TextStyle.TITLE)
 
         consoleIO.printer.printOptions(EditTaskOptions.entries)
 
@@ -144,7 +144,7 @@ class TasksUi(
         projectId: Uuid
     ) {
 
-        consoleIO.printer.printText("Select Your Task Progression State",TextStyle.TITLE)
+        consoleIO.printer.printText("Select Your Task Progression State", TextStyle.TITLE)
 
         consoleIO.printer.printText(
             progressionStates.map {
@@ -217,14 +217,14 @@ class TasksUi(
     }
 
     private fun receiveStringInput(message: String): String {
-        consoleIO.printer.printText(message,TextStyle.OPTION)
+        consoleIO.printer.printText(message, TextStyle.OPTION)
         return consoleIO.reader.readStringFromUser()
     }
 
     private fun Task.showTaskDetails() {
-        consoleIO.printer.printText(this.title,TextStyle.TITLE)
-        consoleIO.printer.printText(this.description,TextStyle.INFO)
-        consoleIO.printer.printText(this.currentProgressionState.name,TextStyle.INFO)
+        consoleIO.printer.printText(this.title, TextStyle.TITLE)
+        consoleIO.printer.printText(this.description, TextStyle.INFO)
+        consoleIO.printer.printText(this.currentProgressionState.name, TextStyle.INFO)
     }
 
 }

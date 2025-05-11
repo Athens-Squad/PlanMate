@@ -3,8 +3,8 @@ package data.authentication.repository
 import data.user.data_source.UsersDataSource
 import data.user.data_source.remote.mongo.mapper.toUser
 import logic.entities.User
-import logic.repositories.AuthenticationRepository
 import logic.exceptions.UserNotFoundException
+import logic.repositories.AuthenticationRepository
 import net.thechance.data.user.data_source.remote.mongo.dto.UserDto
 
 class AuthRepositoryImpl(

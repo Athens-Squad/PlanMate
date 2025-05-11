@@ -1,13 +1,13 @@
 package di
 
-import logic.use_cases.audit_log.CreateAuditLogUseCase
-import logic.use_cases.progression_state.*
-import logic.use_cases.task.*
-import logic.use_cases.project.*
-import logic.use_cases.authentication.*
 import logic.use_cases.audit_log.*
-import logic.use_cases.progression_state.ProgressionStatesUseCases
-import logic.use_cases.project.GetAllProjectsByUsernameUseCase
+import logic.use_cases.authentication.AuthenticationUseCases
+import logic.use_cases.authentication.LoginUseCase
+import logic.use_cases.authentication.RegisterAsAdminUseCase
+import logic.use_cases.authentication.RegisterAsMateUseCase
+import logic.use_cases.progression_state.*
+import logic.use_cases.project.*
+import logic.use_cases.task.*
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 

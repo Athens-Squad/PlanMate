@@ -10,11 +10,11 @@ enum class TextStyle(private val color: String) {
     EXIT("\u001B[31m"),        // Red
     WELCOME("\u001B[36m"),     // Cyan
     NORMAL("\u001B[37m"),      // White
-    GOODBYE("\u001B[33m") ;    // Yellow
+    GOODBYE("\u001B[33m");    // Yellow
 
     companion object {
         const val RESET = "\u001B[0m"
     }
 
-    fun format(text: String): String =  "$color$text$RESET"
- }
+    fun format(text: String): String = "$color$text$RESET"
+}

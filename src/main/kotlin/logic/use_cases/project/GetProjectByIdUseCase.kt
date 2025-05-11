@@ -12,15 +12,15 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 class GetProjectByIdUseCase(
-	private val projectRepository: ProjectsRepository,
+    private val projectRepository: ProjectsRepository,
 
-	) {
-	suspend fun execute(projectId: Uuid): Project {
-		projectId.toString().apply {
-			checkIfFieldIsValid().takeIf { it } ?: throw InvalidProjectNameException()
-		}
+    ) {
+    suspend fun execute(projectId: Uuid): Project {
+        projectId.toString().apply {
+            checkIfFieldIsValid().takeIf { it } ?: throw InvalidProjectNameException()
+        }
 
-		return checkIfProjectExistInRepositoryAndReturn(projectId) { projectRepository.getProjects() }
-			?: throw NoProjectFoundException()
-	}
+        return checkIfProjectExistInRepositoryAndReturn(projectId) { projectRepository.getProjects() }
+            ?: throw NoProjectFoundException()
+    }
 }

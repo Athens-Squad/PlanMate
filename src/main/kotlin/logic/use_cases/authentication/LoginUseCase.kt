@@ -1,9 +1,9 @@
 package logic.use_cases.authentication
 
-import logic.entities.User
 import data.authentication.utils.PasswordHashing
-import logic.repositories.AuthenticationRepository
+import logic.entities.User
 import logic.exceptions.InvalidCredentialsException
+import logic.repositories.AuthenticationRepository
 import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
 
 class LoginUseCase(
@@ -11,13 +11,13 @@ class LoginUseCase(
     private val passwordHashing: PasswordHashing,
     private val userValidator: UserValidator,
 
-) {
-   suspend fun execute(username: String, password: String): User{
-       if (
-          userValidator. isUsernameNotValid(username) ||
+    ) {
+    suspend fun execute(username: String, password: String): User {
+        if (
+            userValidator.isUsernameNotValid(username) ||
             userValidator.isPasswordNotValid(password)
         ) {
-           throw InvalidCredentialsException()
+            throw InvalidCredentialsException()
         }
 
         val hashedPassword = passwordHashing.hash(password)

@@ -10,6 +10,6 @@ import kotlin.uuid.Uuid
 
 class GetProgressionStatesByProjectIdUseCase(private val repository: ProgressionStateRepository) {
     suspend fun execute(projectId: Uuid): List<ProgressionState> {
-           return repository.getProgressionStatesByProjectId(projectId)
+        return repository.getProgressionStatesByProjectId(projectId)
     }
 }

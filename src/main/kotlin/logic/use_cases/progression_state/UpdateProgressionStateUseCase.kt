@@ -9,14 +9,14 @@ import kotlin.uuid.ExperimentalUuidApi
 
 
 class UpdateProgressionStateUseCase(
-	private val repository: ProgressionStateRepository,
-	private val progressionStateValidator: ProgressionStateValidator
+    private val repository: ProgressionStateRepository,
+    private val progressionStateValidator: ProgressionStateValidator
 ) {
-	suspend fun execute(updatedProgressionState: ProgressionState) {
-		progressionStateValidator
-			.validateAfterCreation(updatedProgressionState.id)
-			?.let { throw it }
+    suspend fun execute(updatedProgressionState: ProgressionState) {
+        progressionStateValidator
+            .validateAfterCreation(updatedProgressionState.id)
+            ?.let { throw it }
 
-		repository.updateProgressionState(updatedProgressionState)
-	}
+        repository.updateProgressionState(updatedProgressionState)
+    }
 }

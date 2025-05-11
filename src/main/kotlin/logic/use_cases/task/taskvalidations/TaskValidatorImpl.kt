@@ -4,7 +4,9 @@ package logic.use_cases.task.taskvalidations
 
 import logic.entities.ProgressionState
 import logic.entities.Task
-import logic.exceptions.*
+import logic.exceptions.CannotCompleteTaskOperationException
+import logic.exceptions.CannotUpdateTaskException
+import logic.exceptions.InvalidTaskException
 import logic.repositories.ProgressionStateRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TasksRepository
@@ -26,7 +28,7 @@ class TaskValidatorImpl(
 
     }
 
-    override suspend fun doIfTaskNotExistsOrThrow(task: Task,  action: suspend() -> Unit) {
+    override suspend fun doIfTaskNotExistsOrThrow(task: Task, action: suspend () -> Unit) {
         try {
             tasksRepository.getTaskById(task.id)
             throw CannotCompleteTaskOperationException("There is existing task with same id")

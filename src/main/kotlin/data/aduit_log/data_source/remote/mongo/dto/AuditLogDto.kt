@@ -3,7 +3,6 @@
 package net.thechance.data.aduit_log.data_source.remote.mongo.dto
 
 import org.bson.codecs.pojo.annotations.BsonId
-import java.util.*
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
