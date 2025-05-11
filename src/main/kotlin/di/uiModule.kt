@@ -1,39 +1,41 @@
 package di
 
-import net.thechance.ui.handlers.AdminOptionsHandler
-import net.thechance.ui.handlers.MateOptionsHandler
-import net.thechance.ui.handlers.ProjectOptionsHandler
-import net.thechance.ui.utils.ProjectSelector
-import net.thechance.ui.utils.ShowProjectSwimlanes
+import net.thechance.ui.PlanMateAppRunner
+import net.thechance.ui.core.io.ConsoleIO
+import net.thechance.ui.core.io.Printer
+import net.thechance.ui.core.io.Reader
+import net.thechance.ui.featuresui.*
+import net.thechance.ui.presenters.AdminPresenter
+import net.thechance.ui.presenters.AuthenticationPresenter
+import net.thechance.ui.presenters.MatePresenter
+import net.thechance.ui.presenters.ProjectPresenter
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
-import ui.PlanMateCli
-import ui.featuresui.*
-import ui.io.ConsoleIO
-import ui.io.Printer
-import ui.io.Reader
+
 
 val uiModule = module {
 
+//core
+    //io
     singleOf(::Printer)
     singleOf(::Reader)
     singleOf(::ConsoleIO)
 
-
+//features ui
     singleOf(::AuditLogUi)
     singleOf(::ProjectsUi)
     singleOf(::ProgressionStateUi)
     singleOf(::TasksUi)
     singleOf(::AuthenticationUi)
 
-    singleOf(::ShowProjectSwimlanes)
-    singleOf(::ProjectSelector)
+//presenters
+    singleOf(::ProjectPresenter)
+    singleOf(::MatePresenter)
+    singleOf(::AdminPresenter)
+    singleOf(::AuthenticationPresenter)
 
+//App Runner
+    singleOf(::PlanMateAppRunner)
 
-    singleOf(::ProjectOptionsHandler)
-    singleOf(::AdminOptionsHandler)
-    singleOf(::MateOptionsHandler)
-
-    singleOf(::PlanMateCli)
 }
 

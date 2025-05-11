@@ -4,7 +4,7 @@ package net.thechance.ui.options
 enum class AuthenticationOptions(
     override val optionNumber: Int,
     override val optionTitle: String
-): Option {
+) : Option {
     LOGIN(
         1,
         "Login"

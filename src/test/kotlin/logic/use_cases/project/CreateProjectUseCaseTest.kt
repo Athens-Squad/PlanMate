@@ -37,7 +37,7 @@ class CreateProjectUseCaseTest {
 
     @Test
     fun `should create project successfully, when project is valid`() {
-        every { userRepository.getUserByUsername(fakeProject.createdBy) } returns Result.success(adminUser)
+        every { userRepository.getUserByUsername(fakeProject.createdByUserName) } returns Result.success(adminUser)
         every { projectRepository.getProjects() } returns Result.success(listOf(
                 createProject(id = "dummy1", name = "dummyProject")
             )
@@ -50,13 +50,13 @@ class CreateProjectUseCaseTest {
         assertThat(result.isSuccess).isTrue()
         verify(exactly = 1) { projectRepository.createProject(fakeProject) }
         verify(exactly = 1) { projectRepository.getProjects() }
-        verify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdBy) }
+        verify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdByUserName) }
         verify(exactly = 1) { auditRepository.createAuditLog(any()) }
     }
 
     @Test
     fun `should create project failed, when project is already exists`() {
-        every { userRepository.getUserByUsername(fakeProject.createdBy) } returns Result.success(adminUser)
+        every { userRepository.getUserByUsername(fakeProject.createdByUserName) } returns Result.success(adminUser)
         every { projectRepository.getProjects() } returns Result.success(listOf(fakeProject))
         every { projectRepository.createProject(fakeProject) } returns Result.success(Unit)
 
@@ -65,24 +65,24 @@ class CreateProjectUseCaseTest {
         assertThat(result.exceptionOrNull()).isInstanceOf(ProjectAlreadyExistException::class.java)
         verify(exactly = 0) { projectRepository.createProject(fakeProject) }
         verify(exactly = 1) { projectRepository.getProjects() }
-        verify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdBy) }
+        verify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdByUserName) }
     }
 
     @Test
     fun `should create project failed and throw exception, when user is not admin`() {
-        every { userRepository.getUserByUsername(fakeProject.createdBy) } returns Result.success(mateUser)
+        every { userRepository.getUserByUsername(fakeProject.createdByUserName) } returns Result.success(mateUser)
 
         val result = createProjectUseCase.execute(fakeProject)
 
         assertThat(result.exceptionOrNull()).isInstanceOf(NotAuthorizedUserException::class.java)
         verify(exactly = 0) { projectRepository.createProject(fakeProject) }
-        verify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdBy) }
+        verify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdByUserName) }
     }
 
     @Test
     fun `should create project failed and throw exception, when project user name is invalid`() {
-        val fakeProjectWithInvalidUserName = fakeProject.copy(createdBy = "")
-        every { userRepository.getUserByUsername(fakeProjectWithInvalidUserName.createdBy) } returns Result.failure(
+        val fakeProjectWithInvalidUserName = fakeProject.copy(createdByUserName = "")
+        every { userRepository.getUserByUsername(fakeProjectWithInvalidUserName.createdByUserName) } returns Result.failure(
             Exception()
         )
 
@@ -90,13 +90,13 @@ class CreateProjectUseCaseTest {
 
         assertThat(result.exceptionOrNull()).isInstanceOf(InvalidUsernameForProjectException::class.java)
         verify(exactly = 0) { projectRepository.createProject(fakeProjectWithInvalidUserName) }
-        verify(exactly = 0) { userRepository.getUserByUsername(fakeProjectWithInvalidUserName.createdBy) }
+        verify(exactly = 0) { userRepository.getUserByUsername(fakeProjectWithInvalidUserName.createdByUserName) }
     }
 
     @Test
     fun `should create project failed and throw exception, when project name is invalid`() {
         val fakeProjectWithInvalidName = fakeProject.copy(name = "")
-        every { userRepository.getUserByUsername(fakeProjectWithInvalidName.createdBy) } returns Result.success(adminUser)
+        every { userRepository.getUserByUsername(fakeProjectWithInvalidName.createdByUserName) } returns Result.success(adminUser)
 
         val result = createProjectUseCase.execute(fakeProjectWithInvalidName)
 

@@ -1,10 +1,13 @@
 package logic.repositories
 
 import logic.entities.Project
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 interface ProjectsRepository {
     suspend fun createProject(project: Project)
     suspend fun updateProject(project: Project)
-    suspend fun deleteProject(projectId: String)
+    suspend fun deleteProject(projectId: Uuid)
     suspend fun getProjects(): List<Project>
 }

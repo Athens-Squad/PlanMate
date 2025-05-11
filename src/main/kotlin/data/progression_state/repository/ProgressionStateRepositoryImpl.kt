@@ -5,5 +5,5 @@ import logic.repositories.ProgressionStateRepository
 
 
 class ProgressionStateRepositoryImpl(
-	private val progressionStateDataSource: ProgressionStateDataSource
-): ProgressionStateRepository, ProgressionStateDataSource by progressionStateDataSource
+    private val progressionStateDataSource: ProgressionStateDataSource
+) : ProgressionStateRepository, ProgressionStateDataSource by progressionStateDataSource

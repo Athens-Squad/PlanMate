@@ -1,28 +1,37 @@
-package ui.featuresui
+@file:OptIn(ExperimentalUuidApi::class)
+
+package net.thechance.ui.featuresui
 
 
 import kotlinx.coroutines.*
+import logic.entities.ProgressionState
 import logic.entities.Project
-import logic.entities.UserType
+import logic.entities.Task
+import logic.use_cases.progression_state.ProgressionStatesUseCases
 import logic.use_cases.project.ProjectUseCases
+import logic.use_cases.task.TasksUseCases
 import net.thechance.data.authentication.UserSession
+import net.thechance.ui.core.io.ConsoleIO
+import net.thechance.ui.core.io.TextStyle
 import net.thechance.ui.options.project.EditProjectOptions
-import net.thechance.ui.utils.TextStyle
-import ui.io.ConsoleIO
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class ProjectsUi(
     private val projectUseCases: ProjectUseCases,
+    private val progressionStatesUseCases: ProgressionStatesUseCases,
+    private val tasksUseCases: TasksUseCases,
     private val session: UserSession,
     private val consoleIO: ConsoleIO
 ) {
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        consoleIO.printer.printText("Unexpected error: ${throwable.message}",TextStyle.ERROR)
+        consoleIO.printer.printText("Unexpected error: ${throwable.message}", TextStyle.ERROR)
     }
     private val projectsScope: CoroutineScope =
         CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
     fun createProject() {
-        consoleIO.printer.printText("Create Project.",TextStyle.TITLE)
+        consoleIO.printer.printText("Create Project.", TextStyle.TITLE)
 
         val projectName = receiveStringInput("Enter Project Name : ")
         val projectDescription = receiveStringInput("Enter Project Description : ")
@@ -33,33 +42,33 @@ class ProjectsUi(
                     Project(
                         name = projectName,
                         description = projectDescription,
-                        createdBy = session.currentUser.name
+                        createdByUserName = session.currentUser.name
                     )
                 )
-                consoleIO.printer.printText("Project created successfully.",TextStyle.SUCCESS)
+                consoleIO.printer.printText("Project created successfully.", TextStyle.SUCCESS)
             } catch (exception: Exception) {
-                consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
+                consoleIO.printer.printText("Error : ${exception.message}", TextStyle.ERROR)
             }
         }
     }
 
     suspend fun editProject(project: Project) {
-        consoleIO.printer.printText("Edit Project",TextStyle.TITLE)
+        consoleIO.printer.printText("Edit Project", TextStyle.TITLE)
 
-        consoleIO.printer.printText("Select your option (1 or 2) : ",TextStyle.TITLE)
+        consoleIO.printer.printText("Select your option (1 or 2) : ", TextStyle.TITLE)
 
         consoleIO.printer.printOptions(EditProjectOptions.entries)
 
         val inputEditOption = consoleIO.reader.readNumberFromUser()
 
-            try {
-                when(inputEditOption) {
-                    EditProjectOptions.NAME.optionNumber ->  editProjectName(project)
-                    EditProjectOptions.DESCRIPTION.optionNumber -> editProjectDescription(project)
-                    else -> throw Exception("Invalid Input!")
-                }
-            } catch (exception: Exception) {
-                consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
+        try {
+            when (inputEditOption) {
+                EditProjectOptions.NAME.optionNumber -> editProjectName(project)
+                EditProjectOptions.DESCRIPTION.optionNumber -> editProjectDescription(project)
+                else -> throw Exception("Invalid Input!")
+            }
+        } catch (exception: Exception) {
+            consoleIO.printer.printText("Error : ${exception.message}", TextStyle.ERROR)
         }
 
     }
@@ -77,20 +86,26 @@ class ProjectsUi(
         projectUseCases.updateProjectUseCase.execute(project.copy(name = projectName))
     }
 
-    fun deleteProject(projectId: String) {
+    fun deleteProject(projectId: Uuid) {
         projectsScope.launch {
             try {
                 projectUseCases.deleteProjectUseCase
                     .execute(projectId, session.currentUser.name)
             } catch (exception: Exception) {
-                consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
+                consoleIO.printer.printText("Error : ${exception.message}", TextStyle.ERROR)
             }
         }
     }
 
+    suspend fun getProgressionStatesByProjectId(projectId: Uuid): List<ProgressionState> {
+        return progressionStatesUseCases.getProgressionStatesByProjectIdUseCase.execute(projectId)
+    }
 
+    suspend fun getTasksByProjectId(projectId: Uuid): List<Task> {
+        return tasksUseCases.getTasksByProjectIdUseCase.execute(projectId)
+    }
 
-    suspend fun getProject(projectId: String): Project {
+    suspend fun getProject(projectId: Uuid): Project {
         return projectUseCases.getProjectByIdUseCase.execute(projectId)
     }
 
@@ -99,7 +114,7 @@ class ProjectsUi(
     }
 
     private fun receiveStringInput(message: String): String {
-        consoleIO.printer.printText(message,TextStyle.OPTION)
+        consoleIO.printer.printText(message, TextStyle.OPTION)
         return consoleIO.reader.readStringFromUser()
     }
 }

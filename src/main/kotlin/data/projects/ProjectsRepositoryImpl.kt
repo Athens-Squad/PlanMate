@@ -1,8 +1,12 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package data.projects
 
+import data.projects.data_source.ProjectsDataSource
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
-import data.projects.data_source.ProjectsDataSource
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class ProjectsRepositoryImpl(
     private val projectsDataSource: ProjectsDataSource
@@ -15,11 +19,11 @@ class ProjectsRepositoryImpl(
         projectsDataSource.updateProject(project)
     }
 
-    override suspend fun deleteProject(projectId: String) {
+    override suspend fun deleteProject(projectId: Uuid) {
         projectsDataSource.deleteProject(projectId)
     }
 
     override suspend fun getProjects(): List<Project> {
-       return projectsDataSource.getProjects()
+        return projectsDataSource.getProjects()
     }
 }

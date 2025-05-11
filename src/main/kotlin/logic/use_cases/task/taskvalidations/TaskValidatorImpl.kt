@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.use_cases.task.taskvalidations
 
 import logic.entities.Task
@@ -5,6 +7,8 @@ import logic.exceptions.*
 import logic.repositories.ProgressionStateRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TasksRepository
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class TaskValidatorImpl(
     private val tasksRepository: TasksRepository,
@@ -22,7 +26,7 @@ class TaskValidatorImpl(
 	}
 
 	override suspend fun validateTaskAfterCreation(
-		taskId: String
+		taskId: Uuid
 	): Boolean {
 		val task = tasksRepository.getAllTasks().find { it.id == taskId }
 			?: throw TaskNotFoundException()
@@ -36,7 +40,7 @@ class TaskValidatorImpl(
 	}
 
 	private fun Task.checkIsFieldsAreValid(): Boolean {
-		return id.isNotBlank() && title.isNotBlank() && projectId.isNotBlank()
+		return id.toString().isNotBlank() && title.isNotBlank() && projectId.toString().isNotBlank()
 	}
 
 	private suspend fun Task.checkIfTaskExists(): Boolean {

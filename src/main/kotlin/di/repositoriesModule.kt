@@ -1,13 +1,12 @@
 package di
 
-import logic.repositories.*
-import data.user.repository.UserRepositoryImpl
-import net.thechance.data.aduit_log.repository.AuditLogRepositoryImpl
 import data.authentication.repository.AuthRepositoryImpl
-import data.projects.ProjectsRepositoryImpl
 import data.progression_state.repository.ProgressionStateRepositoryImpl
+import data.projects.ProjectsRepositoryImpl
 import data.tasks.repository.TasksRepositoryImpl
-import logic.repositories.AuthenticationRepository
+import data.user.repository.UserRepositoryImpl
+import logic.repositories.*
+import net.thechance.data.aduit_log.repository.AuditLogRepositoryImpl
 import org.koin.dsl.module
 
 val repositoriesModule = module {

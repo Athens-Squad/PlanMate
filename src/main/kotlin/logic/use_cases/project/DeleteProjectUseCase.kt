@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.use_cases.project
 
 import logic.entities.AuditLog
@@ -6,6 +8,8 @@ import logic.repositories.ProjectsRepository
 import logic.use_cases.audit_log.CreateAuditLogUseCase
 import net.thechance.logic.use_cases.project.projectValidations.ProjectValidator
 import java.time.LocalDateTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 class DeleteProjectUseCase(
@@ -13,7 +17,7 @@ class DeleteProjectUseCase(
 	private val projectValidator: ProjectValidator,
 	private val createAuditLogUseCase: CreateAuditLogUseCase,
 ) {
-    suspend fun execute(projectId: String, username: String) {
+    suspend fun execute(projectId: Uuid, username: String) {
 		projectValidator.validateProjectAfterCreation(
 			projectId = projectId,
 			username = username

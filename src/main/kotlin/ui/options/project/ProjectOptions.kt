@@ -5,7 +5,7 @@ import net.thechance.ui.options.Option
 enum class ProjectOptions(
     override val optionNumber: Int,
     override val optionTitle: String
-): Option {
+) : Option {
     CREATE_TASK(
         1,
         "Create New Task"

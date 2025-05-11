@@ -1,40 +1,43 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.data.tasks.data_source.localCsvFile.dto
 
 import data.tasks.utils.TaskColumnIndex
 import logic.entities.ProgressionState
-import net.thechance.data.utils.CsvSerializable
-import java.util.UUID
+import net.thechance.data.utils.csv_file_handle.CsvSerializable
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 data class TaskCsvDto(
-	val id: String = UUID.randomUUID().toString(),
-	val title: String,
-	val description: String,
-	val currentProgressionState: ProgressionState,
-	val projectId: String
+    val id: Uuid = Uuid.random(),
+    val title: String,
+    val description: String,
+    val currentProgressionState: ProgressionState,
+    val projectId: Uuid
 ) : CsvSerializable {
-	override fun toCsvFields(): List<String> = listOf(
-		id,
-		title,
-		description,
-		currentProgressionState.id,
-		currentProgressionState.name,
-		projectId
-	)
+    override fun toCsvFields(): List<String> = listOf(
+        id.toString(),
+        title,
+        description,
+        currentProgressionState.id.toString(),
+        currentProgressionState.name,
+        projectId.toString()
+    )
 
-	companion object {
-		fun fromCsv(fields: List<String>): TaskCsvDto {
-			return TaskCsvDto(
-				id = fields[TaskColumnIndex.ID],
-				title = fields[TaskColumnIndex.TITLE],
-				description = fields[TaskColumnIndex.DESCRIPTION],
-				currentProgressionState = ProgressionState(
-					id = fields[TaskColumnIndex.CURRENT_STATE_ID],
-					name = fields[TaskColumnIndex.CURRENT_STATE_NAME],
-					projectId = fields[TaskColumnIndex.PROJECT_ID]
-				),
-				projectId = fields[TaskColumnIndex.PROJECT_ID]
-			)
-		}
-	}
+    companion object {
+        fun fromCsv(fields: List<String>): TaskCsvDto {
+            return TaskCsvDto(
+                id = Uuid.parse(fields[TaskColumnIndex.ID]),
+                title = fields[TaskColumnIndex.TITLE],
+                description = fields[TaskColumnIndex.DESCRIPTION],
+                currentProgressionState = ProgressionState(
+                    id = Uuid.parse(fields[TaskColumnIndex.CURRENT_STATE_ID]),
+                    name = fields[TaskColumnIndex.CURRENT_STATE_NAME],
+                    projectId = Uuid.parse(fields[TaskColumnIndex.PROJECT_ID])
+                ),
+                projectId = Uuid.parse(fields[TaskColumnIndex.PROJECT_ID])
+            )
+        }
+    }
 
 }

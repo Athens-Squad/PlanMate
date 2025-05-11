@@ -11,19 +11,19 @@ import net.thechance.data.aduit_log.data_source.remote.mongo.mapper.toAuditLogDt
 import org.bson.Document
 
 class MongoAuditLogDataSource(
-	private val auditLogCollection: MongoCollection<AuditLogDto>
+    private val auditLogCollection: MongoCollection<AuditLogDto>
 ) : AuditLogDataSource {
-	override suspend fun createAuditLog(auditLog: AuditLog) {
-		auditLogCollection.insertOne(auditLog.toAuditLogDto())
-	}
+    override suspend fun createAuditLog(auditLog: AuditLog) {
+        auditLogCollection.insertOne(auditLog.toAuditLogDto())
+    }
 
-	override suspend fun getAuditLogs(): List<AuditLog> {
-		return auditLogCollection.find()
-			.map { it.toAuditLog() }
-			.toList()
-	}
+    override suspend fun getAuditLogs(): List<AuditLog> {
+        return auditLogCollection.find()
+            .map { it.toAuditLog() }
+            .toList()
+    }
 
-	override suspend fun clearLog() {
-		auditLogCollection.deleteMany(Document())
-	}
+    override suspend fun clearLog() {
+        auditLogCollection.deleteMany(Document())
+    }
 }

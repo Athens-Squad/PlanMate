@@ -1,25 +1,29 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.logic.use_cases.audit_log.auditLogValidations
 
 import logic.entities.AuditLog
 import net.thechance.logic.exceptions.InvalidAuditLogFieldsException
 import net.thechance.logic.exceptions.InvalidEntityIdForAuditLog
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class AuditLogValidatorImpl : AuditLogValidator {
 	override fun validateBeforeCreation(auditLog: AuditLog): Boolean {
 		return when {
-			!auditLog.checkIsFieldsAreValid() -> throw InvalidAuditLogFieldsException()
+			auditLog.checkIsFieldsAreBlank() -> throw InvalidAuditLogFieldsException()
 			else -> { true }
 		}
 	}
 
-	override fun validateAfterCreation(entityId: String): Boolean {
+	override fun validateAfterCreation(entityId: Uuid): Boolean {
 		return when {
-			entityId.isBlank() -> throw InvalidEntityIdForAuditLog()
+			entityId.toString().isBlank() -> throw InvalidEntityIdForAuditLog()
 			else -> { true }
 		}
 	}
 
-	private fun AuditLog.checkIsFieldsAreValid(): Boolean {
-		return entityId.isNotBlank() && description.isNotBlank() && userName.isNotBlank()
+	private fun AuditLog.checkIsFieldsAreBlank(): Boolean {
+		return entityId.toString().isBlank() || description.isBlank() || userName.isBlank()
 	}
 }

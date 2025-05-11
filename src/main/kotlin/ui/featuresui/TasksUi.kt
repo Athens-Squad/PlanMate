@@ -1,32 +1,38 @@
-package ui.featuresui
+@file:OptIn(ExperimentalUuidApi::class)
+
+package net.thechance.ui.featuresui
 
 import kotlinx.coroutines.*
 import logic.entities.ProgressionState
 import logic.entities.Task
+import logic.use_cases.progression_state.GetProgressionStatesByProjectIdUseCase
 import logic.use_cases.task.TasksUseCases
 import net.thechance.data.authentication.UserSession
+import net.thechance.ui.core.io.ConsoleIO
+import net.thechance.ui.core.io.TextStyle
 import net.thechance.ui.options.tasks.EditTaskOptions
 import net.thechance.ui.options.tasks.TaskOptions
-import net.thechance.ui.utils.TextStyle
-import ui.io.ConsoleIO
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class TasksUi(
     private val consoleIO: ConsoleIO,
     private val tasksUseCases: TasksUseCases,
+    private val getProgressionStatesByProjectIdUseCase: GetProgressionStatesByProjectIdUseCase,
     private val auditLogUi: AuditLogUi,
     private val session: UserSession
 ) {
-    private val exceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler({ _, throwable: Throwable ->
-        consoleIO.printer.printText(throwable.message.toString(),TextStyle.ERROR)
-    })
+    private val exceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler { _, throwable: Throwable ->
+        consoleIO.printer.printText(throwable.message.toString(), TextStyle.ERROR)
+    }
     private val tasksCoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
 
-    suspend fun manageTasks(tasks: MutableList<Task>, projectId: String, progressionStates: List<ProgressionState>) {
+    suspend fun manageTasks(tasks: List<Task>, projectId: Uuid, progressionStates: List<ProgressionState>) {
         tasksCoroutineScope.launch {
             try {
                 do {
-                    consoleIO.printer.printText("Select A Task :",TextStyle.TITLE)
+                    consoleIO.printer.printText("Select A Task :", TextStyle.TITLE)
                     var inputTaskName = consoleIO.reader.readStringFromUser()
                     val taskId = getTaskId(inputTaskName, tasks)
                     val task = tasksUseCases.getTaskByIdUseCase.execute(taskId)
@@ -34,20 +40,20 @@ class TasksUi(
                     task.showTaskDetails()
 
                     handleTaskOptions(task, projectId, progressionStates)
-                    consoleIO.printer.printText("0 : Back",TextStyle.OPTION)
+                    consoleIO.printer.printText("0 : Back", TextStyle.OPTION)
                     inputTaskName = consoleIO.reader.readStringFromUser()
 
                 } while (inputTaskName != "0")
             } catch (exception: Exception) {
-                consoleIO.printer.printText(exception.message.toString(),TextStyle.ERROR)
+                consoleIO.printer.printText(exception.message.toString(), TextStyle.ERROR)
             }
         }.join()
     }
 
-    private fun handleTaskOptions(task: Task, projectId: String, progressionStates: List<ProgressionState>) {
+    private fun handleTaskOptions(task: Task, projectId: Uuid, progressionStates: List<ProgressionState>) {
         try {
             do {
-                consoleIO.printer.printText("Select Option (1 to 4):",TextStyle.TITLE)
+                consoleIO.printer.printText("Select Option (1 to 4):", TextStyle.TITLE)
                 consoleIO.printer.printOptions(TaskOptions.entries)
 
                 val inputTaskOption = consoleIO.reader.readNumberFromUser()
@@ -60,30 +66,35 @@ class TasksUi(
                                 auditLogUi.getTaskHistory(task.id)
                                 auditLogUi.showHistoryOption()
                             } catch (exception: Exception) {
-                                consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
+                                consoleIO.printer.printText("Error : ${exception.message}", TextStyle.ERROR)
                             }
                         }
                     }
 
                     TaskOptions.DELETE.optionNumber -> {
                         deleteTask(task)
-                        consoleIO.printer.printText("Task Deleted Successfully",TextStyle.SUCCESS)
+                        consoleIO.printer.printText("Task Deleted Successfully", TextStyle.SUCCESS)
                     }
                 }
             } while (inputTaskOption != TaskOptions.BACK.optionNumber ||
                 inputTaskOption != TaskOptions.DELETE.optionNumber
             )
         } catch (exception: Exception) {
-            consoleIO.printer.printText(exception.message.toString(),TextStyle.ERROR)
+            consoleIO.printer.printText(exception.message.toString(), TextStyle.ERROR)
         }
     }
 
-    fun createTask(progressionStates: List<ProgressionState>, projectId: String) {
-        consoleIO.printer.printText("Create Task",TextStyle.TITLE)
+    suspend fun createTask(projectId: Uuid) {
+        consoleIO.printer.printText("Create Task", TextStyle.TITLE)
         val taskName = receiveStringInput("Enter Task Name : ")
         val taskDescription = receiveStringInput("Enter Task Description : ")
 
-        consoleIO.printer.printText("Select Your Task Progression State",TextStyle.TITLE)
+        val progressionStates = getProgressionStatesByProjectIdUseCase.execute(projectId)
+        if (progressionStates.isEmpty()) {
+            consoleIO.printer.printText("please create state first", TextStyle.ERROR)
+            return
+        }
+        consoleIO.printer.printText("Select Your Task Progression State", TextStyle.TITLE)
 
         consoleIO.printer.printText(
             progressionStates.map {
@@ -107,16 +118,14 @@ class TasksUi(
         }
     }
 
-    private fun editTask(progressionStates: List<ProgressionState>, task: Task, projectId: String) {
-        consoleIO.printer.printText("Edit Task",TextStyle.TITLE)
+    private fun editTask(progressionStates: List<ProgressionState>, task: Task, projectId: Uuid) {
+        consoleIO.printer.printText("Edit Task", TextStyle.TITLE)
 
-        consoleIO.printer.printText("Select your option (1 to 3) : ",TextStyle.TITLE)
+        consoleIO.printer.printText("Select your option (1 to 3) : ", TextStyle.TITLE)
 
         consoleIO.printer.printOptions(EditTaskOptions.entries)
 
-        val inputEditOption = consoleIO.reader.readNumberFromUser()
-
-        when (inputEditOption) {
+        when (val inputEditOption = consoleIO.reader.readNumberFromUser()) {
             EditTaskOptions.NAME.optionNumber -> editTaskName(task)
             EditTaskOptions.DESCRIPTION.optionNumber -> editTaskDescription(task)
             EditTaskOptions.PROGRESSION_STATE.optionNumber -> editTaskProgressionState(
@@ -132,10 +141,10 @@ class TasksUi(
     private fun editTaskProgressionState(
         task: Task,
         progressionStates: List<ProgressionState>,
-        projectId: String
+        projectId: Uuid
     ) {
 
-        consoleIO.printer.printText("Select Your Task Progression State",TextStyle.TITLE)
+        consoleIO.printer.printText("Select Your Task Progression State", TextStyle.TITLE)
 
         consoleIO.printer.printText(
             progressionStates.map {
@@ -202,20 +211,20 @@ class TasksUi(
     }
 
 
-    private fun getTaskId(inputTaskName: String, tasks: List<Task>): String {
+    private fun getTaskId(inputTaskName: String, tasks: List<Task>): Uuid {
         return tasks.first { it.title == inputTaskName }.id
 
     }
 
     private fun receiveStringInput(message: String): String {
-        consoleIO.printer.printText(message,TextStyle.OPTION)
+        consoleIO.printer.printText(message, TextStyle.OPTION)
         return consoleIO.reader.readStringFromUser()
     }
 
     private fun Task.showTaskDetails() {
-        consoleIO.printer.printText(this.title,TextStyle.TITLE)
-        consoleIO.printer.printText(this.description,TextStyle.INFO)
-        consoleIO.printer.printText(this.currentProgressionState.name,TextStyle.INFO)
+        consoleIO.printer.printText(this.title, TextStyle.TITLE)
+        consoleIO.printer.printText(this.description, TextStyle.INFO)
+        consoleIO.printer.printText(this.currentProgressionState.name, TextStyle.INFO)
     }
 
 }

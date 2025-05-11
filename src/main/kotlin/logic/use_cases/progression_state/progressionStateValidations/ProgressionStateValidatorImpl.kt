@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.use_cases.progression_state.progressionStateValidations
 
 import logic.entities.ProgressionState
@@ -8,6 +10,8 @@ import logic.exceptions.NoProjectFoundForProgressionStateException
 import logic.exceptions.ProgressionStateAlreadyExistsException
 import logic.exceptions.ProgressionStateNotFoundException
 import net.thechance.logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 
 class ProgressionStateValidatorImpl(
@@ -17,26 +21,26 @@ class ProgressionStateValidatorImpl(
 
 	override suspend fun validateBeforeCreation(progressionState: ProgressionState): Boolean {
 		return when {
-			!progressionState.checkIsFieldsAreValid() -> throw InvalidProgressionStateFieldsException()
+			progressionState.checkIsFieldsAreBlank() -> throw InvalidProgressionStateFieldsException()
 			!progressionState.checkIfProjectExists() -> throw NoProjectFoundForProgressionStateException()
 			progressionState.checkIfProgressionStateExists() -> throw ProgressionStateAlreadyExistsException()
 			else -> { true }
 		}
 	}
 
-	override suspend fun validateAfterCreation(progressionStateId: String): Boolean {
+	override suspend fun validateAfterCreation(progressionStateId: Uuid): Boolean {
 		val entity = progressionStateRepository.getProgressionStates().find { it.id == progressionStateId }
 			?: throw ProgressionStateNotFoundException()
 
 		return when {
-			!entity.checkIsFieldsAreValid() -> throw InvalidProgressionStateFieldsException()
+			entity.checkIsFieldsAreBlank() -> throw InvalidProgressionStateFieldsException()
 			!entity.checkIfProjectExists() -> throw NoProjectFoundForProgressionStateException()
 			else -> { true }
 		}
 	}
 
-	private fun ProgressionState.checkIsFieldsAreValid(): Boolean {
-		return id.isNotBlank() && name.isNotBlank() && projectId.isNotBlank()
+	private fun ProgressionState.checkIsFieldsAreBlank(): Boolean {
+		return id.toString().isNotBlank() || name.isNotBlank() || projectId.toString().isNotBlank()
 	}
 
 	private suspend fun ProgressionState.checkIfProgressionStateExists(): Boolean {

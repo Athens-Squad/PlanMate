@@ -33,18 +33,18 @@ class GetAllProjectsByUsernameUseCaseTest {
             id = "1",
             progressionStates = FakeProjectData.states,
             tasks = FakeProjectData.tasks,
-            createdBy = adminUser.name
+            createdByUserName = adminUser.name
         )
 
         adminUserSecondProject = createProject().copy(
             id = "2",
-            createdBy = adminUser.name
+            createdByUserName = adminUser.name
         )
 
         alexAdminUserProject = createProject().copy(
             progressionStates = FakeProjectData.states,
             tasks = FakeProjectData.tasks,
-            createdBy = alexAdminUser.name
+            createdByUserName = alexAdminUser.name
         )
         getAllProjectsByUsernameUseCase = GetAllProjectsByUsernameUseCase(projectRepository, userRepository)
     }

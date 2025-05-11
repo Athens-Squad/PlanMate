@@ -1,16 +1,16 @@
 package data.aduit_log.data_source.localCsvFile
 
+import data.aduit_log.data_source.localCsvFile.dto.AuditLogCsvDto
+import data.aduit_log.data_source.localCsvFile.mapper.toAuditLog
+import data.aduit_log.data_source.localCsvFile.mapper.toAuditLogCsvDto
 import data.utils.csv_file_handle.CsvFileHandler
 import data.utils.csv_file_handle.CsvFileParser
 import logic.entities.AuditLog
 import net.thechance.data.aduit_log.data_source.AuditLogDataSource
-import data.aduit_log.data_source.localCsvFile.dto.AuditLogCsvDto
-import data.aduit_log.data_source.localCsvFile.mapper.toAuditLog
-import data.aduit_log.data_source.localCsvFile.mapper.toAuditLogCsvDto
 
 class AuditLogFileDataSource(
-	private val auditLogFileHandler: CsvFileHandler,
-	private val csvFileParser: CsvFileParser<AuditLogCsvDto>
+    private val auditLogFileHandler: CsvFileHandler,
+    private val csvFileParser: CsvFileParser<AuditLogCsvDto>
 ) : AuditLogDataSource {
 
     override suspend fun createAuditLog(auditLog: AuditLog) {
@@ -21,10 +21,10 @@ class AuditLogFileDataSource(
     override suspend fun getAuditLogs(): List<AuditLog> {
         return auditLogFileHandler.readRecords()
             .map {
-				csvFileParser
-					.parseRecord(it)
-					.toAuditLog()
-			}
+                csvFileParser
+                    .parseRecord(it)
+                    .toAuditLog()
+            }
     }
 
     override suspend fun clearLog() {

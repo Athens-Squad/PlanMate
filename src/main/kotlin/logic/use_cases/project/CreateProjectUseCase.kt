@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.use_cases.project
 
 import logic.entities.AuditLog
@@ -7,6 +9,7 @@ import logic.repositories.ProjectsRepository
 import logic.use_cases.audit_log.CreateAuditLogUseCase
 import net.thechance.logic.use_cases.project.projectValidations.ProjectValidator
 import java.time.LocalDateTime
+import kotlin.uuid.ExperimentalUuidApi
 
 class CreateProjectUseCase(
 	private val projectRepository: ProjectsRepository,
@@ -16,7 +19,7 @@ class CreateProjectUseCase(
 	suspend fun execute(project: Project) {
 		projectValidator.validateProjectBeforeCreation(
 			project = project,
-			username = project.createdBy
+			username = project.createdByUserName
 		)
 
 		projectRepository.createProject(project)
@@ -26,7 +29,7 @@ class CreateProjectUseCase(
 				entityType = EntityType.PROJECT,
 				entityId = project.id,
 				description = "Project created successfully.",
-				userName = project.createdBy,
+				userName = project.createdByUserName,
 				createdAt = LocalDateTime.now(),
 			)
 		)

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package net.thechance.data.tasks.data_source.localCsvFile
 
 import data.tasks.data_source.TasksDataSource
@@ -7,6 +9,8 @@ import logic.entities.Task
 import net.thechance.data.tasks.data_source.localCsvFile.dto.TaskCsvDto
 import net.thechance.data.tasks.data_source.localCsvFile.mapper.toTask
 import net.thechance.data.tasks.data_source.localCsvFile.mapper.toTaskCsvDto
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class TasksFileDataSource(
     private val tasksFileHandler: CsvFileHandler,
@@ -18,7 +22,7 @@ class TasksFileDataSource(
         tasksFileHandler.appendRecord(record)
     }
 
-    override suspend fun getTaskById(taskId: String): Task {
+    override suspend fun getTaskById(taskId: Uuid): Task {
         return getAllTasks()
             .firstOrNull { it.id == taskId }
             ?: throw NoSuchElementException("No such Task with taskId: $taskId")
@@ -26,7 +30,7 @@ class TasksFileDataSource(
     }
 
 
-    override suspend fun getTasksByProjectId(projectId: String): List<Task> {
+    override suspend fun getTasksByProjectId(projectId: Uuid): List<Task> {
         return getAllTasks()
             .filter { it.projectId == projectId }
     }
@@ -44,7 +48,7 @@ class TasksFileDataSource(
 
     }
 
-    override suspend fun deleteTask(taskId: String) {
+    override suspend fun deleteTask(taskId: Uuid) {
         val updatedTasks = getAllTasks()
             .filter { it.id != taskId }
         val updatedRecords = updatedTasks.map { csvFileParser.toCsvRecord(it.toTaskCsvDto()) }

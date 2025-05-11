@@ -1,8 +1,6 @@
-package ui.io
+package net.thechance.ui.core.io
 
-import net.thechance.ui.options.AuthenticationOptions
 import net.thechance.ui.options.Option
-import net.thechance.ui.utils.TextStyle
 
 class Printer {
     fun printText(
