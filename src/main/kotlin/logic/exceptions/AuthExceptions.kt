@@ -4,8 +4,10 @@ open class AuthenticationException(message: String = "Authentication failed") : 
 
 class InvalidCredentialsException:
 	AuthenticationException( "Invalid username or password")
+
 class UserNotFoundException:
 	AuthenticationException( "User not found")
+
 class UserAlreadyExistsException:
 	AuthenticationException( "User already exists")
 

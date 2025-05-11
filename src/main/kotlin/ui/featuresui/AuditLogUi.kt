@@ -23,38 +23,39 @@ class AuditLogUi(
 
 
     suspend fun getTaskHistory(taskId: Uuid): List<AuditLog> {
-        consoleIO.printer.printText("Here is The History of Your Task",TextStyle.TITLE)
+        consoleIO.printer.printText("Here is The History of Your Task", TextStyle.TITLE)
         return auditLogUseCases.getAuditLogsByTaskIdUseCase.execute(taskId)
     }
 
     suspend fun getProjectHistory(projectId: Uuid): List<AuditLog> {
-        consoleIO.printer.printText("Here is The History of Your Project",TextStyle.TITLE)
+        consoleIO.printer.printText("Here is The History of Your Project", TextStyle.TITLE)
         return auditLogUseCases.getAuditLogsByProjectIdUseCase.execute(projectId)
     }
 
     private suspend fun clearLog() {
-         auditLogUseCases.clearLogUseCase.execute()
+        auditLogUseCases.clearLogUseCase.execute()
     }
 
 
     fun showHistoryOption() {
-        consoleIO.printer.printText("Select Option (1 , 2 )",TextStyle.TITLE)
+        consoleIO.printer.printText("Select Option (1 , 2 )", TextStyle.TITLE)
         consoleIO.printer.printOptions(AuditLogOptions.entries)
         val inputHistoryOption = consoleIO.reader.readNumberFromUser()
 
         when (inputHistoryOption) {
-            AuditLogOptions.CLEAR_LOG.optionNumber ->{
+            AuditLogOptions.CLEAR_LOG.optionNumber -> {
                 logScope.launch {
                     try {
                         clearLog()
-                        consoleIO.printer.printText("History Deleted Successfully.",TextStyle.SUCCESS)
+                        consoleIO.printer.printText("History Deleted Successfully.", TextStyle.SUCCESS)
                     } catch (exception: Exception) {
-                        consoleIO.printer.printText("Error : ${exception.message}",TextStyle.ERROR)
+                        consoleIO.printer.printText("Error : ${exception.message}", TextStyle.ERROR)
                     }
                 }
 
             }
-            AuditLogOptions.BACK.optionNumber ->{
+
+            AuditLogOptions.BACK.optionNumber -> {
                 return
             }
         }

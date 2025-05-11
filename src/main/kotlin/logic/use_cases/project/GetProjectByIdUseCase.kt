@@ -1,15 +1,19 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.use_cases.project
 
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
 import net.thechance.logic.use_cases.project.projectValidations.ProjectValidator
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class GetProjectByIdUseCase(private val projectRepository: ProjectsRepository,
 	private val projectValidator: ProjectValidator
 ) {
-	suspend fun execute(projectId: String): Project {
+	suspend fun execute(projectId: Uuid): Project {
 		return projectRepository.getProjects().first {
-			projectValidator.validateProjectAfterCreation(projectId = projectId, username = it.createdBy)
+			projectValidator.validateProjectAfterCreation(projectId = projectId, username = it.createdByUserName)
 		}
 	}
 }
