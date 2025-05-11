@@ -43,17 +43,7 @@ class ProjectsFileDataSource(
 
     override suspend fun getProjects(): List<Project> {
         return projectsFileHandler.readRecords().map { record ->
-            val project = csvFileParser.parseRecord(record).toProject()
-
-            val tasks = tasksFileDataSource.getTasksByProjectId(project.id).toMutableList()
-            val states = statesFileDataSource.getProgressionStates()
-                .filter { it.projectId == project.id }
-                .toMutableList()
-
-            project.copy(
-                tasks = tasks,
-                progressionStates = states
-            )
+            csvFileParser.parseRecord(record).toProject()
         }
     }
 }

@@ -3,7 +3,9 @@
 package net.thechance.ui.utils
 
 import kotlinx.coroutines.*
+import logic.entities.ProgressionState
 import logic.entities.Project
+import logic.entities.Task
 import logic.entities.UserType
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.handlers.ProjectOptionsHandler
@@ -31,8 +33,10 @@ class ProjectSelector(
                 val inputProjectName = consoleIO.reader.readStringFromUser()
 
                 val project = projectsUi.getProject(getProjectId(inputProjectName, projects))
+                val projectProgressionStates = projectsUi.getProgressionStatesByProjectId(project.id)
+                val tasks = projectsUi.getTasksByProjectId(project.id)
 
-                handleProject(project)
+                handleProject(project, projectProgressionStates, tasks)
 
             } while (inputProjectName == "0")
         } catch (exception: Exception) {
@@ -40,8 +44,16 @@ class ProjectSelector(
         }
 
     }
-    private suspend fun handleProject(project: Project) {
-        showProjectSwimlanes(project)
+    private suspend fun handleProject(
+        project: Project,
+        progressionStates: List<ProgressionState>,
+        tasks: List<Task>
+    ) {
+        showProjectSwimlanes(
+            project,
+            progressionStates,
+            tasks
+        )
 
         if (session.currentUser.type is UserType.AdminUser) {
             projectOptionsHandler.handleAdmin(project)

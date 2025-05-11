@@ -4,6 +4,7 @@ package net.thechance.ui.handlers
 
 
 import kotlinx.coroutines.*
+import logic.entities.ProgressionState
 import logic.entities.Project
 import net.thechance.ui.options.project.ProjectMateOptions
 import ui.io.ConsoleIO
@@ -11,6 +12,7 @@ import net.thechance.ui.options.project.ProjectOptions
 import net.thechance.ui.utils.TextStyle
 import ui.featuresui.*
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class ProjectOptionsHandler(
 	private val consoleIO: ConsoleIO,
@@ -41,7 +43,7 @@ class ProjectOptionsHandler(
                 ProjectOptions.CREATE_TASK.optionNumber -> createTask()
                 ProjectOptions.EDIT.optionNumber -> projectsUi.editProject(project)
                 ProjectOptions.MANAGE_STATES.optionNumber -> progressionStateUi.manageStates( project.id)
-                ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(project.tasks, project.id, project.progressionStates)
+                ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(projectsUi.getTasksByProjectId(project.id), project.id, projectsUi.getProgressionStatesByProjectId(project.id))
                 ProjectOptions.SHOW_HISTORY.optionNumber -> showHistory()
                 ProjectOptions.DELETE.optionNumber -> deleteProject()
             }
@@ -60,9 +62,9 @@ class ProjectOptionsHandler(
             when (option) {
                 ProjectMateOptions.CREATE_TASK.optionNumber -> createTask()
                 ProjectMateOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(
-                    project.tasks,
+                    projectsUi.getTasksByProjectId(project.id),
                     project.id,
-                    project.progressionStates
+                    projectsUi.getProgressionStatesByProjectId(project.id)
                 )
 
                 ProjectMateOptions.SHOW_HISTORY.optionNumber -> showHistory()

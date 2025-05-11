@@ -26,7 +26,7 @@ class TasksUi(
     private val tasksCoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
 
-    suspend fun manageTasks(tasks: MutableList<Task>, projectId: Uuid, progressionStates: List<ProgressionState>) {
+    suspend fun manageTasks(tasks: List<Task>, projectId: Uuid, progressionStates: List<ProgressionState>) {
         tasksCoroutineScope.launch {
             try {
                 do {

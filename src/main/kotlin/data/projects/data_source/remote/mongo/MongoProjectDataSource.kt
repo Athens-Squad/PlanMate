@@ -44,21 +44,8 @@ class MongoProjectDataSource(
 
     override suspend fun getProjects(): List<Project> {
         return projectsCollection.find()
-            .map { projectDto: ProjectDto ->
-                val project = projectDto.toProject()
-
-                val progressionStates = statesDataSource.getProgressionStates()
-                    .filter { state: ProgressionState ->
-                        state.projectId == project.id
-                    }
-                    .toMutableList()
-
-                val tasks = tasksDataSource.getTasksByProjectId(project.id).toMutableList()
-
-                project.copy(
-                    progressionStates = progressionStates,
-                    tasks = tasks
-                )
+            .map {
+                it.toProject()
             }
             .toList()
     }

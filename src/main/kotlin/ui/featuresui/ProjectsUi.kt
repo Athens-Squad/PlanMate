@@ -4,8 +4,12 @@ package ui.featuresui
 
 
 import kotlinx.coroutines.*
+import logic.entities.ProgressionState
 import logic.entities.Project
+import logic.entities.Task
+import logic.use_cases.progression_state.ProgressionStatesUseCases
 import logic.use_cases.project.ProjectUseCases
+import logic.use_cases.task.TasksUseCases
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.options.project.EditProjectOptions
 import net.thechance.ui.utils.TextStyle
@@ -15,6 +19,8 @@ import kotlin.uuid.Uuid
 
 class ProjectsUi(
     private val projectUseCases: ProjectUseCases,
+    private val progressionStatesUseCases: ProgressionStatesUseCases,
+    private val tasksUseCases: TasksUseCases,
     private val session: UserSession,
     private val consoleIO: ConsoleIO
 ) {
@@ -91,7 +97,13 @@ class ProjectsUi(
         }
     }
 
+    suspend fun getProgressionStatesByProjectId(projectId: Uuid): List<ProgressionState> {
+        return progressionStatesUseCases.getProgressionStatesByProjectIdUseCase.execute(projectId)
+    }
 
+    suspend fun getTasksByProjectId(projectId: Uuid): List<Task> {
+        return tasksUseCases.getTasksByProjectIdUseCase.execute(projectId)
+    }
 
     suspend fun getProject(projectId: Uuid): Project {
         return projectUseCases.getProjectByIdUseCase.execute(projectId)
