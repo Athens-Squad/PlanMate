@@ -1,58 +1,59 @@
 package logic.use_cases.progression_state
-import helper.task_helper.createDummyState
+
+import helper.progression_state_helper.FakeProgressionStateData
+import helper.progression_state_helper.createDummyState
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
-import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.test.runTest
 import logic.repositories.ProgressionStateRepository
-import logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
+import net.thechance.data.progression_state.exceptions.ProgressionStateAlreadyExistsException
+import net.thechance.logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
-class CreateStateUseCaseTest{
+class CreateStateUseCaseTest {
 
- lateinit var createProgressionStateUseCase: CreateProgressionStateUseCase
- val stateRepository: ProgressionStateRepository = mockk(relaxed = true)
- var progressionStateValidator: ProgressionStateValidator =mockk(relaxed = true)
-
-
- @BeforeEach
- fun setUp(){
-  createProgressionStateUseCase = CreateProgressionStateUseCase(stateRepository , progressionStateValidator)
- }
-
- @Test
- fun`should create state when call create new state `(){
-  //given
-  val dummyState = createDummyState.dummyState()
-  //when
-  createProgressionStateUseCase.execute(dummyState)
-
-  //then
-  verify{stateRepository.createState(dummyState)}
-
- }
-
- @Test
- fun `should create state successfully when project is exist `() {
-  //given
-  val state = createDummyState.dummyState()
-  //when
-    progressionStateValidator.validateProjectExists(state.projectId)
-  //then
-  val result = createProgressionStateUseCase.execute(state)
-  assertEquals(Result.success(Unit), result)
- }
-@Test
- fun `should create state successfully when state not exist `() {
-  //given
-  val state = createDummyState.dummyState()
-  //when
-  progressionStateValidator.progressionStateIsExist(state.id)
-  //then
-  val result = createProgressionStateUseCase.execute(state)
-
-  assertEquals(Result.success(Unit), result)
- }
- }
+    lateinit var createProgressionStateUseCase: CreateProgressionStateUseCase
+    val stateRepository: ProgressionStateRepository = mockk(relaxed = true)
+    var progressionStateValidator: ProgressionStateValidator = mockk(relaxed = true)
 
 
+    @BeforeEach
+    fun setUp() {
+        createProgressionStateUseCase = CreateProgressionStateUseCase(stateRepository, progressionStateValidator)
+    }
+
+
+    @Test
+    fun `should call repository when progression state is created`() {
+        runTest {
+            //given
+            val progressionState = createDummyState.dummyState()
+            //when
+            coEvery { progressionStateValidator.validateBeforeCreation(progressionState) } returns null
+            //then
+            createProgressionStateUseCase.execute(progressionState)
+            coVerify(exactly = 1) { stateRepository.createProgressionState(progressionState) }
+        }
+    }
+
+
+    @Test
+    fun `should throw exception when progression state is already exist `() {
+        runTest {
+            // given
+            val progressionState = createDummyState.dummyState()
+
+            coEvery { progressionStateValidator.validateBeforeCreation(progressionState) } returns ProgressionStateAlreadyExistsException()
+
+            // when & then
+            assertThrows<ProgressionStateAlreadyExistsException> {
+                createProgressionStateUseCase.execute(progressionState)
+            }
+        }
+
+
+    }
+}
