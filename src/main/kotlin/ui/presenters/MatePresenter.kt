@@ -36,7 +36,7 @@ class MatePresenter(
         val projects = projectsUi.getAllUserProjects(adminName)
         val selected = selectProject(projects)
         selected?.let {
-            projectPresenter.showDetails(it, isAdmin = true)
+            projectPresenter.showDetails(it, isAdmin = false)
 
         }
     }
