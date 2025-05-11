@@ -11,7 +11,7 @@ import kotlin.uuid.Uuid
 class AuditLogValidatorImpl : AuditLogValidator {
 	override fun validateBeforeCreation(auditLog: AuditLog): Boolean {
 		return when {
-			!auditLog.checkIsFieldsAreValid() -> throw InvalidAuditLogFieldsException()
+			auditLog.checkIsFieldsAreBlank() -> throw InvalidAuditLogFieldsException()
 			else -> { true }
 		}
 	}
@@ -23,7 +23,7 @@ class AuditLogValidatorImpl : AuditLogValidator {
 		}
 	}
 
-	private fun AuditLog.checkIsFieldsAreValid(): Boolean {
-		return entityId.toString().isNotBlank() && description.isNotBlank() && userName.isNotBlank()
+	private fun AuditLog.checkIsFieldsAreBlank(): Boolean {
+		return entityId.toString().isBlank() || description.isBlank() || userName.isBlank()
 	}
 }
