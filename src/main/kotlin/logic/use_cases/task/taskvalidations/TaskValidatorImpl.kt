@@ -1,102 +1,55 @@
-@file:OptIn(ExperimentalUuidApi::class)
-
 package logic.use_cases.task.taskvalidations
 
-import logic.entities.ProgressionState
 import logic.entities.Task
-import logic.exceptions.CannotCompleteTaskOperationException
-import logic.exceptions.CannotUpdateTaskException
-import logic.exceptions.InvalidTaskException
+import logic.exceptions.*
 import logic.repositories.ProgressionStateRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.TasksRepository
-import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 class TaskValidatorImpl(
     private val tasksRepository: TasksRepository,
     private val projectsRepository: ProjectsRepository,
     private val statesRepository: ProgressionStateRepository
 ) : TaskValidator {
-    override suspend fun doIfTaskExistsOrThrow(taskId: Uuid, action: suspend (Task) -> Unit) {
-        try {
-            val task = tasksRepository.getTaskById(taskId)
-            action(task)
-        } catch (_: Exception) {
-            throw CannotCompleteTaskOperationException("Cannot find the task!")
-        }
+	override suspend fun validateTaskBeforeCreation(task: Task): Boolean {
+		return when {
+			!task.checkIsFieldsAreValid() -> throw InvalidTaskFieldsException()
+			!task.checkIfProjectExists() -> throw NoProjectFoundForTaskException()
+			!task.checkIfTaskProgressionStateExists() -> throw NoProgressionStateFoundForTaskException()
+			task.checkIfTaskExists() -> throw TaskAlreadyExistsException()
+			else -> { true }
+		}
+	}
 
-    }
+	override suspend fun validateTaskAfterCreation(
+		taskId: String
+	): Boolean {
+		val task = tasksRepository.getAllTasks().find { it.id == taskId }
+			?: throw TaskNotFoundException()
 
-    override suspend fun doIfTaskNotExistsOrThrow(task: Task, action: suspend () -> Unit) {
-        try {
-            tasksRepository.getTaskById(task.id)
-            throw CannotCompleteTaskOperationException("There is existing task with same id")
+		return when {
+			!task.checkIsFieldsAreValid() -> throw InvalidProgressionStateFieldsException()
+			!task.checkIfProjectExists() -> throw NoProjectFoundForProgressionStateException()
+			!task.checkIfTaskProgressionStateExists() -> throw NoProgressionStateFoundForTaskException()
+			else -> { true }
+		}
+	}
 
-        } catch (_: Exception) {
-            action()
-        }
+	private fun Task.checkIsFieldsAreValid(): Boolean {
+		return id.isNotBlank() && title.isNotBlank() && projectId.isNotBlank()
+	}
 
-    }
+	private suspend fun Task.checkIfTaskExists(): Boolean {
+		return tasksRepository.getAllTasks().any { it.id == id }
+	}
 
-    override suspend fun validateTaskBeforeCreation(task: Task) {
-        //validate task exists
-        validateTaskTitleExists(task)
+	private suspend fun Task.checkIfProjectExists(): Boolean {
+		return projectsRepository.getProjects().any { it.id == projectId }
+	}
 
-        // Validate project exists
-        validateProjectExists(task.projectId)
 
-        validateTaskFieldsIsNotBlankOrThrow(task)
 
-        // Validate that the current state belongs to the same project
-        validateTaskState(task.currentProgressionState, task.projectId)
-    }
-
-    override suspend fun validateTaskBeforeUpdating(task: Task, updatedTask: Task) {
-        //validate taskId
-        if (task.id != updatedTask.id)
-            throw CannotUpdateTaskException("Cannot change taskId!")
-
-        //validate projectId
-        if (task.projectId != updatedTask.projectId)
-            throw CannotUpdateTaskException("Cannot change project!")
-
-        validateTaskFieldsIsNotBlankOrThrow(updatedTask)
-
-        validateTaskState(updatedTask.currentProgressionState, updatedTask.projectId)
-    }
-
-    private fun validateTaskFieldsIsNotBlankOrThrow(task: Task) {
-        // Validate task fields (title, description, currentState)
-        if (task.title.isBlank()) throw InvalidTaskException("Task title cannot be empty.")
-        if (task.description.isBlank()) throw InvalidTaskException("Task description cannot be empty.")
-        if (task.currentProgressionState.id.toString().isBlank() || task.currentProgressionState.name.isBlank())
-            throw InvalidTaskException("Task currentState cannot be empty.")
-
-    }
-
-    private suspend fun validateTaskTitleExists(task: Task) {
-        //Check if the task exists in the repository
-
-        val taskExists = tasksRepository.getTasksByProjectId(task.projectId)
-            .find { it.title == task.title } != null
-        if (taskExists) {
-            throw InvalidTaskException("Task with the same title already exist in this project.")
-        }
-
-    }
-
-    private suspend fun validateProjectExists(projectId: Uuid) {
-        projectsRepository.getProjects().find { it.id == projectId }
-            ?: throw InvalidTaskException("Project with ID $projectId does not exist.")
-
-    }
-
-    private suspend fun validateTaskState(currentProgressionState: ProgressionState, projectId: Uuid) {
-        statesRepository.getProgressionStates()
-            .find { it.id == currentProgressionState.id && it.projectId == projectId }
-            ?: throw InvalidTaskException("State '${currentProgressionState.name}' is not valid for the given project.")
-
-    }
-
+	private suspend fun Task.checkIfTaskProgressionStateExists(): Boolean {
+		return statesRepository.getProgressionStates().any { it.id == currentProgressionState.id }
+	}
 }
