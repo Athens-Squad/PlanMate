@@ -6,6 +6,7 @@ import helper.authentication_helper.FakeUser
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import logic.exceptions.InvalidCredentialsException
 import logic.exceptions.UserNotFoundException
 import logic.repositories.AuthenticationRepository
 import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
@@ -60,6 +61,18 @@ class LoginUseCaseTest {
             val user = FakeUser.createUser
             coEvery { authenticationRepository.login(username = user.name, password = user.password) } throws
                     UserNotFoundException()
+
+            assertThrows<Exception> { loginUseCase.execute(user.name, user.password) }
+        }
+
+    }
+
+    @Test
+    fun `login should fail when incorrect password is given is incorrect`() {
+        runTest {
+            val user = FakeUser.createUser
+            coEvery { authenticationRepository.login(username = user.name, password = user.password) } throws
+                    InvalidCredentialsException()
 
             assertThrows<Exception> { loginUseCase.execute(user.name, user.password) }
         }
