@@ -14,6 +14,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 
+@OptIn(ExperimentalUuidApi::class)
 class ProgressionStateValidatorImpl(
     private val projectsRepository: ProjectsRepository,
     private val progressionStateRepository: ProgressionStateRepository
