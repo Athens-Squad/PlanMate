@@ -52,7 +52,7 @@ class TasksFileDataSourceTest {
             val projectId = Uuid.random()
             val expectedTask = Task(
                 id = taskId,
-                title = "Existing Task",
+                name = "Existing Task",
                 description = "This task exists.",
                 currentProgressionState = ProgressionState(
                     stateId,

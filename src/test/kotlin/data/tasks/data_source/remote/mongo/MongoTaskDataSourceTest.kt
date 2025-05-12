@@ -38,7 +38,7 @@ class MongoTaskDataSourceTest {
             val taskId = Uuid.random()
             val task = Task(
                 id = taskId,
-                title = "New Task",
+                name = "New Task",
                 description = "This is a test task.",
                 currentProgressionState = ProgressionState(
                     stateId, "ToDo", projectId

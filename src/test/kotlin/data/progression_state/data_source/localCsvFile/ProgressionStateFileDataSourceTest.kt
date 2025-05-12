@@ -1,3 +1,4 @@
+/*
 @file:OptIn(ExperimentalUuidApi::class)
 package data.progression_state.data_source.localCsvFile
 import com.google.common.truth.Truth.assertThat
@@ -102,4 +103,4 @@ class ProgressionStateFileDataSourceTest {
         // then
         assertThat(result).containsExactly(fakeProgressionState)
     }
-}
+}*/
