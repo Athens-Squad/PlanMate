@@ -22,43 +22,103 @@ class AuditLogUi(
         CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
 
-    suspend fun getTaskHistory(taskId: Uuid): List<AuditLog> {
-        consoleIO.printer.printText("Here is The History of Your Task", TextStyle.TITLE)
-        return auditLogUseCases.getAuditLogsByTaskIdUseCase.execute(taskId)
+    suspend fun showTaskHistory(taskId: Uuid) {
+        consoleIO.printer.printText(
+            "Here is The History of Your Task",
+            TextStyle.TITLE
+        )
+
+        val taskHistory = auditLogUseCases.getAuditLogsByTaskIdUseCase.execute(taskId)
+        if (taskHistory.isEmpty()) {
+            consoleIO.printer.printText("No history found", TextStyle.ERROR)
+            return
+        }
+        taskHistory.forEach { log ->
+            printLog(log)
+        }
     }
 
-    suspend fun getProjectHistory(projectId: Uuid): List<AuditLog> {
-        consoleIO.printer.printText("Here is The History of Your Project", TextStyle.TITLE)
-        return auditLogUseCases.getAuditLogsByProjectIdUseCase.execute(projectId)
-    }
+    suspend fun showProjectHistory(projectId: Uuid) {
+        consoleIO.printer.printText(
+            "Here is The History of Your Project",
+            TextStyle.TITLE
+        )
 
-    private suspend fun clearLog() {
-        auditLogUseCases.clearLogUseCase.execute()
-    }
+        try {
+            val projectHistory = auditLogUseCases.getAuditLogsByProjectIdUseCase.execute(projectId)
+            if (projectHistory.isEmpty()) {
+                consoleIO.printer.printText("No history found", TextStyle.ERROR)
+                return
+            }
 
+            projectHistory.forEach { log ->
+                printLog(log)
+            }
+
+            showHistoryOption()
+        } catch (exception: Exception) {
+            consoleIO.printer.printText(exception.message.toString(), TextStyle.ERROR)
+        }
+    }
 
     fun showHistoryOption() {
-        consoleIO.printer.printText("Select Option (1 , 2 )", TextStyle.TITLE)
+        consoleIO.printer.printText(
+            "Select Option (1 , 2 )",
+            TextStyle.TITLE
+        )
         consoleIO.printer.printOptions(AuditLogOptions.entries)
+
         val inputHistoryOption = consoleIO.reader.readNumberFromUser()
-
         when (inputHistoryOption) {
-            AuditLogOptions.CLEAR_LOG.optionNumber -> {
-                logScope.launch {
-                    try {
-                        clearLog()
-                        consoleIO.printer.printText("History Deleted Successfully.", TextStyle.SUCCESS)
-                    } catch (exception: Exception) {
-                        consoleIO.printer.printText("Error : ${exception.message}", TextStyle.ERROR)
-                    }
-                }
-
-            }
+            AuditLogOptions.CLEAR_LOG.optionNumber -> clearHistory()
 
             AuditLogOptions.BACK.optionNumber -> {
                 return
             }
         }
 
+    }
+
+    private fun clearHistory() {
+        logScope.launch {
+            try {
+                clearLog()
+                consoleIO.printer.printText(
+                    "History Deleted Successfully.",
+                    TextStyle.SUCCESS
+                )
+            } catch (exception: Exception) {
+                consoleIO.printer.printText(
+                    "Error: ${exception.message}",
+                    TextStyle.ERROR
+                )
+            }
+        }
+    }
+
+    private suspend fun clearLog() {
+        auditLogUseCases.clearLogUseCase.execute()
+    }
+
+    private fun printLog(log: AuditLog) {
+        consoleIO.printer.printText(
+            "User: ${log.userName}",
+            TextStyle.INFO
+        )
+
+        consoleIO.printer.printText(
+            "Changed ${log.entityType.name} : ${log.entityId}",
+            TextStyle.INFO
+        )
+
+        consoleIO.printer.printText(
+            "Description : ${log.description}",
+            TextStyle.INFO
+        )
+
+        consoleIO.printer.printText(
+            "At: ${log.createdAt}",
+            TextStyle.INFO
+        )
     }
 }

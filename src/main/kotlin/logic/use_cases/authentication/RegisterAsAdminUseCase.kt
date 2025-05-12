@@ -16,14 +16,12 @@ class RegisterAsAdminUseCase(
 ) {
 
     suspend fun execute(adminUser: User, password: String) {
-        if (
+
             userValidator.isUsernameNotValid(adminUser.name) ||
             userValidator.isPasswordNotValid(password) ||
             userValidator.isTypeNotAdmin(adminUser.type) ||
             userValidator.userNameExist(adminUser.name)
-        ) {
-            throw Exception("Cannot Register!")
-        }
+
 
         val hashedPassword = passwordHashing.hash(password)
 

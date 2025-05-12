@@ -25,7 +25,7 @@ object FakeTask {
         projectId: Uuid = Uuid.random()
     ) = Task(
         id = id,
-        title = title,
+        name = title,
         description = description,
         currentProgressionState = ProgressionState(
             id = currentStateId,

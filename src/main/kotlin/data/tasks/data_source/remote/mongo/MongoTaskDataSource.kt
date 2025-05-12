@@ -43,7 +43,6 @@ class MongoTaskDataSource(
         return taskCollection.find<TaskDto>()
             .map { it.toTask() }
             .toList()
-
     }
 
     override suspend fun updateTask(task: Task) {

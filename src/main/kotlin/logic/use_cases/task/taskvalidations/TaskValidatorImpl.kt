@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalUuidApi::class)
+@file:OptIn(ExperimentalUuidApi::class, ExperimentalUuidApi::class, ExperimentalUuidApi::class)
 
 package logic.use_cases.task.taskvalidations
 
@@ -40,7 +40,7 @@ class TaskValidatorImpl(
 	}
 
 	private fun Task.checkIsFieldsAreValid(): Boolean {
-		return id.toString().isNotBlank() && title.isNotBlank() && projectId.toString().isNotBlank()
+		return id.toString().isNotBlank() && name.isNotBlank() && projectId.toString().isNotBlank()
 	}
 
 	private suspend fun Task.checkIfTaskExists(): Boolean {

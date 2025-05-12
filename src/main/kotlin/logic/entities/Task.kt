@@ -5,10 +5,9 @@ package logic.entities
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-
 data class Task(
     val id: Uuid = Uuid.random(),
-    val title: String,
+    val name: String,
     val description: String,
     val currentProgressionState: ProgressionState,
     val projectId: Uuid

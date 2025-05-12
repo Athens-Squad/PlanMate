@@ -1,23 +1,27 @@
 /*package helper.progression_state_helper
 
 import net.thechance.data.progression_state.data_source.remote.mongo.dto.ProgressionStateDto
+import java.util.UUID
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 object FakeProgressionStateData {
 
 	val fakeProgressionState1: ProgressionStateDto = ProgressionStateDto(
-		id = "1",
+		id = Uuid.random(),
 		name = "state1",
-		projectId = "pr1"
+		projectId = Uuid.random()
 	)
-	val fakeProgressionState2: ProgressionStateDto = ProgressionStateDto(
-		id = "2",
+	private val fakeProgressionState2: ProgressionStateDto = ProgressionStateDto(
+		id = Uuid.random(),
 		name = "state2",
-		projectId = "pr2"
+		projectId = Uuid.random()
 	)
-	val fakeProgressionState3: ProgressionStateDto = ProgressionStateDto(
-		id = "3",
+	private val fakeProgressionState3: ProgressionStateDto = ProgressionStateDto(
+		id = Uuid.random(),
 		name = "state3",
-		projectId = "pr3"
+		projectId = Uuid.random()
 	)
 	val fakeProgressionStates = listOf(fakeProgressionState1, fakeProgressionState2, fakeProgressionState3)
 }

@@ -30,7 +30,7 @@ class UpdateTaskUseCaseTest {
     fun `should be able to update task if the task already exists`() {
         // Given
         val fakeUpdatedTask = fakeTask.copy(
-            title = "newTitle"
+            name = "newTitle"
         )
 
         every { taskValidator.doIfTaskExistsOrThrow(any(), any()) } answers {
@@ -54,7 +54,7 @@ class UpdateTaskUseCaseTest {
     @Test
     fun `should not be able to update a task when task does not exist then return false`() {
         //given
-        val fakeUpdatedTask = fakeTask.copy(title = "newTitle")
+        val fakeUpdatedTask = fakeTask.copy(name = "newTitle")
         every { taskValidator.doIfTaskExistsOrThrow(fakeUpdatedTask.id, any()) } throws
                 CannotCompleteTaskOperationException("Cannot find the task!")
 
