@@ -9,7 +9,7 @@ import kotlin.uuid.ExperimentalUuidApi
 fun TaskCsvDto.toTask(): Task {
     return Task(
         id = id,
-        name = title,
+        name = name,
         description = description,
         currentProgressionState = currentProgressionState,
         projectId = projectId
@@ -19,7 +19,7 @@ fun TaskCsvDto.toTask(): Task {
 fun Task.toTaskCsvDto(): TaskCsvDto {
     return TaskCsvDto(
         id = id,
-        title = name,
+        name = name,
         description = description,
         currentProgressionState = currentProgressionState,
         projectId = projectId

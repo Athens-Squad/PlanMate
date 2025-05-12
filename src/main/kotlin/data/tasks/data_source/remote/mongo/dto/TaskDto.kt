@@ -10,7 +10,7 @@ import kotlin.uuid.Uuid
 data class TaskDto(
     @BsonId
     val id: Uuid = Uuid.random(),
-    val title: String,
+    val name: String,
     val description: String,
     val currentProgressionState: ProgressionState,
     val projectId: Uuid
