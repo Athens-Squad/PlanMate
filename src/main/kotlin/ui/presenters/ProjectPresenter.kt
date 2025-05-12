@@ -2,7 +2,6 @@
 
 package net.thechance.ui.presenters
 
-
 import logic.entities.ProgressionState
 import logic.entities.Project
 import logic.entities.Task

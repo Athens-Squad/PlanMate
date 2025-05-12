@@ -53,10 +53,10 @@ class AdminPresenter(
             return null
         }
 
-        consoleIO.printer.printText("Select project by name:", TextStyle.TITLE)
         projects.map { it.name }.forEach {
             consoleIO.printer.printText(it, TextStyle.OPTION)
         }
+        consoleIO.printer.printText("Select project by name:", TextStyle.TITLE)
 
         val name = consoleIO.reader.readStringFromUser()
         return projects.find { it.name == name }

@@ -38,7 +38,6 @@ class MongoProjectDataSource(
     }
 
     override suspend fun getProjects(): List<Project> {
-        println("Here")
         return projectsCollection.find()
             .map {
                 it.toProject()

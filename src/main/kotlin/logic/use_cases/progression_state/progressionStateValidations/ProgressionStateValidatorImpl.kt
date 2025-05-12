@@ -21,7 +21,7 @@ class ProgressionStateValidatorImpl(
 
 	override suspend fun validateBeforeCreation(progressionState: ProgressionState): Boolean {
 		return when {
-			progressionState.checkIsFieldsAreBlank() -> throw InvalidProgressionStateFieldsException()
+			!progressionState.checkIsFieldsAreBlank() -> throw InvalidProgressionStateFieldsException()
 			!progressionState.checkIfProjectExists() -> throw NoProjectFoundForProgressionStateException()
 			progressionState.checkIfProgressionStateExists() -> throw ProgressionStateAlreadyExistsException()
 			else -> { true }
@@ -33,7 +33,7 @@ class ProgressionStateValidatorImpl(
 			?: throw ProgressionStateNotFoundException()
 
 		return when {
-			entity.checkIsFieldsAreBlank() -> throw InvalidProgressionStateFieldsException()
+			!entity.checkIsFieldsAreBlank() -> throw InvalidProgressionStateFieldsException()
 			!entity.checkIfProjectExists() -> throw NoProjectFoundForProgressionStateException()
 			else -> { true }
 		}
