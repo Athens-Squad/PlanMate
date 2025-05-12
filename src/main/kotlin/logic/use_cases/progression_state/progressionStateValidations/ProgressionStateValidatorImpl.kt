@@ -28,7 +28,6 @@ class ProgressionStateValidatorImpl(
 		}
 	}
 
-
 	override suspend fun validateAfterCreation(progressionStateId: Uuid): Boolean {
 		val entity = progressionStateRepository.getProgressionStates().find { it.id == progressionStateId }
 			?: throw ProgressionStateNotFoundException()

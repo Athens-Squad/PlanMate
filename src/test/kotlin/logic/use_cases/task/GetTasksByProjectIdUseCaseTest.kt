@@ -21,7 +21,7 @@ class GetTasksByProjectIdUseCaseTest {
 
  @Test
  fun `should return tasks for valid project ID`() {
-  val tasks = listOf(fakeTask, fakeTask.copy(title = "task 2"))
+  val tasks = listOf(fakeTask, fakeTask.copy(name = "task 2"))
   every { tasksRepository.getTasksByProjectId(fakeTask.projectId) } returns Result.success(tasks)
 
   val result = getTasksByProjectIdUseCase.execute(fakeTask.projectId)

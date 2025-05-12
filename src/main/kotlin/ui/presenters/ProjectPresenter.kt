@@ -53,7 +53,7 @@ class ProjectPresenter(
             val stateTasks = swimlanes[state].orEmpty()
             if (stateTasks.isEmpty()) consoleIO.printer.printText("(No tasks)", TextStyle.INFO)
             else stateTasks.forEach {
-                consoleIO.printer.printText(" -- ${it.title}: ${it.description}", TextStyle.INFO)
+                consoleIO.printer.printText(" -- ${it.name}: ${it.description}", TextStyle.INFO)
             }
             consoleIO.printer.printText("---------------------------------------------------")
         }

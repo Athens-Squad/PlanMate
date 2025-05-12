@@ -25,7 +25,6 @@ class TaskValidatorImpl(
 		}
 	}
 
-
 	override suspend fun validateTaskAfterCreation(
 		taskId: Uuid
 	): Boolean {
@@ -41,7 +40,7 @@ class TaskValidatorImpl(
 	}
 
 	private fun Task.checkIsFieldsAreValid(): Boolean {
-		return id.toString().isNotBlank() && title.isNotBlank() && projectId.toString().isNotBlank()
+		return id.toString().isNotBlank() && name.isNotBlank() && projectId.toString().isNotBlank()
 	}
 
 	private suspend fun Task.checkIfTaskExists(): Boolean {

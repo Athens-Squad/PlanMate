@@ -25,7 +25,6 @@ class ProjectValidatorImpl(
 		}
 	}
 
-
 	override suspend fun validateProjectAfterCreation(projectId: Uuid, username: String): Boolean {
 		return when {
 			username.checkIfUsernameIsNotValid() -> { throw InvalidUsernameForProjectException() }

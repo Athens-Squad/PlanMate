@@ -59,7 +59,7 @@ class TasksUi(
         tasksCoroutineScope.launch {
             tasksUseCases.createTaskUseCase.execute(
                 Task(
-                    title = taskName,
+                    name = taskName,
                     description = taskDescription,
                     currentProgressionState = state,
                     projectId = projectId
@@ -108,7 +108,7 @@ class TasksUi(
 
     private fun editTaskTitle(task: Task) {
         val taskName = receiveStringInput("Enter New Task Name : ")
-        updateTask(task.copy(title = taskName))
+        updateTask(task.copy(name = taskName))
     }
 
     private fun editTaskDescription(task: Task) {
@@ -145,7 +145,7 @@ class TasksUi(
     }
 
     private fun getTaskByName(name: String, tasks: List<Task>): Task {
-        return tasks.first { it.title == name }
+        return tasks.first { it.name == name }
     }
 
     private fun selectProgressionState(progressionStates: List<ProgressionState>): ProgressionState {
@@ -166,9 +166,8 @@ class TasksUi(
     }
 
     private fun Task.showTaskDetails() {
-        consoleIO.printer.printText(this.title, TextStyle.TITLE)
+        consoleIO.printer.printText(this.name, TextStyle.TITLE)
         consoleIO.printer.printText(this.description, TextStyle.INFO)
         consoleIO.printer.printText(this.currentProgressionState.name, TextStyle.INFO)
     }
-
 }
