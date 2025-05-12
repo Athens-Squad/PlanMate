@@ -70,9 +70,17 @@ class ProjectPresenter(
             val option = consoleIO.reader.readNumberFromUser()
 
             when (option) {
-                ProjectOptions.CREATE_TASK.optionNumber -> tasksUi.createTask(project.id)
+                ProjectOptions.CREATE_TASK.optionNumber -> tasksUi.createTask(
+                    project.id,
+                    projectsUi.getProgressionStatesByProjectId(
+                        project.id
+                    )
+                )
+
                 ProjectOptions.EDIT.optionNumber -> projectsUi.editProject(project)
+
                 ProjectOptions.MANAGE_STATES.optionNumber -> progressionStateUi.manageStates(project.id)
+
                 ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(
                     projectsUi.getTasksByProjectId(project.id),
                     project.id,
@@ -80,6 +88,7 @@ class ProjectPresenter(
                 )
 
                 ProjectOptions.SHOW_HISTORY.optionNumber -> showHistory(project.id)
+
                 ProjectOptions.DELETE.optionNumber -> projectsUi.deleteProject(project.id)
             }
         } while (option != ProjectOptions.BACK.optionNumber && option != ProjectOptions.DELETE.optionNumber)
@@ -94,7 +103,13 @@ class ProjectPresenter(
             val option = consoleIO.reader.readNumberFromUser()
 
             when (option) {
-                ProjectMateOptions.CREATE_TASK.optionNumber -> tasksUi.createTask(project.id)
+                ProjectMateOptions.CREATE_TASK.optionNumber -> tasksUi.createTask(
+                    project.id,
+                    projectsUi.getProgressionStatesByProjectId(
+                        project.id
+                    )
+                )
+
                 ProjectMateOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(
                     projectsUi.getTasksByProjectId(project.id),
                     project.id,

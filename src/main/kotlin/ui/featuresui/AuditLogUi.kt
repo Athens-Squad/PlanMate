@@ -22,23 +22,32 @@ class AuditLogUi(
         CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
 
-    suspend fun getTaskHistory(taskId: Uuid): List<AuditLog> {
-        consoleIO.printer.printText("Here is The History of Your Task", TextStyle.TITLE)
+    suspend fun showTaskHistory(taskId: Uuid) {
+        consoleIO.printer.printText(
+            "Here is The History of Your Task",
+            TextStyle.TITLE
+        )
 
-        return auditLogUseCases.getAuditLogsByTaskIdUseCase.execute(taskId)
+        val taskHistory = auditLogUseCases.getAuditLogsByTaskIdUseCase.execute(taskId)
+        taskHistory.forEach { log ->
+            printLog(log)
+        }
     }
 
     suspend fun getProjectHistory(projectId: Uuid): List<AuditLog> {
-        consoleIO.printer.printText("Here is The History of Your Project", TextStyle.TITLE)
+        consoleIO.printer.printText(
+            "Here is The History of Your Project",
+            TextStyle.TITLE
+        )
 
         return auditLogUseCases.getAuditLogsByProjectIdUseCase.execute(projectId)
     }
 
-
-
-
     fun showHistoryOption() {
-        consoleIO.printer.printText("Select Option (1 , 2 )", TextStyle.TITLE)
+        consoleIO.printer.printText(
+            "Select Option (1 , 2 )",
+            TextStyle.TITLE
+        )
         consoleIO.printer.printOptions(AuditLogOptions.entries)
 
         val inputHistoryOption = consoleIO.reader.readNumberFromUser()
@@ -56,14 +65,42 @@ class AuditLogUi(
         logScope.launch {
             try {
                 clearLog()
-                consoleIO.printer.printText("History Deleted Successfully.", TextStyle.SUCCESS)
+                consoleIO.printer.printText(
+                    "History Deleted Successfully.",
+                    TextStyle.SUCCESS
+                )
             } catch (exception: Exception) {
-                consoleIO.printer.printText("Error: ${exception.message}", TextStyle.ERROR)
+                consoleIO.printer.printText(
+                    "Error: ${exception.message}",
+                    TextStyle.ERROR
+                )
             }
         }
     }
 
     private suspend fun clearLog() {
         auditLogUseCases.clearLogUseCase.execute()
+    }
+
+    private fun printLog(log: AuditLog) {
+        consoleIO.printer.printText(
+            "User: ${log.userName}",
+            TextStyle.INFO
+        )
+
+        consoleIO.printer.printText(
+            "Changed ${log.entityType.name} : ${log.entityId}",
+            TextStyle.INFO
+        )
+
+        consoleIO.printer.printText(
+            "Description : ${log.description}",
+            TextStyle.INFO
+        )
+
+        consoleIO.printer.printText(
+            "At: ${log.createdAt}",
+            TextStyle.INFO
+        )
     }
 }
