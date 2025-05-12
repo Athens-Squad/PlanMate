@@ -1,5 +1,5 @@
 @file:OptIn(ExperimentalUuidApi::class, ExperimentalUuidApi::class, ExperimentalUuidApi::class,
-	ExperimentalUuidApi::class
+	ExperimentalUuidApi::class, ExperimentalUuidApi::class, ExperimentalUuidApi::class, ExperimentalUuidApi::class
 )
 
 package net.thechance.logic.use_cases.audit_log.auditLogValidations

@@ -1,17 +1,14 @@
-package data.aduit_log_csvfile.repository
+package data.auditlog.repository
 
 import com.google.common.truth.Truth.assertThat
-import data.aduit_log_csvfile.dummyAuditLog
+import data.auditlog.dummyAuditLog
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
-import logic.entities.AuditLog
 import net.thechance.data.aduit_log.data_source.AuditLogDataSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import logic.entities.EntityType
 import net.thechance.data.aduit_log.repository.AuditLogRepositoryImpl
-import org.hamcrest.core.Every
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
