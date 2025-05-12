@@ -1,4 +1,6 @@
-@file:OptIn(ExperimentalUuidApi::class)
+@file:OptIn(ExperimentalUuidApi::class, ExperimentalUuidApi::class, ExperimentalUuidApi::class,
+	ExperimentalUuidApi::class
+)
 
 package net.thechance.logic.use_cases.audit_log.auditLogValidations
 
@@ -15,6 +17,7 @@ class AuditLogValidatorImpl : AuditLogValidator {
 			else -> { true }
 		}
 	}
+
 
 	override fun validateAfterCreation(entityId: Uuid): Boolean {
 		return when {
