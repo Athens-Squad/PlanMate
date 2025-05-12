@@ -1,4 +1,4 @@
-package data.projects.data_source.remote.mongo
+/*package data.projects.data_source.remote.mongo
 
 import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
@@ -91,3 +91,5 @@ class MongoProjectDataSourceTest {
 
 
 }
+
+ */

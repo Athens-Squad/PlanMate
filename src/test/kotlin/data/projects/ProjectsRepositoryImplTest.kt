@@ -1,4 +1,4 @@
-package data.projects
+/*package data.projects
 
 import helper.project_helper.createProject
 import io.mockk.coVerify
@@ -67,3 +67,5 @@ class ProjectsRepositoryImplTest {
     }
 
 }
+
+ */

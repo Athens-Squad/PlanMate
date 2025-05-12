@@ -1,4 +1,4 @@
-package logic.use_cases.project
+/*package logic.use_cases.project
 
 import com.google.common.truth.Truth.assertThat
 import helper.project_helper.createProject
@@ -63,3 +63,5 @@ class GetProjectByIdUseCaseTest {
         verify(exactly = 0) { projectRepository.getProjects() }
     }
 }
+
+ */

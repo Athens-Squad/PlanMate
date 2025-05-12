@@ -1,4 +1,4 @@
-package helper.project_helper
+/*package helper.project_helper
 
 import logic.entities.ProgressionState
 import logic.entities.Project
@@ -21,3 +21,5 @@ fun createProject(
     tasks = tasks,
     createdByUserName = createdBy
 )
+
+ */

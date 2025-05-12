@@ -1,4 +1,4 @@
-package helper.progression_state_helper
+/*package helper.progression_state_helper
 
 import logic.entities.ProgressionState
 
@@ -15,6 +15,8 @@ object createDummyState {
         )
     }
 }
+
+ */
 
 
 

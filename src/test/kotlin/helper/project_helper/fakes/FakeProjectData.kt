@@ -1,4 +1,4 @@
-package helper.project_helper.fakes
+/*package helper.project_helper.fakes
 
 import logic.entities.ProgressionState
 import logic.entities.Task
@@ -23,3 +23,5 @@ object FakeProjectData {
         secondState.copy(projectId = "project2")
     )
 }
+
+ */

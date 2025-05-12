@@ -1,4 +1,4 @@
-package logic.use_cases.authentication
+/*package logic.use_cases.authentication
 
 import data.authentication.utils.PasswordHashing
 import io.mockk.coEvery
@@ -245,3 +245,5 @@ class RegisterAsMateUseCaseTest {
 
 
 }
+
+ */

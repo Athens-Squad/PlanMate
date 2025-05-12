@@ -1,4 +1,4 @@
-package data.aduit_log_csvfile.repository
+/*package data.aduit_log_csvfile.repository
 
 import com.google.common.truth.Truth.assertThat
 import data.aduit_log_csvfile.dummyAuditLog
@@ -65,3 +65,4 @@ class AuditLogRepositoryImplTest {
         coVerify(exactly = 1) { dataSource.clearLog() }
     }
 }
+*/

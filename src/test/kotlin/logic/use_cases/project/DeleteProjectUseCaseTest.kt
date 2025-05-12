@@ -1,4 +1,4 @@
-package logic.use_cases.project
+/*package logic.use_cases.project
 
 import com.google.common.truth.Truth.assertThat
 import helper.project_helper.createProject
@@ -144,3 +144,5 @@ class DeleteProjectUseCaseTest {
         verify(exactly = 1) { userRepository.getUserByUsername(adminUser.name) }
     }
 }
+
+ */

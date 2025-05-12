@@ -53,6 +53,7 @@ class TaskValidatorImpl(
 
 
 
+	@OptIn(ExperimentalUuidApi::class)
 	private suspend fun Task.checkIfTaskProgressionStateExists(): Boolean {
 		return statesRepository.getProgressionStates().any { it.id == currentProgressionState.id }
 	}

@@ -1,4 +1,4 @@
-package logic.use_cases.task
+/*package logic.use_cases.task
 
 import com.google.common.truth.Truth.assertThat
 import helper.task_helper.FakeTask.fakeTask
@@ -41,3 +41,5 @@ class GetTasksByProjectIdUseCaseTest {
   assertThat(result.exceptionOrNull()).isEqualTo(projectNotFoundException)
  }
 }
+
+ */

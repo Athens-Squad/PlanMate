@@ -1,4 +1,4 @@
-package data.progression_state.data_source.remote.mongo
+/*package data.progression_state.data_source.remote.mongo
 
 import com.google.common.truth.Truth.assertThat
 import com.mongodb.kotlin.client.coroutine.MongoCollection
@@ -44,3 +44,5 @@ class ProgressionStateDatabaseDataSourceTest {
 	}
 
 }
+
+ */

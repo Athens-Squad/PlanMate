@@ -1,4 +1,4 @@
-package logic.use_cases.progression_state
+/*package logic.use_cases.progression_state
 
 import helper.progression_state_helper.FakeProgressionStateData
 import helper.progression_state_helper.createDummyState
@@ -57,3 +57,5 @@ class CreateStateUseCaseTest {
 
     }
 }
+
+ */

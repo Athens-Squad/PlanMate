@@ -3,7 +3,7 @@ package data.aduit_log_csvfile
 import logic.entities.AuditLog
 import logic.entities.EntityType
 import java.time.LocalDateTime
-
+/*
 fun dummyAuditLog(): AuditLog = AuditLog(
     id = "123",
     entityType = EntityType.PROJECT,
@@ -12,3 +12,5 @@ fun dummyAuditLog(): AuditLog = AuditLog(
     userName = "admin",
     createdAt = LocalDateTime.now()
 )
+
+ */

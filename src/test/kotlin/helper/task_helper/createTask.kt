@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class, ExperimentalUuidApi::class)
+
 package helper.task_helper
 
 import logic.entities.AuditLog
@@ -5,18 +7,22 @@ import logic.entities.Task
 import logic.entities.EntityType
 import logic.entities.ProgressionState
 import java.time.LocalDateTime
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 object FakeTask {
+    @OptIn(ExperimentalUuidApi::class)
     val fakeTask = createTask()
     val fakeAuditLog = createAuditLog()
     val fakeUserName = getUserName()
+    @OptIn(ExperimentalUuidApi::class)
     private fun createTask(
-        id: String = "t1",
+        id : Uuid = Uuid.random(),
         title: String = "Task Title",
         description: String = "Task Description",
-        currentStateId: String = "s1",
+        currentStateId: Uuid = Uuid.random(),
         currentStateName: String = "State Name",
-        projectId: String = "p1"
+        projectId: Uuid = Uuid.random()
     ) = Task(
         id = id,
         title = title,
@@ -30,9 +36,9 @@ object FakeTask {
     )
 
     private fun createAuditLog(
-        id: String = "al1",
+        id: Uuid = Uuid.random(),
         entityType: EntityType = EntityType.TASK,
-        entityId: String = "t1",
+        entityId: Uuid = Uuid.random(),
         description: String = "audit log desc",
         userName: String = getUserName(),
         createdAt: LocalDateTime = LocalDateTime.of(

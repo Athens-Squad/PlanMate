@@ -1,4 +1,4 @@
-package helper
+/*package helper
 
 import logic.entities.User
 import logic.entities.UserType
@@ -15,3 +15,5 @@ fun createUser(
     password = password,
     type = userType
 )
+
+ */

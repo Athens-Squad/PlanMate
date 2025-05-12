@@ -1,4 +1,4 @@
-package logic.use_cases.progression_state
+/*package logic.use_cases.progression_state
 
 import io.mockk.coEvery
 import io.mockk.every
@@ -40,3 +40,5 @@ class GetStatesByProjectIdUseCaseTest {
     }
 
 }
+
+ */

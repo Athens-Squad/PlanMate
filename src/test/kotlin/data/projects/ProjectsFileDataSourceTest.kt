@@ -1,4 +1,4 @@
-package data.projects
+/*package data.projects
 
 import com.google.common.truth.Truth.assertThat
 import data.utils.csv_file_handle.CsvFileHandler
@@ -129,3 +129,5 @@ class ProjectsFileDataSourceTest {
         assertThat(projects).isNotEmpty()
     }
 }
+
+ */

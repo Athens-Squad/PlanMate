@@ -1,4 +1,4 @@
-package helper.authentication_helper
+/*package helper.authentication_helper
 
 import logic.entities.User
 import logic.entities.UserType
@@ -10,3 +10,5 @@ object FakeUser {
         type = UserType.AdminUser
     )
 }
+
+ */

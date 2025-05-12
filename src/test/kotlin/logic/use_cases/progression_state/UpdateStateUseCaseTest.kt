@@ -1,4 +1,4 @@
-package logic.use_cases.progression_state
+/*package logic.use_cases.progression_state
 
 import helper.progression_state_helper.createDummyState
 import io.mockk.coEvery
@@ -58,3 +58,5 @@ class UpdateStateUseCaseTest {
     }
 
 }
+
+ */

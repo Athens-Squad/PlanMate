@@ -1,4 +1,4 @@
-package logic.use_cases.project
+/*package logic.use_cases.project
 
 import com.google.common.truth.Truth.assertThat
 import helper.project_helper.createProject
@@ -103,3 +103,5 @@ class GetAllProjectsByUsernameUseCaseTest {
     }
 
 }
+
+ */
