@@ -15,7 +15,6 @@ import net.thechance.ui.featuresui.TasksUi
 import net.thechance.ui.options.project.ProjectMateOptions
 import net.thechance.ui.options.project.ProjectOptions
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 class ProjectPresenter(
     private val consoleIO: ConsoleIO,
@@ -83,11 +82,10 @@ class ProjectPresenter(
 
                 ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(
                     projectsUi.getTasksByProjectId(project.id),
-                    project.id,
                     projectsUi.getProgressionStatesByProjectId(project.id)
                 )
 
-                ProjectOptions.SHOW_HISTORY.optionNumber -> showHistory(project.id)
+                ProjectOptions.SHOW_HISTORY.optionNumber -> auditLogsUi.showTaskHistory(project.id)
 
                 ProjectOptions.DELETE.optionNumber -> projectsUi.deleteProject(project.id)
             }
@@ -112,31 +110,12 @@ class ProjectPresenter(
 
                 ProjectMateOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(
                     projectsUi.getTasksByProjectId(project.id),
-                    project.id,
                     projectsUi.getProgressionStatesByProjectId(project.id)
                 )
 
-                ProjectMateOptions.SHOW_HISTORY.optionNumber -> showHistory(project.id)
+                ProjectMateOptions.SHOW_HISTORY.optionNumber -> auditLogsUi.showProjectHistory(project.id)
             }
         } while (option != ProjectMateOptions.BACK.optionNumber)
-    }
-
-    private suspend fun showHistory(projectId: Uuid) {
-        try {
-            val history = auditLogsUi.getProjectHistory(projectId)
-            if (history.isEmpty()) {
-                consoleIO.printer.printText("no history found", TextStyle.ERROR)
-                return
-            }
-            history.forEach { log ->
-                consoleIO.printer.printText(log.toString(), TextStyle.INFO)
-            }
-            auditLogsUi.showHistoryOption()
-
-
-        } catch (exception: Exception) {
-            consoleIO.printer.printText(exception.message.toString(), TextStyle.ERROR)
-        }
     }
 
 }

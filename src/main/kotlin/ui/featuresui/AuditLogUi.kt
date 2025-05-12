@@ -29,18 +29,36 @@ class AuditLogUi(
         )
 
         val taskHistory = auditLogUseCases.getAuditLogsByTaskIdUseCase.execute(taskId)
+        if (taskHistory.isEmpty()) {
+            consoleIO.printer.printText("No history found", TextStyle.ERROR)
+            return
+        }
         taskHistory.forEach { log ->
             printLog(log)
         }
     }
 
-    suspend fun getProjectHistory(projectId: Uuid): List<AuditLog> {
+    suspend fun showProjectHistory(projectId: Uuid) {
         consoleIO.printer.printText(
             "Here is The History of Your Project",
             TextStyle.TITLE
         )
 
-        return auditLogUseCases.getAuditLogsByProjectIdUseCase.execute(projectId)
+        try {
+            val projectHistory = auditLogUseCases.getAuditLogsByProjectIdUseCase.execute(projectId)
+            if (projectHistory.isEmpty()) {
+                consoleIO.printer.printText("No history found", TextStyle.ERROR)
+                return
+            }
+
+            projectHistory.forEach { log ->
+                printLog(log)
+            }
+
+            showHistoryOption()
+        } catch (exception: Exception) {
+            consoleIO.printer.printText(exception.message.toString(), TextStyle.ERROR)
+        }
     }
 
     fun showHistoryOption() {

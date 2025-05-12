@@ -5,7 +5,6 @@ package net.thechance.ui.featuresui
 import kotlinx.coroutines.*
 import logic.entities.ProgressionState
 import logic.entities.Task
-import logic.use_cases.progression_state.GetProgressionStatesByProjectIdUseCase
 import logic.use_cases.task.TasksUseCases
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.core.io.ConsoleIO
@@ -18,7 +17,6 @@ import kotlin.uuid.Uuid
 class TasksUi(
     private val consoleIO: ConsoleIO,
     private val tasksUseCases: TasksUseCases,
-    private val getProgressionStatesByProjectIdUseCase: GetProgressionStatesByProjectIdUseCase,
     private val auditLogUi: AuditLogUi,
     private val session: UserSession
 ) {
@@ -28,7 +26,7 @@ class TasksUi(
     private val tasksCoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
 
-    suspend fun manageTasks(tasks: List<Task>, projectId: Uuid, progressionStates: List<ProgressionState>) {
+    suspend fun manageTasks(tasks: List<Task>,progressionStates: List<ProgressionState>) {
         tasksCoroutineScope.launch {
             try {
                 do {
@@ -49,7 +47,7 @@ class TasksUi(
         }.join()
     }
 
-    suspend fun createTask(
+    fun createTask(
         projectId: Uuid,
         progressionStates: List<ProgressionState>
     ) {
@@ -72,38 +70,32 @@ class TasksUi(
     }
 
     private suspend fun handleTaskOptions(task: Task, progressionStates: List<ProgressionState>) {
-        try {
-            do {
-                consoleIO.printer.printText("Select Option (1 to 4):", TextStyle.TITLE)
-                consoleIO.printer.printOptions(TaskOptions.entries)
+        do {
+            consoleIO.printer.printText("Select Option (1 to 4):", TextStyle.TITLE)
+            consoleIO.printer.printOptions(TaskOptions.entries)
 
-                val option = consoleIO.reader.readNumberFromUser()
-                when (option) {
-                    TaskOptions.EDIT.optionNumber -> editTask(progressionStates, task)
+            val option = consoleIO.reader.readNumberFromUser()
+            when (option) {
+                TaskOptions.EDIT.optionNumber -> editTask(progressionStates, task)
 
-                    TaskOptions.SHOW_HISTORY.optionNumber -> auditLogUi.showTaskHistory(task.id)
+                TaskOptions.SHOW_HISTORY.optionNumber -> auditLogUi.showTaskHistory(task.id)
 
-                    TaskOptions.DELETE.optionNumber -> deleteTask(task)
-                }
-            } while (option != TaskOptions.BACK.optionNumber ||
-                option != TaskOptions.DELETE.optionNumber
-            )
-        } catch (exception: Exception) {
-            consoleIO.printer.printText(exception.message.toString(), TextStyle.ERROR)
-        }
+                TaskOptions.DELETE.optionNumber -> deleteTask(task)
+            }
+        } while (!(option == TaskOptions.DELETE.optionNumber ||
+                    option == TaskOptions.BACK.optionNumber)
+        )
     }
 
 
 
     private fun editTask(progressionStates: List<ProgressionState>, task: Task) {
         consoleIO.printer.printText("Edit Task", TextStyle.TITLE)
-
         consoleIO.printer.printText("Select your option (1 to 3) : ", TextStyle.TITLE)
-
         consoleIO.printer.printOptions(EditTaskOptions.entries)
 
         when (val inputEditOption = consoleIO.reader.readNumberFromUser()) {
-            EditTaskOptions.NAME.optionNumber -> editTaskName(task)
+            EditTaskOptions.NAME.optionNumber -> editTaskTitle(task)
             EditTaskOptions.DESCRIPTION.optionNumber -> editTaskDescription(task)
             EditTaskOptions.PROGRESSION_STATE.optionNumber -> editTaskProgressionState(
                 task,
@@ -114,64 +106,30 @@ class TasksUi(
         }
     }
 
+    private fun editTaskTitle(task: Task) {
+        val taskName = receiveStringInput("Enter New Task Name : ")
+        updateTask(task.copy(title = taskName))
+    }
+
+    private fun editTaskDescription(task: Task) {
+        val taskDescription = receiveStringInput("Enter New Task Description : ")
+        updateTask(task.copy(description = taskDescription))
+    }
     private fun editTaskProgressionState(
         task: Task,
         progressionStates: List<ProgressionState>
     ) {
-
-        consoleIO.printer.printText("Select Your Task Progression State", TextStyle.TITLE)
-
-        consoleIO.printer.printText(
-            progressionStates.map {
-                it.name
-            }.toString(),
-            TextStyle.OPTION
-        )
-
-        val taskState = receiveStringInput("Enter New Task State : ")
-        tasksCoroutineScope.launch {
-            tasksUseCases
-                .updateTaskUseCase
-                .execute(
-                    task.copy(
-                        currentProgressionState =
-                            task.currentProgressionState.copy(
-                                name = taskState,
-                                projectId = task.projectId
-                            )
-                    ),
-                    userName = session.currentUser.name
-                )
-        }
+        val taskState = selectProgressionState(progressionStates)
+        updateTask(task.copy(currentProgressionState = taskState))
     }
 
-
-    private fun editTaskDescription(task: Task) {
-        val taskDescription = receiveStringInput("Enter New Task Description : ")
-
+    private fun updateTask(updatedTask: Task) {
         tasksCoroutineScope.launch {
-            tasksUseCases
-                .updateTaskUseCase
-                .execute(
-                    task.copy(description = taskDescription),
-                    userName = session.currentUser.name
-                )
+            tasksUseCases.updateTaskUseCase.execute(
+                updatedTask,
+                userName = session.currentUser.name
+            )
         }
-    }
-
-    private fun editTaskName(task: Task) {
-        val taskName = receiveStringInput("Enter New Task Name : ")
-
-        tasksCoroutineScope.launch {
-
-            tasksUseCases
-                .updateTaskUseCase
-                .execute(
-                    task.copy(title = taskName),
-                    userName = session.currentUser.name
-                )
-        }
-
     }
 
     private fun deleteTask(task: Task) {
@@ -190,7 +148,7 @@ class TasksUi(
         return tasks.first { it.title == name }
     }
 
-    private suspend fun selectProgressionState(progressionStates: List<ProgressionState>): ProgressionState {
+    private fun selectProgressionState(progressionStates: List<ProgressionState>): ProgressionState {
         require(progressionStates.isNotEmpty()) { "Please create state first" }
 
         consoleIO.printer.printText("Select Your Task Progression State", TextStyle.TITLE)
@@ -200,11 +158,6 @@ class TasksUi(
         )
         val stateName = receiveStringInput("Enter Task State:")
         return progressionStates.first { it.name == stateName }
-    }
-
-    private fun getTaskId(inputTaskName: String, tasks: List<Task>): Uuid {
-        return tasks.first { it.title == inputTaskName }.id
-
     }
 
     private fun receiveStringInput(message: String): String {
