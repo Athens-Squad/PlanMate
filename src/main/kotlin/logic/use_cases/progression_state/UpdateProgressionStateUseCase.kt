@@ -13,7 +13,9 @@ class UpdateProgressionStateUseCase(
 	private val progressionStateValidator: ProgressionStateValidator
 ) {
 	suspend fun execute(updatedProgressionState: ProgressionState) {
-		progressionStateValidator.validateAfterCreation(updatedProgressionState.id)
+		progressionStateValidator.validateProgressionStateFieldsNotBlank(updatedProgressionState)
+		progressionStateValidator.validateProjectExists(updatedProgressionState.projectId)
+		progressionStateValidator.validateProgressionStateAlreadyExists(updatedProgressionState.id)
 		repository.updateProgressionState(updatedProgressionState)
 	}
 }

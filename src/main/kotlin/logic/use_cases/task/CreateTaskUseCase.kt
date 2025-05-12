@@ -17,7 +17,11 @@ class CreateTaskUseCase(
     private val taskValidator: TaskValidator
 ) {
     suspend fun execute(task: Task, userName: String) {
-        taskValidator.validateTaskBeforeCreation(task)
+	    taskValidator.validateTaskFieldsNotBlank(task)
+	    taskValidator.validateProjectExists(task.projectId)
+	    taskValidator.validateProgressionStateExists(progressionStateId = task.currentProgressionState.id)
+	    taskValidator.validateTaskNotExists(task.id)
+
 	    taskRepository.createTask(task)
 
 	    createAuditLogUseCase.execute(

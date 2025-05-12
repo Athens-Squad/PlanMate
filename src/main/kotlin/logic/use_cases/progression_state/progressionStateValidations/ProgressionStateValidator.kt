@@ -7,6 +7,8 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 interface ProgressionStateValidator {
-	suspend fun validateBeforeCreation(progressionState: ProgressionState): Boolean
-	suspend fun validateAfterCreation(progressionStateId: Uuid): Boolean
+	fun validateProgressionStateFieldsNotBlank(progressionState: ProgressionState): Boolean
+	suspend fun validateProjectExists(projectId: Uuid): Boolean
+	suspend fun validateProgressionStateNotExists(progressionStateId: Uuid): Boolean
+	suspend fun validateProgressionStateAlreadyExists(progressionStateId: Uuid): Boolean
 }

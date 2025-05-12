@@ -9,7 +9,7 @@ class CreateAuditLogUseCase(
 	private val auditLogValidator: AuditLogValidator
 	) {
     suspend fun execute(auditLog: AuditLog) {
-		auditLogValidator.validateBeforeCreation(auditLog)
+		auditLogValidator.validateAuditLogFieldsNotBlank(auditLog)
         auditRepository.createAuditLog(auditLog)
     }
 }

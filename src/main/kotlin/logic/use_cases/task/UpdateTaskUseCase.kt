@@ -19,7 +19,11 @@ class UpdateTaskUseCase(
 ) {
 
     suspend fun execute(updatedTask: Task, userName: String) {
-        taskValidator.validateTaskAfterCreation(updatedTask.id)
+	    taskValidator.validateTaskFieldsNotBlank(updatedTask)
+	    taskValidator.validateProjectExists(updatedTask.projectId)
+	    taskValidator.validateProgressionStateExists(updatedTask.currentProgressionState.id)
+	    taskValidator.validateTaskAlreadyExists(updatedTask.id)
+		
 	    taskRepository.updateTask(updatedTask)
 
 	    createAuditLogUseCase.execute(

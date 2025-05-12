@@ -18,11 +18,11 @@ class DeleteProjectUseCase(
 	private val createAuditLogUseCase: CreateAuditLogUseCase,
 ) {
     suspend fun execute(projectId: Uuid, username: String) {
-		projectValidator.validateProjectAfterCreation(
-			projectId = projectId,
-			username = username
-		)
-        projectRepository.deleteProject(projectId)
+		projectValidator.validateUserIsAuthorized(username)
+	    projectValidator.validateProjectAlreadyExists(projectId)
+	    projectValidator.validateUserIsTheProjectOwner(projectId, username)
+
+	    projectRepository.deleteProject(projectId)
 
         createAuditLogUseCase.execute(
             AuditLog(
