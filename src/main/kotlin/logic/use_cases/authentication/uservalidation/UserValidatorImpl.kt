@@ -10,7 +10,7 @@ class UserValidatorImpl(
     override suspend fun isUsernameNotValid(username: String): Boolean {
         return when{
             username.isEmpty() || username.trim().isEmpty() -> throw InvalidUsernameException()
-             else->{true}
+             else->{false}
         }
 
     }
@@ -18,7 +18,7 @@ class UserValidatorImpl(
     override suspend fun isPasswordNotValid(password: String): Boolean {
         return when {
             password.length < 8 || password.length > 20->throw InvalidPasswordException()
-             else->{true}
+             else->{false}
 
         }
     }

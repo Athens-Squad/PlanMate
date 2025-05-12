@@ -21,20 +21,19 @@ class ProgressionStateValidatorImpl(
 
 	override suspend fun validateBeforeCreation(progressionState: ProgressionState): Boolean {
 		return when {
-			progressionState.checkIsFieldsAreBlank() -> throw InvalidProgressionStateFieldsException()
+			!progressionState.checkIsFieldsAreBlank() -> throw InvalidProgressionStateFieldsException()
 			!progressionState.checkIfProjectExists() -> throw NoProjectFoundForProgressionStateException()
 			progressionState.checkIfProgressionStateExists() -> throw ProgressionStateAlreadyExistsException()
 			else -> { true }
 		}
 	}
 
-
 	override suspend fun validateAfterCreation(progressionStateId: Uuid): Boolean {
 		val entity = progressionStateRepository.getProgressionStates().find { it.id == progressionStateId }
 			?: throw ProgressionStateNotFoundException()
 
 		return when {
-			entity.checkIsFieldsAreBlank() -> throw InvalidProgressionStateFieldsException()
+			!entity.checkIsFieldsAreBlank() -> throw InvalidProgressionStateFieldsException()
 			!entity.checkIfProjectExists() -> throw NoProjectFoundForProgressionStateException()
 			else -> { true }
 		}

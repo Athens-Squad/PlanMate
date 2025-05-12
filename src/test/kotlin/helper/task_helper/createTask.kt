@@ -19,7 +19,7 @@ object FakeTask {
         projectId: String = "p1"
     ) = Task(
         id = id,
-        title = title,
+        name = title,
         description = description,
         currentProgressionState = ProgressionState(
             id = currentStateId,

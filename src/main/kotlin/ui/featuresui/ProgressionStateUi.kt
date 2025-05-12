@@ -16,35 +16,39 @@ class ProgressionStateUi(
     private val progressionStatesUseCases: ProgressionStatesUseCases
 ) {
     suspend fun manageStates(projectId: Uuid) {
-        do {
-            val progressionStates = progressionStatesUseCases
-                .getProgressionStatesByProjectIdUseCase
-                .execute(projectId)
+        try {
+            do {
+                val progressionStates = progressionStatesUseCases
+                    .getProgressionStatesByProjectIdUseCase
+                    .execute(projectId)
 
-            consoleIO.printer.printText("Select Option (1 to 4):", TextStyle.TITLE)
-            consoleIO.printer.printOptions(ProgressionStateOptions.entries)
-            val inputStateOption = consoleIO.reader.readNumberFromUser()
+                consoleIO.printer.printText("Select Option (1 to 4):", TextStyle.TITLE)
+                consoleIO.printer.printOptions(ProgressionStateOptions.entries)
+                val inputStateOption = consoleIO.reader.readNumberFromUser()
 
-            when (inputStateOption) {
-                ProgressionStateOptions.CREATE.optionNumber -> {
-                    createProgressionState(projectId).also {
-                        consoleIO.printer.printText("created successful", TextStyle.SUCCESS)
-                        return
+                when (inputStateOption) {
+                    ProgressionStateOptions.CREATE.optionNumber -> {
+                        createProgressionState(projectId).also {
+                            consoleIO.printer.printText("created successful", TextStyle.SUCCESS)
+                            return
+                        }
+                    }
+
+                    ProgressionStateOptions.EDIT.optionNumber -> editProgressionState(progressionStates)
+
+                    ProgressionStateOptions.DELETE.optionNumber -> {
+                        deleteProgressionState(progressionStates)
+                            .also {
+                                consoleIO.printer.printText("State Deleted Successfully", TextStyle.SUCCESS)
+                            }
                     }
                 }
-
-                ProgressionStateOptions.EDIT.optionNumber -> editProgressionState(progressionStates)
-
-                ProgressionStateOptions.DELETE.optionNumber -> {
-                    deleteProgressionState(progressionStates)
-                        .also {
-                            consoleIO.printer.printText("State Deleted Successfully", TextStyle.SUCCESS)
-                        }
-                }
-            }
-        } while (inputStateOption != ProgressionStateOptions.BACK.optionNumber &&
-            inputStateOption != ProgressionStateOptions.DELETE.optionNumber
-        )
+            } while (inputStateOption != ProgressionStateOptions.BACK.optionNumber &&
+                inputStateOption != ProgressionStateOptions.DELETE.optionNumber
+            )
+        } catch (exception: Exception) {
+            consoleIO.printer.printText(exception.message.toString(), TextStyle.ERROR)
+        }
     }
 
     private suspend fun createProgressionState(projectId: Uuid) {
@@ -110,10 +114,6 @@ class ProgressionStateUi(
             .also { progressionStateId ->
                 progressionStatesUseCases.deleteProgressionStateUseCase.execute(progressionStateId)
             }
-    }
-
-    suspend fun getProgressionStatesByProjectId(projectId: Uuid): List<ProgressionState> {
-        return progressionStatesUseCases.getProgressionStatesByProjectIdUseCase.execute(projectId)
     }
 
 
