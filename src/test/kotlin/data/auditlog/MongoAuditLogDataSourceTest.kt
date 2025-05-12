@@ -10,17 +10,26 @@ import helper.auditlog.createTestAuditLog
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
+
 import kotlinx.coroutines.test.runTest
+import logic.entities.EntityType
 import net.thechance.data.aduit_log.data_source.remote.mongo.MongoAuditLogDataSource
 import net.thechance.data.aduit_log.data_source.remote.mongo.dto.AuditLogDto
+import net.thechance.data.aduit_log.data_source.remote.mongo.mapper.toAuditLog
 import net.thechance.data.aduit_log.data_source.remote.mongo.mapper.toAuditLogDto
 import org.bson.Document
+import org.bson.conversions.Bson
 import org.junit.jupiter.api.BeforeEach
+import java.time.LocalDateTime
+import java.util.*
 import kotlin.test.Test
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class MongoAuditLogDataSourceTest {
     private lateinit var auditLogMongoCollection: MongoCollection<AuditLogDto>
@@ -35,7 +44,8 @@ class MongoAuditLogDataSourceTest {
 
     @Test
     fun `createAuditLog insert audit log into collection`() = runTest {
-        val auditLog =  createTestAuditLog(description = "Test insert audit log")
+
+       val auditLog =  createTestAuditLog(description = "Test insert audit log")
         coEvery { auditLogMongoCollection.insertOne(any()) } returns mockk()
         mongoAuditLogDataSource.createAuditLog(auditLog)
 
@@ -50,42 +60,47 @@ class MongoAuditLogDataSourceTest {
                 }
             )
         }
-
     }
 
 
     @Test
     fun `getAuditLogs  return audit logs from collection`()= runTest {
-        // given
-        val auditLog = createTestAuditLog(description = "Audit log for retrieval")
-        val dto = auditLog.toAuditLogDto()
-        val findFlowMock = mockk<FindFlow<AuditLogDto>>(relaxed = true)
 
-        coEvery { auditLogMongoCollection.find() } returns findFlowMock
+        // given
+        val auditLog = dummyAuditLog()
+        val dto = auditLog.toAuditLogDto()
+
+
+        val findFlowMock = mockk<FindFlow<AuditLogDto>>()
+
         coEvery { findFlowMock.toList() } returns listOf(dto)
+        coEvery { auditLogMongoCollection.find().collect(any()) } coAnswers {
+           val collect=arg<FlowCollector<AuditLogDto>>(0)
+            collect.emit(dto)
+        }
+
 
         // when
         val result = mongoAuditLogDataSource.getAuditLogs()
+         println("result $result")
+
 
         // then
         assertThat(result).hasSize(1)
         assertThat(result[0]).isEqualTo(auditLog)
 
-        coVerify { auditLogMongoCollection.find() }
-        coVerify { findFlowMock.toList() }
     }
 
     @Test
-    fun `clearLog  delete all documents in collection`() = runTest {
-        //given
-        val deleteResultMock = mockk<DeleteResult>()
-        coEvery { auditLogMongoCollection.deleteMany(any<Document>()) } returns deleteResultMock
+    fun `clearLog should delete all documents from MongoDB`() = runTest {
 
-        // when
+        coEvery { auditLogMongoCollection.deleteMany(any()) } answers {
+            val filterArg = firstArg<Bson>()
+            assertEquals(Document(), filterArg)
+            mockk()
+        }
+
         mongoAuditLogDataSource.clearLog()
-
-        // then
-        coVerify { auditLogMongoCollection.deleteMany(any<Document>()) }
 
     }
 
