@@ -66,6 +66,7 @@ class TasksUi(
                 ),
                 userName = session.currentUser.name
             )
+            consoleIO.printer.printText("Task Created Successfully", TextStyle.SUCCESS)
         }
     }
 
