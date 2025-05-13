@@ -17,9 +17,9 @@ class RegisterAsAdminUseCase(
 
     suspend fun execute(adminUser: User, password: String) {
 
-            userValidator.isUsernameNotValid(adminUser.name) ||
-            userValidator.isPasswordNotValid(password) ||
-            userValidator.isTypeNotAdmin(adminUser.type) ||
+            userValidator.isUsernameNotValid(adminUser.name)
+            userValidator.isPasswordNotValid(password)
+            userValidator.isTypeNotAdmin(adminUser.type)
             userValidator.userNameExist(adminUser.name)
 
 

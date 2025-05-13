@@ -16,10 +16,10 @@ class RegisterAsMateUseCase(
 ) {
     suspend fun execute(mateUser: User, password: String) {
 
-            userValidator.isUsernameNotValid(mateUser.name) ||
-            userValidator.isPasswordNotValid(password) ||
-            userValidator.isTypeNotMate(mateUser.type) ||
-            userValidator.isMateAdminIdNotValid(mateUser.type) ||
+            userValidator.isUsernameNotValid(mateUser.name)
+            userValidator.isPasswordNotValid(password)
+            userValidator.isTypeNotMate(mateUser.type)
+            userValidator.isMateAdminIdNotValid(mateUser.type)
             userValidator.userNameExist(mateUser.name)
 
         val hashedPassword = passwordHashing.hash(password)
