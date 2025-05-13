@@ -99,10 +99,6 @@ class ProgressionStateUi(
         return consoleIO.reader.readStringFromUser()
     }
 
-    private fun getProgressionStateId(inputStateName: String, progressionStates: List<ProgressionState>): Uuid {
-        return progressionStates.first { it.name == inputStateName }.id
-    }
-
     private fun printProgressionStates(progressionStates: List<ProgressionState>) {
         consoleIO.printer.printText(progressionStates.joinToString { it.name + ", " }, TextStyle.OPTION)
     }
