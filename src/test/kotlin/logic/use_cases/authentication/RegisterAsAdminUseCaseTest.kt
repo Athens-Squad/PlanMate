@@ -10,7 +10,7 @@ import logic.entities.User
 import logic.entities.UserType
 import logic.exceptions.InvalidCredentialsException
 import logic.repositories.UserRepository
-import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
+import net.thechance.logic.validators.uservalidation.UserValidator
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.assertDoesNotThrow
 import kotlin.test.assertFailsWith

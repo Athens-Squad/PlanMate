@@ -7,7 +7,7 @@ import kotlinx.coroutines.test.runTest
 import logic.entities.User
 import logic.exceptions.InvalidCredentialsException
 import logic.repositories.AuthenticationRepository
-import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
+import net.thechance.logic.validators.uservalidation.UserValidator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

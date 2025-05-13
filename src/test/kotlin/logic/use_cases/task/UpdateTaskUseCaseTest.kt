@@ -15,7 +15,7 @@ import logic.repositories.AuditRepository
 import logic.repositories.TasksRepository
 import logic.use_cases.audit_log.CreateAuditLogUseCase
 
-import logic.use_cases.task.taskvalidations.TaskValidator
+import net.thechance.logic.validators.taskvalidations.TaskValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

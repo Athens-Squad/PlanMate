@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class, ExperimentalUuidApi::class, ExperimentalUuidApi::class)
 
-package logic.use_cases.task.taskvalidations
+package net.thechance.logic.validators.taskvalidations
 
 import logic.entities.Task
 import logic.exceptions.*

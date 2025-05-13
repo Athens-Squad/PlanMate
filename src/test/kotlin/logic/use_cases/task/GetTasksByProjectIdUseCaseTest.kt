@@ -10,7 +10,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import logic.exceptions.NoProjectFoundForTaskException
 import logic.repositories.TasksRepository
-import logic.use_cases.task.taskvalidations.TaskValidator
+import net.thechance.logic.validators.taskvalidations.TaskValidator
 import org.junit.jupiter.api.assertThrows
 
 import kotlin.test.BeforeTest

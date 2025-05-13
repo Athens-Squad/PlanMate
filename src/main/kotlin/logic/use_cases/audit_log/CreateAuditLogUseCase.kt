@@ -2,7 +2,7 @@ package logic.use_cases.audit_log
 
 import logic.entities.AuditLog
 import logic.repositories.AuditRepository
-import net.thechance.logic.use_cases.audit_log.auditLogValidations.AuditLogValidator
+import net.thechance.logic.validators.auditLogValidations.AuditLogValidator
 
 class CreateAuditLogUseCase(
 	private val auditRepository: AuditRepository,

@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package net.thechance.logic.use_cases.project.projectValidations
+package net.thechance.logic.validators.projectValidations
 
 import logic.entities.Project
 import kotlin.uuid.ExperimentalUuidApi

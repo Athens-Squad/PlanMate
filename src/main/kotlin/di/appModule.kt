@@ -2,16 +2,16 @@ package di
 
 
 import data.authentication.utils.PasswordHashing
-import logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidatorImpl
-import logic.use_cases.task.taskvalidations.TaskValidator
-import logic.use_cases.task.taskvalidations.TaskValidatorImpl
-import net.thechance.logic.use_cases.audit_log.auditLogValidations.AuditLogValidator
-import net.thechance.logic.use_cases.audit_log.auditLogValidations.AuditLogValidatorImpl
-import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
-import net.thechance.logic.use_cases.authentication.uservalidation.UserValidatorImpl
-import net.thechance.logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
-import net.thechance.logic.use_cases.project.projectValidations.ProjectValidator
-import net.thechance.logic.use_cases.project.projectValidations.ProjectValidatorImpl
+import net.thechance.logic.validators.progressionStateValidations.ProgressionStateValidatorImpl
+import net.thechance.logic.validators.taskvalidations.TaskValidator
+import net.thechance.logic.validators.taskvalidations.TaskValidatorImpl
+import net.thechance.logic.validators.auditLogValidations.AuditLogValidator
+import net.thechance.logic.validators.auditLogValidations.AuditLogValidatorImpl
+import net.thechance.logic.validators.uservalidation.UserValidator
+import net.thechance.logic.validators.uservalidation.UserValidatorImpl
+import net.thechance.logic.validators.progressionStateValidations.ProgressionStateValidator
+import net.thechance.logic.validators.projectValidations.ProjectValidator
+import net.thechance.logic.validators.projectValidations.ProjectValidatorImpl
 import org.koin.dsl.module
 
 val appModule = module {

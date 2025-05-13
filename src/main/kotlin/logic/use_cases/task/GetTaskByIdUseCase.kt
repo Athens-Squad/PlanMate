@@ -4,7 +4,7 @@ package logic.use_cases.task
 
 import logic.entities.Task
 import logic.repositories.TasksRepository
-import logic.use_cases.task.taskvalidations.TaskValidator
+import net.thechance.logic.validators.taskvalidations.TaskValidator
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

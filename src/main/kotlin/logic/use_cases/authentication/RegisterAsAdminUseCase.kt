@@ -5,7 +5,7 @@ package logic.use_cases.authentication
 import data.authentication.utils.PasswordHashing
 import logic.entities.User
 import logic.repositories.UserRepository
-import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
+import net.thechance.logic.validators.uservalidation.UserValidator
 import kotlin.uuid.ExperimentalUuidApi
 
 class RegisterAsAdminUseCase(

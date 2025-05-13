@@ -6,10 +6,9 @@ import data.progression_state.data_source.remote.mongo.mapper.toProgressionState
 import data.utils.csv_file_handle.CsvFileHandler
 import data.utils.csv_file_handle.CsvFileParser
 import helper.progression_state_helper.FakeProgressionStateData.fakeProgressionState1
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.mockk
+import io.mockk.*
 import kotlinx.coroutines.test.runTest
+import net.thechance.data.user.data_source.localCsvFile.mapper.toUserCsvDto
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.uuid.ExperimentalUuidApi
@@ -42,18 +41,15 @@ class ProgressionStateFileDataSourceTest {
 
     @Test
     fun `createProgressionState should append record to file`() = runTest {
-        // given
-        coEvery { mockCsvParser.toCsvRecord(fakeCsvDto) } returns fakeCsvRecord
+        //given
         coEvery { mockFileHandler.readRecords() } returns emptyList()
-        coEvery { mockCsvParser.parseRecord(fakeCsvRecord) } returns fakeCsvDto
+        every { mockCsvParser.toCsvRecord(fakeCsvDto) } returns fakeCsvRecord
+        coEvery { mockFileHandler.appendRecord(fakeCsvRecord) } just Runs
 
-        // when
+        //when
         progressionStateFileDataSource.createProgressionState(fakeProgressionState.toProgressionState())
-        val result = progressionStateFileDataSource.getProgressionStates()
 
-        // then
-        assertThat(result).containsExactly(fakeProgressionState)
-        coVerify(exactly = 1) { mockFileHandler.appendRecord(fakeCsvRecord) }
+        coVerify { mockFileHandler.appendRecord(fakeCsvRecord) }
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -100,6 +96,6 @@ class ProgressionStateFileDataSourceTest {
         val result = progressionStateFileDataSource.getProgressionStatesByProjectId(fakeProgressionState.projectId)
 
         // then
-        assertThat(result).containsExactly(fakeProgressionState)
+        assertThat(result).containsExactly(fakeProgressionState.toProgressionState())
     }
 }

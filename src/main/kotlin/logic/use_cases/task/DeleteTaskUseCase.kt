@@ -6,7 +6,7 @@ import logic.entities.AuditLog
 import logic.entities.EntityType
 import logic.repositories.TasksRepository
 import logic.use_cases.audit_log.CreateAuditLogUseCase
-import logic.use_cases.task.taskvalidations.TaskValidator
+import net.thechance.logic.validators.taskvalidations.TaskValidator
 import java.time.LocalDateTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
