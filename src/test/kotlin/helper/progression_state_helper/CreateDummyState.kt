@@ -1,12 +1,16 @@
-/*package helper.progression_state_helper
+@file:OptIn(ExperimentalUuidApi::class)
+
+package helper.progression_state_helper
 
 import logic.entities.ProgressionState
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 object createDummyState {
     fun dummyState(
-        id: String = "12",
+        id: Uuid = Uuid.random(),
         name: String = "TODO",
-        projectId: String = "2"
+        projectId: Uuid = Uuid.random()
     ): ProgressionState {
         return ProgressionState(
             id = id,
@@ -16,7 +20,6 @@ object createDummyState {
     }
 }
 
- */
 
 
 
