@@ -18,11 +18,10 @@ class UpdateProjectUseCase(
     private val createAuditLogUseCase: CreateAuditLogUseCase,
 ) {
     suspend fun execute(updatedProject: Project) {
-
-		projectValidator.validateProjectAfterCreation(
-			projectId = updatedProject.id,
-			username = updatedProject.createdByUserName
-		)
+	    projectValidator.validateProjectFieldsNotBlank(updatedProject)
+	    projectValidator.validateUserIsAuthorized(updatedProject.createdByUserName)
+	    projectValidator.validateProjectAlreadyExists(updatedProject.id)
+	    projectValidator.validateUserIsTheProjectOwner(updatedProject.id, updatedProject.createdByUserName)
 
         projectRepository.updateProject(updatedProject)
 

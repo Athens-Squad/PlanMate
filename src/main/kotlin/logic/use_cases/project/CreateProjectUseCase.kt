@@ -17,10 +17,9 @@ class CreateProjectUseCase(
 	private val createAuditLogUseCase: CreateAuditLogUseCase,
 ) {
 	suspend fun execute(project: Project) {
-		projectValidator.validateProjectBeforeCreation(
-			project = project,
-			username = project.createdByUserName
-		)
+		projectValidator.validateProjectFieldsNotBlank(project)
+		projectValidator.validateUserIsAuthorized(project.createdByUserName)
+		projectValidator.validateProjectNotExists(project.id)
 
 		projectRepository.createProject(project)
 

@@ -12,8 +12,8 @@ class GetAllProjectsByUsernameUseCase(
     private val projectValidator: ProjectValidator,
 ) {
     suspend fun execute(username: String): List<Project> {
-        return projectRepository.getProjects()
-	        .filter { projectValidator.validateProjectAfterCreation(projectId = it.id, username = username) }
-			.filter { it.createdByUserName == username }
+		projectValidator.validateUserIsAuthorized(username)
+
+        return projectRepository.getProjects().filter { it.createdByUserName == username }
     }
 }

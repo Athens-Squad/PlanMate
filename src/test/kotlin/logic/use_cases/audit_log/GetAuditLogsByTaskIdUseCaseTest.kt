@@ -6,14 +6,11 @@ import com.google.common.truth.Truth.assertThat
 import helper.auditlog.createTestAuditLog
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import logic.entities.AuditLog
 import logic.entities.EntityType
 import logic.repositories.AuditRepository
-import net.thechance.logic.exceptions.InvalidEntityIdForAuditLog
-import net.thechance.logic.use_cases.audit_log.auditLogValidations.AuditLogValidator
 import org.junit.jupiter.api.BeforeEach
 import java.time.LocalDateTime
 import kotlin.test.Test
@@ -24,13 +21,11 @@ class GetAuditLogsByTaskIdUseCaseTest {
 
     private lateinit var auditRepository: AuditRepository
     private lateinit var getAuditLogsByTaskIdUseCase: GetAuditLogsByTaskIdUseCase
-    private lateinit var logValidator: AuditLogValidator
 
     @BeforeEach
     fun setUp() {
         auditRepository = mockk()
-        logValidator = mockk()
-        getAuditLogsByTaskIdUseCase = GetAuditLogsByTaskIdUseCase(auditRepository, logValidator)
+        getAuditLogsByTaskIdUseCase = GetAuditLogsByTaskIdUseCase(auditRepository)
     }
 
     @Test
@@ -52,7 +47,6 @@ class GetAuditLogsByTaskIdUseCaseTest {
                 createdAt = LocalDateTime.of(2025, 4, 28, 10, 30)
             )
         )
-        every { logValidator.validateAfterCreation(taskId) } returns true
         coEvery { auditRepository.getAuditLogs() } returns expected
 
         val result = getAuditLogsByTaskIdUseCase.execute(taskId)
@@ -65,7 +59,6 @@ class GetAuditLogsByTaskIdUseCaseTest {
     @Test
     fun `getAuditLogs returns empty list when invalid task id is given`() = runTest {
         val invalidTaskId = Uuid.random()
-        every { logValidator.validateAfterCreation(invalidTaskId) } returns false
         coEvery { auditRepository.getAuditLogs() } returns emptyList()
 
 
@@ -89,7 +82,6 @@ class GetAuditLogsByTaskIdUseCaseTest {
             )
         )
 
-        every { logValidator.validateAfterCreation(taskId) } returns true
         coEvery { auditRepository.getAuditLogs() } returns unrelatedLogs
 
         val result = getAuditLogsByTaskIdUseCase.execute(taskId)
