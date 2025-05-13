@@ -6,6 +6,7 @@ import logic.entities.Task
 import net.thechance.data.tasks.data_source.remote.mongo.dto.TaskDto
 import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 fun TaskDto.toTask(): Task {
     return Task(
         id = id,

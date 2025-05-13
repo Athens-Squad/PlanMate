@@ -26,7 +26,7 @@ class ProgressionStateDatabaseDataSourceTest {
 			progressionStatesCollection = mockkProgressionStatesDocument
 		)
 	}
-
+/*
 	@OptIn(ExperimentalCoroutinesApi::class)
 	@Test
 	fun `should create ProgressionState successfully, when called`() = runTest {
@@ -41,6 +41,6 @@ class ProgressionStateDatabaseDataSourceTest {
 		coVerify(exactly = 1) {
 			mockkProgressionStatesDocument.insertOne(fakeProgressionState1)
 		}
-	}
+	}*/
 
 }

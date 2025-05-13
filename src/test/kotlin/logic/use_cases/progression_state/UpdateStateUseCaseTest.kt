@@ -1,17 +1,19 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.use_cases.progression_state
 
 import helper.progression_state_helper.createDummyState
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.test.runTest
+import logic.exceptions.ProgressionStateNotFoundException
 import logic.repositories.ProgressionStateRepository
-import net.thechance.data.progression_state.exceptions.ProgressionStateNotFoundException
-import net.thechance.logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
+import net.thechance.logic.validators.progressionStateValidations.ProgressionStateValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import kotlin.uuid.ExperimentalUuidApi
 
 class UpdateStateUseCaseTest {
     lateinit var updateState: UpdateProgressionStateUseCase
@@ -29,7 +31,8 @@ class UpdateStateUseCaseTest {
         runTest {
             // given
             val UpdateProgressionState = createDummyState.dummyState()
-            coEvery { progressionStateValidator.validateAfterCreation(UpdateProgressionState.id) } returns ProgressionStateNotFoundException()
+            coEvery { progressionStateValidator.validateProgressionStateAlreadyExists(UpdateProgressionState.id) } throws
+                    ProgressionStateNotFoundException()
 
             // when & then
             assertThrows<ProgressionStateNotFoundException> {
@@ -47,7 +50,9 @@ class UpdateStateUseCaseTest {
             // given
             val updatedProgressionState = createDummyState.dummyState()
 
-            coEvery { progressionStateValidator.validateAfterCreation(updatedProgressionState.id) } returns null // Validation succeeds
+            coEvery { progressionStateValidator.validateProgressionStateAlreadyExists(updatedProgressionState.id) } returns true
+            coEvery { progressionStateValidator.validateProgressionStateFieldsNotBlank(updatedProgressionState) } returns true
+            coEvery { progressionStateValidator.validateProjectExists(updatedProgressionState.projectId) } returns true // Validation succeeds
 
             // when
             updateState.execute(updatedProgressionState)
@@ -58,3 +63,4 @@ class UpdateStateUseCaseTest {
     }
 
 }
+

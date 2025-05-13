@@ -6,6 +6,4 @@ import logic.repositories.TasksRepository
 
 class TasksRepositoryImpl(
     private val tasksDataSource: TasksDataSource
-) : TasksRepository, TasksDataSource by tasksDataSource {
-
-}
+) : TasksRepository, TasksDataSource by tasksDataSource

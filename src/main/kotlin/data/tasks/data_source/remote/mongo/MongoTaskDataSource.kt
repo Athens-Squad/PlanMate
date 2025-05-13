@@ -18,6 +18,7 @@ import kotlin.uuid.Uuid
 class MongoTaskDataSource(
     private val taskCollection: MongoCollection<TaskDto>
 ) : TasksDataSource {
+
     override suspend fun createTask(task: Task) {
         val taskDto = task.toTaskDto()
         taskCollection.insertOne(taskDto)

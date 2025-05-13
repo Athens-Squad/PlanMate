@@ -5,7 +5,7 @@ package logic.use_cases.authentication
 import data.authentication.utils.PasswordHashing
 import logic.entities.User
 import logic.repositories.UserRepository
-import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
+import net.thechance.logic.validators.uservalidation.UserValidator
 import kotlin.uuid.ExperimentalUuidApi
 
 class RegisterAsAdminUseCase(
@@ -17,9 +17,9 @@ class RegisterAsAdminUseCase(
 
     suspend fun execute(adminUser: User, password: String) {
 
-            userValidator.isUsernameNotValid(adminUser.name) ||
-            userValidator.isPasswordNotValid(password) ||
-            userValidator.isTypeNotAdmin(adminUser.type) ||
+            userValidator.isUsernameNotValid(adminUser.name)
+            userValidator.isPasswordNotValid(password)
+            userValidator.isTypeNotAdmin(adminUser.type)
             userValidator.userNameExist(adminUser.name)
 
 
