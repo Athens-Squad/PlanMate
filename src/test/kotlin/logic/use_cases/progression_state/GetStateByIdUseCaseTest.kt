@@ -1,19 +1,18 @@
-/*package logic.use_cases.progression_state
+@file:OptIn(ExperimentalUuidApi::class)
+
+package logic.use_cases.progression_state
 
 import com.google.common.truth.Truth.assertThat
 import helper.progression_state_helper.createDummyState
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import logic.exceptions.ProgressionStateNotFoundException
 import logic.repositories.ProgressionStateRepository
-import logic.entities.ProgressionState
-import net.thechance.data.progression_state.exceptions.ProgressionStateNotFoundException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
+import kotlin.uuid.ExperimentalUuidApi
 
 class GetStateByIdUseCaseTest {
 
@@ -30,11 +29,10 @@ class GetStateByIdUseCaseTest {
     fun `should return progression state when found`() {
         runTest {
             // given
-            val progressionStateId = createDummyState.dummyState().id
-
             val expectedProgressionState = createDummyState.dummyState()
+            val progressionStateId = expectedProgressionState.id
 
-            coEvery { stateRepository.getProgressionStates() } returns listOf (expectedProgressionState)
+            coEvery { stateRepository.getProgressionStates() } returns listOf(expectedProgressionState)
 
             // when
             val result = getProgressionStateByIdUseCase.execute(progressionStateId)
@@ -63,4 +61,3 @@ class GetStateByIdUseCaseTest {
 
 }
 
- */

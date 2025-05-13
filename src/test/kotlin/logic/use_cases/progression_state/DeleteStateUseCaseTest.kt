@@ -1,17 +1,19 @@
-/*package logic.use_cases.progression_state
+@file:OptIn(ExperimentalUuidApi::class)
+
+package logic.use_cases.progression_state
 
 import helper.progression_state_helper.createDummyState
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
 import kotlinx.coroutines.test.runTest
+import logic.exceptions.ProgressionStateNotFoundException
 import logic.repositories.ProgressionStateRepository
-import net.thechance.data.progression_state.exceptions.ProgressionStateNotFoundException
 import net.thechance.logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import kotlin.uuid.ExperimentalUuidApi
 
 class DeleteStateUseCaseTest {
 
@@ -32,7 +34,8 @@ class DeleteStateUseCaseTest {
             val progressionStateId = createDummyState.dummyState().id
             val validationException = IllegalArgumentException("State cannot be deleted")
 
-            coEvery { progressionStateValidator.validateAfterCreation(progressionStateId) } returns ProgressionStateNotFoundException()
+            coEvery { progressionStateValidator.validateProgressionStateAlreadyExists(progressionStateId) } throws
+                    ProgressionStateNotFoundException()
 
             // when & then
             assertThrows<ProgressionStateNotFoundException> {
@@ -47,10 +50,11 @@ class DeleteStateUseCaseTest {
             //given
             val dummyState = createDummyState.dummyState()
             //when
-            coEvery { progressionStateValidator.validateAfterCreation(dummyState.id) } returns null
+            coEvery { progressionStateValidator.validateProgressionStateAlreadyExists(dummyState.id) } returns true
             //then
             deleteProgressionStateUseCase.execute(dummyState.id)
 
+            coVerify { progressionStateValidator.validateProgressionStateAlreadyExists(dummyState.id) }
 
         }
     }
@@ -61,7 +65,7 @@ class DeleteStateUseCaseTest {
             // given
             val progressionStateId = createDummyState.dummyState().id
 
-            coEvery { progressionStateValidator.validateAfterCreation(progressionStateId) } returns null // No exception, validation succeeds
+            coEvery { progressionStateValidator.validateProgressionStateAlreadyExists(progressionStateId) } returns true // No exception, validation succeeds
 
             // when
             deleteProgressionStateUseCase.execute(progressionStateId)
@@ -72,4 +76,3 @@ class DeleteStateUseCaseTest {
     }
 }
 
- */

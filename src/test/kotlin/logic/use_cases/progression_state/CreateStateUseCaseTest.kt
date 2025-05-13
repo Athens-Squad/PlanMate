@@ -49,12 +49,13 @@ class CreateStateUseCaseTest {
     @Test
     fun `should throw exception when progression state is already exist `() {
         runTest {
-            // given
+            // Given
             val progressionState = createDummyState.dummyState()
 
-            coEvery { progressionStateValidator.validateBeforeCreation(progressionState) } throws ProgressionStateAlreadyExistsException()
+            coEvery { progressionStateValidator.validateProgressionStateNotExists(progressionState.id) } throws
+                    ProgressionStateAlreadyExistsException()
 
-            // when & then
+            // When & Then
             assertThrows<ProgressionStateAlreadyExistsException> {
                 createProgressionStateUseCase.execute(progressionState)
             }
