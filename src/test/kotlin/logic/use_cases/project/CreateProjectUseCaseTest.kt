@@ -1,107 +1,122 @@
 package logic.use_cases.project
 
-import com.google.common.truth.Truth.assertThat
 import helper.project_helper.createProject
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import logic.entities.Project
 import logic.entities.User
 import logic.entities.UserType
-import logic.repositories.AuditRepository
 import logic.repositories.ProjectsRepository
 import logic.repositories.UserRepository
-import net.thechance.logic.exceptions.ProjectsLogicExceptions.*
+import logic.use_cases.audit_log.CreateAuditLogUseCase
+import net.thechance.logic.exceptions.InvalidProjectFieldsException
+import net.thechance.logic.exceptions.ProjectAlreadyExistException
+import net.thechance.logic.use_cases.project.projectValidations.ProjectValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import kotlin.uuid.ExperimentalUuidApi
 
 class CreateProjectUseCaseTest {
 
     private val projectRepository: ProjectsRepository = mockk(relaxed = true)
     private val userRepository: UserRepository = mockk(relaxed = true)
 
-    private val auditRepository: AuditRepository = mockk(relaxed = true)
+    private val auditRepository: CreateAuditLogUseCase = mockk(relaxed = true)
     private lateinit var fakeProject: Project
     private lateinit var adminUser: User
     private lateinit var mateUser: User
     private lateinit var createProjectUseCase: CreateProjectUseCase
+    private val projectValidator: ProjectValidator = mockk(relaxed = true)
 
+    @OptIn(ExperimentalUuidApi::class)
     @BeforeEach
     fun setUp() {
-        adminUser = User("1", "admin user", "abc123", UserType.AdminUser)
-        mateUser = User("2", "mate user", "123", UserType.MateUser("1"))
-        fakeProject = createProject().copy(id = "1")
+        adminUser = User(name = "admin user", type = UserType.AdminUser)
+        mateUser = User(name = "mate user", type = UserType.MateUser("1"))
+        fakeProject = createProject()
         createProjectUseCase =
-            CreateProjectUseCase(projectRepository, userRepository, auditRepository)
-    }
-
-    @Test
-    fun `should create project successfully, when project is valid`() {
-        every { userRepository.getUserByUsername(fakeProject.createdByUserName) } returns Result.success(adminUser)
-        every { projectRepository.getProjects() } returns Result.success(listOf(
-                createProject(id = "dummy1", name = "dummyProject")
+            CreateProjectUseCase(
+                projectRepository = projectRepository,
+                projectValidator = projectValidator,
+                createAuditLogUseCase = auditRepository
             )
-        )
-        every { projectRepository.createProject(fakeProject) } returns Result.success(Unit)
-        every { auditRepository.createAuditLog(any()) } returns Result.success(Unit)
-
-        val result = createProjectUseCase.execute(fakeProject)
-
-        assertThat(result.isSuccess).isTrue()
-        verify(exactly = 1) { projectRepository.createProject(fakeProject) }
-        verify(exactly = 1) { projectRepository.getProjects() }
-        verify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdByUserName) }
-        verify(exactly = 1) { auditRepository.createAuditLog(any()) }
     }
 
-    @Test
-    fun `should create project failed, when project is already exists`() {
-        every { userRepository.getUserByUsername(fakeProject.createdByUserName) } returns Result.success(adminUser)
-        every { projectRepository.getProjects() } returns Result.success(listOf(fakeProject))
-        every { projectRepository.createProject(fakeProject) } returns Result.success(Unit)
 
-        val result = createProjectUseCase.execute(fakeProject)
-
-        assertThat(result.exceptionOrNull()).isInstanceOf(ProjectAlreadyExistException::class.java)
-        verify(exactly = 0) { projectRepository.createProject(fakeProject) }
-        verify(exactly = 1) { projectRepository.getProjects() }
-        verify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdByUserName) }
-    }
-
-    @Test
-    fun `should create project failed and throw exception, when user is not admin`() {
-        every { userRepository.getUserByUsername(fakeProject.createdByUserName) } returns Result.success(mateUser)
-
-        val result = createProjectUseCase.execute(fakeProject)
-
-        assertThat(result.exceptionOrNull()).isInstanceOf(NotAuthorizedUserException::class.java)
-        verify(exactly = 0) { projectRepository.createProject(fakeProject) }
-        verify(exactly = 1) { userRepository.getUserByUsername(fakeProject.createdByUserName) }
-    }
-
-    @Test
-    fun `should create project failed and throw exception, when project user name is invalid`() {
-        val fakeProjectWithInvalidUserName = fakeProject.copy(createdByUserName = "")
-        every { userRepository.getUserByUsername(fakeProjectWithInvalidUserName.createdByUserName) } returns Result.failure(
-            Exception()
-        )
-
-        val result = createProjectUseCase.execute(fakeProjectWithInvalidUserName)
-
-        assertThat(result.exceptionOrNull()).isInstanceOf(InvalidUsernameForProjectException::class.java)
-        verify(exactly = 0) { projectRepository.createProject(fakeProjectWithInvalidUserName) }
-        verify(exactly = 0) { userRepository.getUserByUsername(fakeProjectWithInvalidUserName.createdByUserName) }
-    }
-
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `should create project failed and throw exception, when project name is invalid`() {
-        val fakeProjectWithInvalidName = fakeProject.copy(name = "")
-        every { userRepository.getUserByUsername(fakeProjectWithInvalidName.createdByUserName) } returns Result.success(adminUser)
+        runTest {
+            val fakeProjectWithInvalidProjectName = fakeProject.copy(name = "")
+            coEvery { projectValidator.validateProjectFieldsNotBlank(fakeProjectWithInvalidProjectName) } throws InvalidProjectFieldsException()
 
-        val result = createProjectUseCase.execute(fakeProjectWithInvalidName)
+            assertThrows<InvalidProjectFieldsException> { createProjectUseCase.execute(fakeProjectWithInvalidProjectName) }
+        }
 
-        assertThat(result.exceptionOrNull()).isInstanceOf(InvalidProjectNameException::class.java)
-        verify(exactly = 0) { projectRepository.createProject(fakeProjectWithInvalidName) }
+    }
+
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `should create project failed and throw exception, when project created by user name is invalid`() {
+        runTest {
+            val fakeProjectWithInvalidCreatedByUserName = fakeProject.copy(createdByUserName = "")
+            every { projectValidator.validateProjectFieldsNotBlank(fakeProjectWithInvalidCreatedByUserName) } throws InvalidProjectFieldsException()
+
+
+            assertThrows<InvalidProjectFieldsException> {
+                createProjectUseCase.execute(
+                    fakeProjectWithInvalidCreatedByUserName
+                )
+            }
+        }
+
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `should create project failed and throw exception, when user is not admin`() {
+        runTest {
+            val fakeProjectWithMateUser = fakeProject.copy(createdByUserName = mateUser.name)
+
+            coEvery { projectValidator.validateUserIsAuthorized(fakeProjectWithMateUser.createdByUserName) } throws InvalidProjectFieldsException()
+
+
+            assertThrows<InvalidProjectFieldsException> { createProjectUseCase.execute(fakeProjectWithMateUser) }
+        }
+
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `should create project failed, when project is already exists`() {
+        runTest {
+            val fakeProjectAlreadyExist = fakeProject
+            coEvery { projectValidator.validateProjectNotExists(fakeProjectAlreadyExist.id) } throws ProjectAlreadyExistException()
+
+            assertThrows<ProjectAlreadyExistException> { createProjectUseCase.execute(fakeProjectAlreadyExist) }
+        }
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `should create project successfully, when project is valid`() {
+        runTest {
+            val validProject = fakeProject
+            every { projectValidator.validateProjectFieldsNotBlank(any()) } returns true
+            coEvery { projectValidator.validateUserIsAuthorized(any()) } returns true
+            coEvery { projectValidator.validateProjectNotExists(any()) } returns true
+
+            createProjectUseCase.execute(validProject)
+
+            coVerify { projectRepository.createProject(validProject) }
+
+        }
+
     }
 
 }
