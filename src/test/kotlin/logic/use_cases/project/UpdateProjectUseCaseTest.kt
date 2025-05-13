@@ -1,111 +1,79 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.use_cases.project
 
-import com.google.common.truth.Truth.assertThat
 import helper.project_helper.createProject
-import helper.project_helper.fakes.FakeProjectData
-import helper.project_helper.fakes.FakeProjectData.adminUser
-import helper.project_helper.fakes.FakeProjectData.mateUserForAdminUser
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import logic.entities.Project
+import io.mockk.*
+import kotlinx.coroutines.test.runTest
+import logic.entities.EntityType
 import logic.repositories.*
-import net.thechance.logic.exceptions.ProjectsLogicExceptions.*
+import logic.use_cases.audit_log.CreateAuditLogUseCase
+import net.thechance.logic.exceptions.InvalidProjectFieldsException
+import net.thechance.logic.use_cases.project.projectValidations.ProjectValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import kotlin.uuid.ExperimentalUuidApi
 
 class UpdateProjectUseCaseTest {
-
-    private val projectRepository: ProjectsRepository = mockk(relaxed = true)
-    private val userRepository: UserRepository = mockk(relaxed = true)
-
-    private val auditRepository: AuditRepository = mockk(relaxed = true)
-    private lateinit var fakeProject: Project
-    private lateinit var updatedProject: Project
-    private lateinit var updateProjectUseCase: UpdateProjectUseCase
+    private lateinit var updateProject: UpdateProjectUseCase
+    private lateinit var projectRepository: ProjectsRepository
+    private lateinit var projectValidator: ProjectValidator
+    private lateinit var createAuditLogUseCase: CreateAuditLogUseCase
 
     @BeforeEach
     fun setUp() {
-        fakeProject = createProject().copy(
-            id = "1",
-            progressionStates = FakeProjectData.states,
-            tasks = FakeProjectData.tasks,
-        )
-        updatedProject = fakeProject.copy(
-            name = "Updated Project",
-            description = "Just a simple updated project",
-        )
-
-        updateProjectUseCase =
-            UpdateProjectUseCase(projectRepository, userRepository, auditRepository)
+        projectRepository = mockk()
+        projectValidator = mockk()
+        createAuditLogUseCase = mockk()
+        updateProject = UpdateProjectUseCase(projectRepository, projectValidator, createAuditLogUseCase)
     }
 
     @Test
-    fun `should update project successfully, when update is valid`() {
-        every { userRepository.getUserByUsername(updatedProject.createdByUserName) } returns Result.success(adminUser)
-        every { projectRepository.getProjects() } returns Result.success(listOf(fakeProject))
-        every { projectRepository.updateProject(updatedProject) } returns Result.success(Unit)
-        every { auditRepository.createAuditLog(any()) } returns Result.success(Unit)
+    fun `should throw exception when validation fails`() = runTest {
+        // given
+        val project = createProject()
+        coEvery { projectValidator.validateProjectFieldsNotBlank(project) } throws InvalidProjectFieldsException()
 
-        val result = updateProjectUseCase.execute(updatedProject)
+        // when & then
+        assertThrows<InvalidProjectFieldsException> {
+            updateProject.execute(project)
+        }
 
-        assertThat(result.isSuccess).isTrue()
-        verify(exactly = 1) { projectRepository.updateProject(updatedProject) }
-        verify(exactly = 1) { projectRepository.getProjects() }
-        verify(exactly = 1) { userRepository.getUserByUsername(updatedProject.createdByUserName) }
-        verify(exactly = 1) { auditRepository.createAuditLog(any()) }
+        coVerify(exactly = 0) { projectRepository.updateProject(any()) }
+        coVerify(exactly = 0) { createAuditLogUseCase.execute(any()) }
     }
 
     @Test
-    fun `should update project failed and throw exception, when user is not admin`() {
-        every { userRepository.getUserByUsername(updatedProject.createdByUserName) } returns Result.success(mateUserForAdminUser)
+    fun `should update project and create audit log when validation succeeds`() = runTest {
+        // given
+        val project = createProject()
 
-        val result = updateProjectUseCase.execute(updatedProject)
+        // Mock successful validations
+        coEvery { projectValidator.validateProjectFieldsNotBlank(project) } returns true
+        coEvery { projectValidator.validateUserIsAuthorized(project.createdByUserName) } returns true
+        coEvery { projectValidator.validateProjectAlreadyExists(project.id) } returns true
+        coEvery { projectValidator.validateUserIsTheProjectOwner(project.id, project.createdByUserName) } returns true
 
-        assertThat(result.exceptionOrNull()).isInstanceOf(NotAuthorizedUserException::class.java)
-        verify(exactly = 0) { projectRepository.updateProject(updatedProject) }
-        verify(exactly = 1) { userRepository.getUserByUsername(updatedProject.createdByUserName) }
+        // Mock dependencies
+        coEvery { projectRepository.updateProject(project) } just Runs
+        coEvery { createAuditLogUseCase.execute(any()) } just Runs
+
+        // when
+        updateProject.execute(project)
+
+        // then
+        coVerify(exactly = 1) { projectRepository.updateProject(project) }
+        coVerify(exactly = 1) {
+            createAuditLogUseCase.execute(
+                match { auditLog ->
+                    auditLog.entityType == EntityType.PROJECT &&
+                            auditLog.entityId == project.id &&
+                            auditLog.description == "Project updated successfully." &&
+                            auditLog.userName == project.createdByUserName
+                }
+            )
+        }
     }
 
-    @Test
-    fun `should update project failed and throw exception, when project is not found for updated project`() {
-        val newUpdatedProject = updatedProject.copy(id = "project2")
-        every { userRepository.getUserByUsername(newUpdatedProject.createdByUserName) } returns Result.success(adminUser)
-        every { projectRepository.getProjects() } returns Result.success(listOf(fakeProject, updatedProject))
-
-        val result = updateProjectUseCase.execute(newUpdatedProject)
-
-        assertThat(result.exceptionOrNull()).isInstanceOf(NoProjectFoundException::class.java)
-        verify(exactly = 0) { projectRepository.updateProject(newUpdatedProject) }
-        verify(exactly = 1) { projectRepository.getProjects() }
-        verify(exactly = 1) { userRepository.getUserByUsername(newUpdatedProject.createdByUserName) }
-    }
-
-
-    @Test
-    fun `should update project failed and throw exception, when updated project user name is invalid`() {
-        val updatedProjectWithInvalidUserName = updatedProject.copy(createdByUserName = "")
-        every { userRepository.getUserByUsername(updatedProjectWithInvalidUserName.createdByUserName) } returns Result.failure(
-            Exception()
-        )
-
-        val result = updateProjectUseCase.execute(updatedProjectWithInvalidUserName)
-
-        assertThat(result.exceptionOrNull()).isInstanceOf(InvalidUsernameForProjectException::class.java)
-        verify(exactly = 0) { projectRepository.updateProject(updatedProjectWithInvalidUserName) }
-        verify(exactly = 0) { userRepository.getUserByUsername(updatedProjectWithInvalidUserName.createdByUserName) }
-    }
-
-    @Test
-    fun `should update project failed and throw exception, when updated project name is invalid`() {
-        val updatedProjectWithInvalidName = updatedProject.copy(name = "")
-        every { userRepository.getUserByUsername(updatedProjectWithInvalidName.createdByUserName) } returns Result.success(
-            adminUser
-        )
-
-        val result = updateProjectUseCase.execute(updatedProjectWithInvalidName)
-
-        assertThat(result.exceptionOrNull()).isInstanceOf(InvalidProjectNameException::class.java)
-        verify(exactly = 0) { projectRepository.updateProject(updatedProjectWithInvalidName) }
-    }
 }
