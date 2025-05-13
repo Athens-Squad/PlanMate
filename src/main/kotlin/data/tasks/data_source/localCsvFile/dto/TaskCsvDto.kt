@@ -10,14 +10,14 @@ import kotlin.uuid.Uuid
 
 data class TaskCsvDto(
     val id: Uuid = Uuid.random(),
-    val title: String,
+    val name: String,
     val description: String,
     val currentProgressionState: ProgressionState,
     val projectId: Uuid
 ) : CsvSerializable {
     override fun toCsvFields(): List<String> = listOf(
         id.toString(),
-        title,
+        name,
         description,
         currentProgressionState.id.toString(),
         currentProgressionState.name,
@@ -28,7 +28,7 @@ data class TaskCsvDto(
         fun fromCsv(fields: List<String>): TaskCsvDto {
             return TaskCsvDto(
                 id = Uuid.parse(fields[TaskColumnIndex.ID]),
-                title = fields[TaskColumnIndex.TITLE],
+                name = fields[TaskColumnIndex.TITLE],
                 description = fields[TaskColumnIndex.DESCRIPTION],
                 currentProgressionState = ProgressionState(
                     id = Uuid.parse(fields[TaskColumnIndex.CURRENT_STATE_ID]),
