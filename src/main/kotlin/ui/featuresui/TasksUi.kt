@@ -2,7 +2,6 @@
 
 package net.thechance.ui.featuresui
 
-import kotlinx.coroutines.*
 import logic.entities.ProgressionState
 import logic.entities.Task
 import logic.use_cases.task.TasksUseCases
@@ -20,34 +19,27 @@ class TasksUi(
     private val auditLogUi: AuditLogUi,
     private val session: UserSession
 ) {
-    private val exceptionHandler: CoroutineExceptionHandler = CoroutineExceptionHandler { _, throwable: Throwable ->
-        consoleIO.printer.printText(throwable.message.toString(), TextStyle.ERROR)
-    }
-    private val tasksCoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
+    suspend fun manageTasks(tasks: List<Task>, progressionStates: List<ProgressionState>) {
+        try {
+            do {
+                consoleIO.printer.printText("0 : Back", TextStyle.OPTION)
+                consoleIO.printer.printText("Select A Task :", TextStyle.TITLE)
 
-    suspend fun manageTasks(tasks: List<Task>,progressionStates: List<ProgressionState>) {
-        tasksCoroutineScope.launch {
-            try {
-                do {
-                    consoleIO.printer.printText("Select A Task :", TextStyle.TITLE)
-                    consoleIO.printer.printText("0 : Back", TextStyle.OPTION)
+                val inputTaskName = consoleIO.reader.readStringFromUser()
+                if (inputTaskName == "0") break
 
-                    val inputTaskName = consoleIO.reader.readStringFromUser()
-                    if (inputTaskName == "0") return@launch
+                val task = getTaskByName(inputTaskName, tasks)
+                task.showTaskDetails()
+                handleTaskOptions(task, progressionStates)
 
-                    val task = getTaskByName(inputTaskName, tasks)
-                    task.showTaskDetails()
-                    handleTaskOptions(task, progressionStates)
-
-                } while (true)
-            } catch (exception: Exception) {
-                consoleIO.printer.printText(exception.message.toString(), TextStyle.ERROR)
-            }
-        }.join()
+            } while (true)
+        } catch (exception: Exception) {
+            consoleIO.printer.printText(exception.message.toString(), TextStyle.ERROR)
+        }
     }
 
-    fun createTask(
+    suspend fun createTask(
         projectId: Uuid,
         progressionStates: List<ProgressionState>
     ) {
@@ -56,18 +48,16 @@ class TasksUi(
         val taskDescription = receiveStringInput("Enter Task Description : ")
         val state = selectProgressionState(progressionStates)
 
-        tasksCoroutineScope.launch {
-            tasksUseCases.createTaskUseCase.execute(
-                Task(
-                    name = taskName,
-                    description = taskDescription,
-                    currentProgressionState = state,
-                    projectId = projectId
-                ),
-                userName = session.currentUser.name
-            )
-            consoleIO.printer.printText("Task Created Successfully", TextStyle.SUCCESS)
-        }
+        tasksUseCases.createTaskUseCase.execute(
+            Task(
+                name = taskName,
+                description = taskDescription,
+                currentProgressionState = state,
+                projectId = projectId
+            ),
+            userName = session.currentUser.name
+        )
+
     }
 
     private suspend fun handleTaskOptions(task: Task, progressionStates: List<ProgressionState>) {
@@ -89,8 +79,7 @@ class TasksUi(
     }
 
 
-
-    private fun editTask(progressionStates: List<ProgressionState>, task: Task) {
+    private suspend fun editTask(progressionStates: List<ProgressionState>, task: Task) {
         consoleIO.printer.printText("Edit Task", TextStyle.TITLE)
         consoleIO.printer.printText("Select your option (1 to 3) : ", TextStyle.TITLE)
         consoleIO.printer.printOptions(EditTaskOptions.entries)
@@ -107,16 +96,17 @@ class TasksUi(
         }
     }
 
-    private fun editTaskTitle(task: Task) {
+    private suspend fun editTaskTitle(task: Task) {
         val taskName = receiveStringInput("Enter New Task Name : ")
         updateTask(task.copy(name = taskName))
     }
 
-    private fun editTaskDescription(task: Task) {
+    private suspend fun editTaskDescription(task: Task) {
         val taskDescription = receiveStringInput("Enter New Task Description : ")
         updateTask(task.copy(description = taskDescription))
     }
-    private fun editTaskProgressionState(
+
+    private suspend fun editTaskProgressionState(
         task: Task,
         progressionStates: List<ProgressionState>
     ) {
@@ -124,25 +114,22 @@ class TasksUi(
         updateTask(task.copy(currentProgressionState = taskState))
     }
 
-    private fun updateTask(updatedTask: Task) {
-        tasksCoroutineScope.launch {
-            tasksUseCases.updateTaskUseCase.execute(
-                updatedTask,
-                userName = session.currentUser.name
-            )
-        }
+    private suspend fun updateTask(updatedTask: Task) {
+        tasksUseCases.updateTaskUseCase.execute(
+            updatedTask,
+            userName = session.currentUser.name
+        )
     }
 
-    private fun deleteTask(task: Task) {
-        tasksCoroutineScope.launch {
-            tasksUseCases
-                .deleteTaskUseCase
-                .execute(
-                    taskId = task.id,
-                    userName = session.currentUser.name
-                )
-            consoleIO.printer.printText("Task Deleted Successfully", TextStyle.SUCCESS)
-        }
+    private suspend fun deleteTask(task: Task) {
+        tasksUseCases
+            .deleteTaskUseCase
+            .execute(
+                taskId = task.id,
+                userName = session.currentUser.name
+            )
+        consoleIO.printer.printText("Task Deleted Successfully", TextStyle.SUCCESS)
+
     }
 
     private fun getTaskByName(name: String, tasks: List<Task>): Task {

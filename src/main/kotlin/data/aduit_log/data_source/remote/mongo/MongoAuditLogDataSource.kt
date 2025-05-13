@@ -19,8 +19,8 @@ class MongoAuditLogDataSource(
 
     override suspend fun getAuditLogs(): List<AuditLog> {
         return auditLogCollection.find()
-            .toList()
             .map { it.toAuditLog() }
+            .toList()
 
     }
 
