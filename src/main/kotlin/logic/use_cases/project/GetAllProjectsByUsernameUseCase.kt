@@ -4,7 +4,7 @@ package logic.use_cases.project
 
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
-import net.thechance.logic.use_cases.project.projectValidations.ProjectValidator
+import net.thechance.logic.validators.projectValidations.ProjectValidator
 import kotlin.uuid.ExperimentalUuidApi
 
 class GetAllProjectsByUsernameUseCase(

@@ -1,3 +1,4 @@
+@file:OptIn(ExperimentalUuidApi::class)
 package logic.use_cases.authentication
 
 import data.authentication.utils.PasswordHashing
@@ -7,241 +8,118 @@ import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import logic.entities.User
 import logic.entities.UserType
+import logic.exceptions.InvalidCredentialsException
 import logic.repositories.UserRepository
-import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.assertThrows
-import kotlin.test.Test
+import net.thechance.logic.validators.uservalidation.UserValidator
+import org.junit.jupiter.api.Test
+import kotlin.test.BeforeTest
+import kotlin.test.assertFailsWith
+import kotlin.uuid.ExperimentalUuidApi
 
 class RegisterAsMateUseCaseTest {
-
     private lateinit var userRepository: UserRepository
     private lateinit var passwordHashing: PasswordHashing
     private lateinit var userValidator: UserValidator
     private lateinit var registerAsMateUseCase: RegisterAsMateUseCase
 
-    @BeforeEach
-    fun setup() {
-        userRepository = mockk(relaxed = true)
-        passwordHashing = PasswordHashing()
+    @BeforeTest
+    fun setUp() {
+        userRepository = mockk()
+        passwordHashing = mockk()
         userValidator = mockk()
         registerAsMateUseCase = RegisterAsMateUseCase(userRepository, passwordHashing, userValidator)
     }
 
-
     @Test
-    fun `should throw exception when username is empty`() {
-        runTest {
-            //Given
-            val userName = ""
-            val password = "ABCabc123@#4"
-            val userType = UserType.MateUser("ali")
-            val hashPassword = passwordHashing.hash(password)
-            val user = User(name = userName, password = hashPassword, type = userType)
-            coEvery { userValidator.isUsernameNotValid(any()) } returns true
-            coEvery { userValidator.isPasswordNotValid(any()) } returns false
-            coEvery { userValidator.isTypeNotMate(any()) } returns false
-            coEvery { userValidator.isMateAdminIdNotValid(any()) } returns false
-            coEvery { userValidator.userNameExist(any()) } returns false
+    fun `should register mate successfully when input is valid`() = runTest {
+        // Given
+        val mateUser = User(name = "mate123", type = UserType.MateUser(adminName = "admin1"))
+        val password = "validPass123"
 
-            //then
-            assertThrows<Exception> { registerAsMateUseCase.execute(user) }
+        coEvery { userValidator.isUsernameNotValid(mateUser.name) } returns false
+        coEvery { userValidator.isPasswordNotValid(password) } returns false
+        coEvery { userValidator.isTypeNotMate(mateUser.type) } returns false
+        coEvery { userValidator.isMateAdminIdNotValid(mateUser.type) } returns false
+        coEvery { userValidator.userNameExist(mateUser.name) } returns false
+        coEvery { passwordHashing.hash(password) } returns "hashedPass"
+        coEvery { userRepository.createUser(mateUser, "hashedPass") } returns Unit
+
+        // When
+        registerAsMateUseCase.execute(mateUser, password)
+
+        // Then
+        coVerify {
+            userRepository.createUser(mateUser, "hashedPass")
         }
     }
 
     @Test
-    fun `should throw exception when username is only spaces`() {
-        runTest {
-            //Given
-            val userName = "      "
-            val password = "ABCabc123@#4"
-            val userType = UserType.MateUser("ali")
-            val hashPassword = passwordHashing.hash(password)
-            val user = User(name = userName, password = hashPassword, type = userType)
-            coEvery { userValidator.isUsernameNotValid(any()) } returns true
-            coEvery { userValidator.isPasswordNotValid(any()) } returns false
-            coEvery { userValidator.isTypeNotMate(any()) } returns false
-            coEvery { userValidator.isMateAdminIdNotValid(any()) } returns false
-            coEvery { userValidator.userNameExist(any()) } returns false
+    fun `should throw InvalidCredentialsException when username is invalid`() = runTest {
+        val user = User(name = "invalid", type = UserType.MateUser("admin1"))
+        val password = "pass"
 
-            //then
-            assertThrows<Exception> { registerAsMateUseCase.execute(user) }
-        }
-    }
+        coEvery { userValidator.isUsernameNotValid(user.name) } throws InvalidCredentialsException()
 
-
-    @Test
-    fun `should throw exception when password less than 8 character`() {
-        runTest {
-            //Given
-            val userName = "mohamed"
-            val password = "ABCabc"
-            val userType = UserType.MateUser("ali")
-            val hashPassword = passwordHashing.hash(password)
-            val user = User(name = userName, password = hashPassword, type = userType)
-            coEvery { userValidator.isUsernameNotValid(any()) } returns false
-            coEvery { userValidator.isPasswordNotValid(any()) } returns true
-            coEvery { userValidator.isTypeNotMate(any()) } returns false
-            coEvery { userValidator.isMateAdminIdNotValid(any()) } returns false
-            coEvery { userValidator.userNameExist(any()) } returns false
-
-            //then
-            assertThrows<Exception> { registerAsMateUseCase.execute(user) }
-        }
-
-    }
-
-    @Test
-    fun `should throw exception when password more than 20 character`() {
-        runTest {
-            //Given
-            val userName = "ahmed ali"
-            val password = "1@Abcdefghijklmnopqrstuvwxyz"
-            val userType = UserType.MateUser("ali")
-            val hashPassword = passwordHashing.hash(password)
-            val user = User(name = userName, password = hashPassword, type = userType)
-
-            coEvery { userValidator.isUsernameNotValid(any()) } returns false
-            coEvery { userValidator.isPasswordNotValid(any()) } returns true
-            coEvery { userValidator.isTypeNotMate(any()) } returns false
-            coEvery { userValidator.isMateAdminIdNotValid(any()) } returns false
-            coEvery { userValidator.userNameExist(any()) } returns false
-
-
-            //then
-            assertThrows<Exception> { registerAsMateUseCase.execute(user) }
+        assertFailsWith<InvalidCredentialsException> {
+            registerAsMateUseCase.execute(user, password)
         }
     }
 
     @Test
-    fun `should throw exception when user type isn't MateUser`() {
-        runTest {
-            //Given
-            val userName = "ahmed ali"
-            val password = "1@Abcdefg"
-            val userType = UserType.AdminUser
-            val hashPassword = passwordHashing.hash(password)
-            val user = User(name = userName, password = hashPassword, type = userType)
+    fun `should throw InvalidCredentialsException when password is invalid`() = runTest {
+        val user = User(name = "valid", type = UserType.MateUser("admin1"))
+        val password = "weak"
 
-            coEvery { userValidator.isUsernameNotValid(any()) } returns false
-            coEvery { userValidator.isPasswordNotValid(any()) } returns false
-            coEvery { userValidator.isTypeNotMate(any()) } returns true
-            coEvery { userValidator.isMateAdminIdNotValid(any()) } returns false
-            coEvery { userValidator.userNameExist(any()) } returns false
+        coEvery { userValidator.isUsernameNotValid(user.name) } returns false
+        coEvery { userValidator.isPasswordNotValid(password) } throws InvalidCredentialsException()
 
-            //then
-            assertThrows<Exception> { registerAsMateUseCase.execute(user) }
-        }
-
-    }
-
-    @Test
-    fun `should throw exception when admin Id is empty`(){
-        runTest {
-            //Given
-            val userName = "mohamed"
-            val password = "ABCabc123@#4"
-            val userType = UserType.MateUser("")
-            val hashPassword = passwordHashing.hash(password)
-            val user = User(name = userName, password = hashPassword, type = userType)
-
-            coEvery { userValidator.isUsernameNotValid(any()) } returns false
-            coEvery { userValidator.isPasswordNotValid(any()) } returns false
-            coEvery { userValidator.isTypeNotMate(any()) } returns false
-            coEvery { userValidator.isMateAdminIdNotValid(any()) } returns true
-            coEvery { userValidator.userNameExist(any()) } returns true
-
-            //then
-            assertThrows<Exception> { registerAsMateUseCase.execute(user) }
-        }
-
-    }
-
-    @Test
-    fun `should throw exception when admin Id is only space`(){
-        runTest {
-            //Given
-            val userName = "mohamed"
-            val password = "ABCabc123@#4"
-            val userType = UserType.MateUser("     ")
-            val hashPassword = passwordHashing.hash(password)
-            val user = User(name = userName, password = hashPassword, type = userType)
-
-            coEvery { userValidator.isUsernameNotValid(any()) } returns false
-            coEvery { userValidator.isPasswordNotValid(any()) } returns false
-            coEvery { userValidator.isTypeNotMate(any()) } returns false
-            coEvery { userValidator.isMateAdminIdNotValid(any()) } returns true
-            coEvery { userValidator.userNameExist(any()) } returns true
-
-            //then
-            assertThrows<Exception> { registerAsMateUseCase.execute(user) }
+        assertFailsWith<InvalidCredentialsException> {
+            registerAsMateUseCase.execute(user, password)
         }
     }
 
     @Test
-    fun `should throw when username name already exist`() {
-        runTest {
-            //Given
-            val userName = "mohamed"
-            val password = "ABCabc123@#4"
-            val userType = UserType.MateUser("mohamed")
-            val hashPassword = passwordHashing.hash(password)
-            val user = User(name = userName, password = hashPassword, type = userType)
+    fun `should throw InvalidCredentialsException when user is not MateUser`() = runTest {
+        val user = User(name = "mate", type = UserType.AdminUser)
+        val password = "validPass"
 
-            coEvery { userValidator.isUsernameNotValid(any()) } returns false
-            coEvery { userValidator.isPasswordNotValid(any()) } returns false
-            coEvery { userValidator.isTypeNotMate(any()) } returns false
-            coEvery { userValidator.isMateAdminIdNotValid(any()) } returns false
-            coEvery { userValidator.userNameExist(any()) } returns true
+        coEvery { userValidator.isUsernameNotValid(user.name) } returns false
+        coEvery { userValidator.isPasswordNotValid(password) } returns false
+        coEvery { userValidator.isTypeNotMate(user.type) } throws InvalidCredentialsException()
 
-            //then
-            assertThrows<Exception> { registerAsMateUseCase.execute(user) }
-        }
-
-    }
-
-    @Test
-    fun `should return true when create user success`() {
-        runTest {
-            //Given
-            val userName = "mohamed"
-            val password = "ABCabc123@#4"
-            val userType = UserType.MateUser("mohamed")
-            val hashPassword = passwordHashing.hash(password)
-            val user = User(name = userName, password = hashPassword, type = userType)
-            coEvery { userValidator.isUsernameNotValid(any()) } returns false
-            coEvery { userValidator.isPasswordNotValid(any()) } returns false
-            coEvery { userValidator.isTypeNotMate(any()) } returns false
-            coEvery { userValidator.isMateAdminIdNotValid(any()) } returns false
-            coEvery { userValidator.userNameExist(any()) } returns false
-            // when
-            registerAsMateUseCase.execute(user)
-            //then
-            coVerify(exactly = 1) { userRepository.createUser(any()) }
+        assertFailsWith<InvalidCredentialsException> {
+            registerAsMateUseCase.execute(user, password)
         }
     }
 
     @Test
-    fun `execute throw exception when create user failed and get user by username failed`() {
-        runTest {
-            //Given
-            val userName = "mohamed"
-            val password = "ABCabc123@#4"
-            val userType = UserType.MateUser("mohamed")
-            val hashPassword = passwordHashing.hash(password)
-            val user = User(name = userName, password = hashPassword, type = userType)
-            coEvery { userValidator.isUsernameNotValid(any()) } returns false
-            coEvery { userValidator.isPasswordNotValid(any()) } returns false
-            coEvery { userValidator.isTypeNotMate(any()) } returns false
-            coEvery { userValidator.isMateAdminIdNotValid(any()) } returns false
-            coEvery { userValidator.userNameExist(any()) } returns false
-            coEvery { userRepository.createUser(any()) } throws Exception()
+    fun `should throw InvalidCredentialsException when mate admin ID is invalid`() = runTest {
+        val user = User(name = "mate", type = UserType.MateUser(""))
+        val password = "validPass"
 
-            //then
-            assertThrows<Exception> { registerAsMateUseCase.execute(user) }
+        coEvery { userValidator.isUsernameNotValid(user.name) } returns false
+        coEvery { userValidator.isPasswordNotValid(password) } returns false
+        coEvery { userValidator.isTypeNotMate(user.type) } returns false
+        coEvery { userValidator.isMateAdminIdNotValid(user.type) } throws InvalidCredentialsException()
 
+        assertFailsWith<InvalidCredentialsException> {
+            registerAsMateUseCase.execute(user, password)
         }
     }
 
+    @Test
+    fun `should throw InvalidCredentialsException when username already exists`() = runTest {
+        val user = User(name = "duplicate", type = UserType.MateUser("admin1"))
+        val password = "validPass"
 
+        coEvery { userValidator.isUsernameNotValid(user.name) } returns false
+        coEvery { userValidator.isPasswordNotValid(password) } returns false
+        coEvery { userValidator.isTypeNotMate(user.type) } returns false
+        coEvery { userValidator.isMateAdminIdNotValid(user.type) } returns false
+        coEvery { userValidator.userNameExist(user.name) } throws InvalidCredentialsException()
+
+        assertFailsWith<InvalidCredentialsException> {
+            registerAsMateUseCase.execute(user, password)
+        }
+    }
 }

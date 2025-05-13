@@ -5,7 +5,7 @@ package logic.use_cases.authentication
 import data.authentication.utils.PasswordHashing
 import logic.entities.User
 import logic.repositories.UserRepository
-import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
+import net.thechance.logic.validators.uservalidation.UserValidator
 import kotlin.uuid.ExperimentalUuidApi
 
 class RegisterAsMateUseCase(
@@ -16,10 +16,10 @@ class RegisterAsMateUseCase(
 ) {
     suspend fun execute(mateUser: User, password: String) {
 
-            userValidator.isUsernameNotValid(mateUser.name) ||
-            userValidator.isPasswordNotValid(password) ||
-            userValidator.isTypeNotMate(mateUser.type) ||
-            userValidator.isMateAdminIdNotValid(mateUser.type) ||
+            userValidator.isUsernameNotValid(mateUser.name)
+            userValidator.isPasswordNotValid(password)
+            userValidator.isTypeNotMate(mateUser.type)
+            userValidator.isMateAdminIdNotValid(mateUser.type)
             userValidator.userNameExist(mateUser.name)
 
         val hashedPassword = passwordHashing.hash(password)

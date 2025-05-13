@@ -1,23 +1,26 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.use_cases.progression_state
 
-import helper.progression_state_helper.FakeProgressionStateData
+
 import helper.progression_state_helper.createDummyState
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import logic.exceptions.ProgressionStateAlreadyExistsException
 import logic.repositories.ProgressionStateRepository
-import net.thechance.data.progression_state.exceptions.ProgressionStateAlreadyExistsException
-import net.thechance.logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
+import net.thechance.logic.validators.progressionStateValidations.ProgressionStateValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import kotlin.uuid.ExperimentalUuidApi
 
 class CreateStateUseCaseTest {
 
-    lateinit var createProgressionStateUseCase: CreateProgressionStateUseCase
-    val stateRepository: ProgressionStateRepository = mockk(relaxed = true)
-    var progressionStateValidator: ProgressionStateValidator = mockk(relaxed = true)
+    private lateinit var createProgressionStateUseCase: CreateProgressionStateUseCase
+    private val stateRepository: ProgressionStateRepository = mockk(relaxed = true)
+    private var progressionStateValidator: ProgressionStateValidator = mockk(relaxed = true)
 
 
     @BeforeEach
@@ -32,7 +35,10 @@ class CreateStateUseCaseTest {
             //given
             val progressionState = createDummyState.dummyState()
             //when
-            coEvery { progressionStateValidator.validateBeforeCreation(progressionState) } returns null
+            coEvery { progressionStateValidator.validateProjectExists(progressionState.projectId) } returns true
+            coEvery { progressionStateValidator.validateProgressionStateNotExists(progressionState.id) } returns true
+            coEvery { progressionStateValidator.validateProgressionStateFieldsNotBlank(progressionState) } returns true
+
             //then
             createProgressionStateUseCase.execute(progressionState)
             coVerify(exactly = 1) { stateRepository.createProgressionState(progressionState) }
@@ -46,7 +52,10 @@ class CreateStateUseCaseTest {
             // given
             val progressionState = createDummyState.dummyState()
 
-            coEvery { progressionStateValidator.validateBeforeCreation(progressionState) } returns ProgressionStateAlreadyExistsException()
+            coEvery { progressionStateValidator.validateProgressionStateNotExists(progressionState.id) } throws
+                    ProgressionStateAlreadyExistsException()
+            coEvery { progressionStateValidator.validateProjectExists(progressionState.projectId) } returns true
+            coEvery { progressionStateValidator.validateProgressionStateFieldsNotBlank(progressionState) } returns true
 
             // when & then
             assertThrows<ProgressionStateAlreadyExistsException> {

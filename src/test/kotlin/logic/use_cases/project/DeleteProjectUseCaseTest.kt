@@ -1,146 +1,110 @@
 package logic.use_cases.project
 
-import com.google.common.truth.Truth.assertThat
 import helper.project_helper.createProject
-import helper.project_helper.fakes.FakeProjectData
-import helper.project_helper.fakes.FakeProjectData.adminUser
-import helper.project_helper.fakes.FakeProjectData.mateUserForAdminUser
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import logic.entities.Project
-import logic.repositories.AuditRepository
+import logic.entities.User
+import logic.entities.UserType
 import logic.repositories.ProjectsRepository
-import logic.repositories.UserRepository
-import net.thechance.logic.exceptions.ProjectsLogicExceptions.*
+import logic.use_cases.audit_log.CreateAuditLogUseCase
+import net.thechance.logic.exceptions.InvalidUsernameForProjectException
+import net.thechance.logic.exceptions.NoProjectFoundException
+import net.thechance.logic.exceptions.NotAuthorizedUserException
+import net.thechance.logic.use_cases.project.projectValidations.ProjectValidator
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import kotlin.test.Test
+import kotlin.uuid.ExperimentalUuidApi
 
 class DeleteProjectUseCaseTest {
-    private val projectRepository: ProjectsRepository = mockk(relaxed = true)
-    private val userRepository: UserRepository = mockk(relaxed = true)
-
-    private val auditRepository: AuditRepository = mockk(relaxed = true)
-    private lateinit var fakeProject: Project
 
     private lateinit var deleteProjectUseCase: DeleteProjectUseCase
+    private val projectRepository: ProjectsRepository = mockk(relaxed = true)
+    private val projectValidator : ProjectValidator = mockk(relaxed = true )
+    private val createAuditLogUseCase: CreateAuditLogUseCase = mockk(relaxed = true)
+    private lateinit var fakeProject: Project
+    private lateinit var adminUser: User
+    private lateinit var mateUser: User
 
+
+
+    @OptIn(ExperimentalUuidApi::class)
     @BeforeEach
     fun setUp() {
-        fakeProject = createProject().copy(
-            id = "1",
-            progressionStates = FakeProjectData.states,
-            tasks = FakeProjectData.tasks
-        )
+        fakeProject = createProject()
+        adminUser = User(name = "admin user", type = UserType.AdminUser)
+        mateUser = User(name = "mate user", type = UserType.MateUser("1"))
 
-        deleteProjectUseCase = DeleteProjectUseCase(projectRepository, userRepository,auditRepository)
+        deleteProjectUseCase = DeleteProjectUseCase(
+            projectRepository=projectRepository,
+            projectValidator = projectValidator,
+            createAuditLogUseCase = createAuditLogUseCase
+        )
     }
 
-    @Test
-    fun `should delete project successfully, when project is valid`() {
-        val validProject = fakeProject.copy(
-            createdByUserName = adminUser.name
-        )
-        every { userRepository.getUserByUsername(adminUser.name) } returns Result.success(adminUser)
-        every { projectRepository.getProjects() } returns Result.success(listOf(validProject))
-        every { projectRepository.deleteProject(validProject.id) } returns Result.success(Unit)
-        every { auditRepository.createAuditLog(any()) } returns Result.success(Unit)
 
-        val result = deleteProjectUseCase.execute(adminUser.name, validProject.id)
-
-        assertThat(result.isSuccess).isTrue()
-        verify(exactly = 1) { userRepository.getUserByUsername(adminUser.name) }
-        verify(exactly = 1) { projectRepository.getProjects() }
-        verify(exactly = 1) { projectRepository.deleteProject(validProject.id) }
-        verify(exactly = 1) { auditRepository.createAuditLog(any()) }
-    }
-
-    @Test
-    fun `should delete project failed, when user is not the owner of project`() {
-        val invalidProject = fakeProject.copy(
-            createdByUserName = "diffrent user"
-        )
-        every { userRepository.getUserByUsername(adminUser.name) } returns Result.success(adminUser)
-        every { projectRepository.getProjects() } returns Result.success(listOf(invalidProject))
-        every { projectRepository.deleteProject(invalidProject.id) } returns Result.success(Unit)
-
-        assertThrows<NotAuthorizedUserException> {
-            deleteProjectUseCase.execute(adminUser.name, invalidProject.id).getOrThrow()
-        }
-        verify(exactly = 1) { userRepository.getUserByUsername(adminUser.name) }
-        verify(exactly = 1) { projectRepository.getProjects() }
-        verify(exactly = 0) { projectRepository.deleteProject(invalidProject.id) }
-    }
-
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `should delete project failed and throw exception, when username is invalid`() {
-        val invalidAdminUserName = ""
-        every { userRepository.getUserByUsername(invalidAdminUserName) } returns Result.failure(
-            Exception()
-        )
+        runTest {
+            val invalidAdminUserName = ""
+            coEvery { projectValidator.validateUserIsAuthorized(invalidAdminUserName) }  throws InvalidUsernameForProjectException()
 
-        val result = deleteProjectUseCase.execute(invalidAdminUserName, fakeProject.id)
+            assertThrows < InvalidUsernameForProjectException>{deleteProjectUseCase.execute(fakeProject.id , invalidAdminUserName)  }
+        }
 
-        assertThat(result.exceptionOrNull()).isInstanceOf(InvalidUsernameForProjectException::class.java)
-        verify(exactly = 0) { userRepository.getUserByUsername(invalidAdminUserName) }
-        verify(exactly = 0) { projectRepository.getProjects() }
-        verify(exactly = 0) { projectRepository.deleteProject(fakeProject.id) }
     }
 
-    @Test
-    fun `should delete project failed and throw exception, when user not found to delete project`() {
-        val notExistingUsername = "usernameDoNotExist"
-        every { userRepository.getUserByUsername(notExistingUsername) } returns Result.failure(
-            Exception()
-        )
-        every { projectRepository.getProjects() } returns Result.success(listOf(fakeProject))
 
-        val result = deleteProjectUseCase.execute(notExistingUsername, fakeProject.id)
-
-        assertThat(result.exceptionOrNull()).isInstanceOf(NotAuthorizedUserException::class.java)
-        verify(exactly = 0) { projectRepository.deleteProject(fakeProject.id) }
-        verify(exactly = 0) { projectRepository.getProjects() }
-        verify(exactly = 1) { userRepository.getUserByUsername(notExistingUsername) }
-    }
-
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `should delete project failed and throw exception, when user is not admin`() {
-        every { userRepository.getUserByUsername(mateUserForAdminUser.name) } returns Result.success(mateUserForAdminUser)
-        every { projectRepository.getProjects() } returns Result.success(listOf(fakeProject))
+        runTest {
+            coEvery { projectValidator.validateUserIsAuthorized(mateUser.name) }  throws NotAuthorizedUserException()
 
-        val result = deleteProjectUseCase.execute(mateUserForAdminUser.name, fakeProject.id)
-
-        assertThat(result.exceptionOrNull()).isInstanceOf(NotAuthorizedUserException::class.java)
-        verify(exactly = 0) { projectRepository.deleteProject(fakeProject.id) }
-        verify(exactly = 1) { userRepository.getUserByUsername(mateUserForAdminUser.name) }
+            assertThrows < NotAuthorizedUserException> {deleteProjectUseCase.execute(fakeProject.id,mateUser.name)}
+        }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `should delete project failed and throw exception, when project not found for deleted project`() {
-        val notExistingProjectId = "projectIdDoNotExist"
-        every { userRepository.getUserByUsername(adminUser.name) } returns Result.success(adminUser)
-        every { projectRepository.getProjects() } returns Result.success(listOf(fakeProject))
+        runTest {
+            coEvery { projectValidator.validateProjectAlreadyExists(fakeProject.id) } throws NoProjectFoundException()
 
-        val result = deleteProjectUseCase.execute(adminUser.name, notExistingProjectId)
+            assertThrows < NoProjectFoundException> {deleteProjectUseCase.execute(fakeProject.id,adminUser.name)}
+        }
 
-        assertThat(result.exceptionOrNull()).isInstanceOf(NoProjectFoundException::class.java)
-        verify(exactly = 0) { projectRepository.deleteProject(notExistingProjectId) }
-        verify(exactly = 1) { projectRepository.getProjects() }
-        verify(exactly = 1) { userRepository.getUserByUsername(adminUser.name) }
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
-    fun `should delete project failed and throw exception, when project id is invalid`() {
-        val invalidProjectId = ""
-        every { userRepository.getUserByUsername(adminUser.name) } returns Result.success(adminUser)
-        every { projectRepository.getProjects() } returns Result.success(listOf(fakeProject))
+    fun `should delete project failed, when user is not the owner of project`() {
+        runTest {
+            coEvery { projectValidator.validateUserIsTheProjectOwner(fakeProject.id , adminUser.name) } throws Exception()
 
-        val result = deleteProjectUseCase.execute(adminUser.name, invalidProjectId)
-
-        assertThat(result.exceptionOrNull()).isInstanceOf(NoProjectFoundException::class.java)
-        verify(exactly = 0) { projectRepository.deleteProject(invalidProjectId) }
-        verify(exactly = 0) { projectRepository.getProjects() }
-        verify(exactly = 1) { userRepository.getUserByUsername(adminUser.name) }
+            assertThrows < Exception>{ deleteProjectUseCase.execute(fakeProject.id,adminUser.name) }
+        }
     }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `should delete project successfully, when project is valid`() {
+        runTest {
+            coEvery { projectValidator.validateUserIsAuthorized(any()) } returns true
+            coEvery { projectValidator.validateProjectAlreadyExists(any()) } returns true
+            coEvery { projectValidator.validateUserIsTheProjectOwner(any() , any()) }returns true
+
+            deleteProjectUseCase.execute(fakeProject.id , adminUser.name)
+
+            coVerify { projectRepository.deleteProject(fakeProject.id) }
+        }
+
+    }
+
+
+
 }
