@@ -1,65 +1,65 @@
 package logic.use_cases.project
 
-import com.google.common.truth.Truth.assertThat
 import helper.project_helper.createProject
-import helper.project_helper.fakes.FakeProjectData
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import junit.framework.TestCase.assertEquals
+import kotlinx.coroutines.test.runTest
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
-import net.thechance.logic.exceptions.ProjectsLogicExceptions.InvalidProjectNameException
-import net.thechance.logic.exceptions.ProjectsLogicExceptions.NoProjectFoundException
-import org.junit.jupiter.api.BeforeEach
+import net.thechance.logic.exceptions.NoProjectFoundException
+import net.thechance.logic.use_cases.project.projectValidations.ProjectValidator
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import kotlin.test.BeforeTest
+import kotlin.uuid.ExperimentalUuidApi
 
 class GetProjectByIdUseCaseTest {
-
-    private val projectRepository: ProjectsRepository = mockk(relaxed = true)
-
-    private lateinit var fakeProject: Project
     private lateinit var getProjectByIdUseCase: GetProjectByIdUseCase
+    private lateinit var projectsRepository: ProjectsRepository
+    private lateinit var projectValidator: ProjectValidator
 
-    @BeforeEach
-    fun setUp() {
-        fakeProject = createProject().copy(
-            id = "1",
-            progressionStates = FakeProjectData.states,
-            tasks = FakeProjectData.tasks
-        )
-
-        getProjectByIdUseCase = GetProjectByIdUseCase(projectRepository)
+    @BeforeTest
+    fun setup() {
+        projectsRepository = mockk(relaxed = true)
+        projectValidator = mockk(relaxed = true)
+        getProjectByIdUseCase = GetProjectByIdUseCase(projectsRepository, projectValidator)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
-    fun `should get project by id successfully, when project is valid`() {
-        every { projectRepository.getProjects() } returns Result.success(listOf(fakeProject))
+    fun `should return project if it exists`() {
+        runTest {
+            //given
+            val dummyProject = createProject()
+            coEvery { projectValidator.validateProjectAlreadyExists(dummyProject.id) } returns true
+            coEvery { projectsRepository.getProjects() } returns listOf(dummyProject)
 
-        val result = getProjectByIdUseCase.execute(fakeProject.id)
+            //when
+            val result = getProjectByIdUseCase.execute(dummyProject.id)
+            //then
+            assertEquals(dummyProject, result)
+            coVerify { projectsRepository.getProjects() }
 
-        assertThat(result.isSuccess).isTrue()
-        verify(exactly = 1) { projectRepository.getProjects() }
+        }
+
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
-    fun `should get project by id failed and throw exception,, when project not found to fetch`() {
-        val notExistingProjectId = "projectIdDoNotExist"
-        every { projectRepository.getProjects() } returns Result.success(listOf(fakeProject))
+    fun `should not return project if it not exist`() {
+        runTest {
+            //given
+            val dummyProject = createProject()
 
-        val result = getProjectByIdUseCase.execute(notExistingProjectId)
+            coEvery { projectValidator.validateProjectAlreadyExists(dummyProject.id) } throws NoProjectFoundException()
+            //when & then
+            assertThrows<NoProjectFoundException> {
+                getProjectByIdUseCase.execute(dummyProject.id)
+            }
 
-        assertThat(result.exceptionOrNull()).isInstanceOf(NoProjectFoundException::class.java)
-        verify(exactly = 1) { projectRepository.getProjects() }
+        }
     }
 
-    @Test
-    fun `should get project by id failed and throw exception, when project id is invalid`() {
-        val invalidProjectId = ""
-        every { projectRepository.getProjects() } returns Result.success(listOf(fakeProject))
-
-        val result = getProjectByIdUseCase.execute(invalidProjectId)
-
-        assertThat(result.exceptionOrNull()).isInstanceOf(InvalidProjectNameException::class.java)
-        verify(exactly = 0) { projectRepository.getProjects() }
-    }
 }
