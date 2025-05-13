@@ -1,122 +1,155 @@
 package logic.use_cases.task
 
-import com.google.common.truth.Truth.*
-import helper.task_helper.FakeTask.fakeAuditLog
-import helper.task_helper.FakeTask.fakeTask
-import helper.task_helper.FakeTask.fakeUserName
+import helper.task_helper.FakeTask
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
+import logic.entities.EntityType
 import logic.exceptions.*
 import logic.repositories.TasksRepository
 import logic.use_cases.audit_log.CreateAuditLogUseCase
-
 import logic.use_cases.task.taskvalidations.TaskValidator
+import logic.use_cases.task.taskvalidations.TaskValidatorImpl
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import java.time.LocalDateTime
+import kotlin.uuid.ExperimentalUuidApi
 
 class CreateTaskUseCaseTest {
     private lateinit var createTaskUseCase: CreateTaskUseCase
-    private val fakeTaskValidator = mockk<TaskValidator>()
-    private val fakeTasksRepository = mockk<TasksRepository>()
-    private val fakCreateAuditLogUseCase = mockk<CreateAuditLogUseCase>()
+    private val fakeTaskValidator: TaskValidatorImpl = mockk(relaxed = true)
+    private val fakeTasksRepository: TasksRepository = mockk(relaxed = true)
+    private val fakCreateAuditLogUseCase: CreateAuditLogUseCase = mockk(relaxed = true)
 
     @BeforeEach
     fun setup() {
         createTaskUseCase = CreateTaskUseCase(fakeTasksRepository, fakCreateAuditLogUseCase, fakeTaskValidator)
     }
 
+    @OptIn(ExperimentalUuidApi::class)
     @Test
     fun `should create Task when Task is valid`() {
         runTest {
             //given
-            fakeTask
-            //when
-            coEvery { fakeTaskValidator.validateTaskBeforeCreation(fakeTask) } returns true
+            val dummyTask = FakeTask.fakeTask
+            val dummyUserName = FakeTask.fakeUserName
 
-            createTaskUseCase.execute(fakeTask , fakeUserName)
+
+            coEvery { fakeTaskValidator.validateTaskFieldsNotBlank(dummyTask) } returns true
+            coEvery { fakeTaskValidator.validateTaskNotExists(dummyTask.id) } returns true
+            coEvery { fakeTaskValidator.validateProgressionStateExists(dummyTask.currentProgressionState.id) } returns true
+            coEvery { fakeTaskValidator.validateProjectExists(dummyTask.projectId) } returns true
+
+            createTaskUseCase.execute(dummyTask, dummyUserName)
             //then
-            coVerify{(fakeTasksRepository.createTask(fakeTask))}
+            coVerify { (fakeTasksRepository.createTask(dummyTask)) }
         }
 
     }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `should not create task if it is already exist`() {
+        runTest {
+            //given
+            val dummyTask = FakeTask.fakeTask
+            val dummyUserName = FakeTask.fakeUserName
+
+            coEvery { fakeTaskValidator.validateTaskNotExists(dummyTask.id) } throws TaskAlreadyExistsException()
+
+            //when & then
+            assertThrows<TaskAlreadyExistsException> {
+                createTaskUseCase.execute(dummyTask, dummyUserName)
+            }
+        }
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `should not create task if project no found `() {
+        runTest {
+            //given
+            val dummyTask = FakeTask.fakeTask
+            val dummyUserName = FakeTask.fakeUserName
+
+
+            coEvery { fakeTaskValidator.validateTaskFieldsNotBlank(dummyTask) } returns true
+            coEvery { fakeTaskValidator.validateTaskNotExists(dummyTask.id) } returns true
+            coEvery { fakeTaskValidator.validateProgressionStateExists(dummyTask.currentProgressionState.id) } returns true
+            coEvery { fakeTaskValidator.validateProjectExists(dummyTask.id) } throws NoProjectFoundForTaskException()
+            coEvery { fakeTasksRepository.createTask(dummyTask) } just runs
+
+            //when & then
+            assertThrows<NoProjectFoundForTaskException> {
+                createTaskUseCase.execute(dummyTask ,dummyUserName)
+            }
+        }
+    }
+
+    @Test
+    fun `should not create task if fields is blank`() {
+        runTest {
+            //given
+            val dummyTask = FakeTask.fakeTask
+            val dummyUserName = FakeTask.fakeUserName
+
+            coEvery { fakeTaskValidator.validateTaskFieldsNotBlank(dummyTask) } throws InvalidTaskFieldsException()
+
+            //when & then
+            assertThrows<InvalidTaskFieldsException> {
+                createTaskUseCase.execute(dummyTask, dummyUserName)
+            }
+        }
+    }
+
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun `should not create task if no valid progressionState `() {
+        runTest {
+            //given
+            val dummyTask = FakeTask.fakeTask
+            val dummyUserName = FakeTask.fakeUserName
+
+            coEvery { fakeTaskValidator.validateProgressionStateExists(dummyTask.currentProgressionState.id) } throws NoProgressionStateFoundForTaskException()
+
+            //when & then
+            assertThrows<NoProgressionStateFoundForTaskException> {
+                createTaskUseCase.execute(dummyTask, dummyUserName)
+            }
+        }
+    }
+    @OptIn(ExperimentalUuidApi::class)
+    @Test
+    fun`should call AuditLog if when task creation`(){
+        runTest {
+            //given
+            val dummyTask = FakeTask.fakeTask
+            val dummyUserName = FakeTask.fakeUserName
+            val dummyAuditLog = FakeTask.fakeAuditLog
+            //when
+            coEvery { fakeTaskValidator.validateTaskFieldsNotBlank(dummyTask) } returns true
+            coEvery { fakeTaskValidator.validateTaskNotExists(dummyTask.id) } returns true
+            coEvery { fakeTaskValidator.validateProgressionStateExists(dummyTask.currentProgressionState.id) } returns true
+            coEvery { fakeTaskValidator.validateProjectExists(dummyTask.projectId) } returns true
+            coEvery { fakeTasksRepository.createTask(dummyTask) } just runs
+
+            createTaskUseCase.execute(dummyTask ,dummyUserName)
+            //then
+            coVerify { fakCreateAuditLogUseCase.execute(
+                withArg {
+                    assert(it.entityType == EntityType.TASK)
+                    assert(it.description == "Task created successfully." )
+                    assert(it.entityId == dummyTask.id)
+                    assert(it.userName == dummyUserName)
+
+                }
+            ) }
+
+
+        }
+    }
+
+
 }
 
-   /*
-    @Test
-    fun `should create auditLog when Task created successfully`() {
-        //given
-        every { fakeTaskValidator.doIfTaskNotExistsOrThrow(fakeTask, any()) } answers {
-            secondArg<() -> Unit>().invoke()
-        }
-        every { fakeTaskValidator.validateTaskBeforeCreation(fakeTask) } just Runs
-        every { fakeTasksRepository.createTask(fakeTask) } returns Result.success(Unit)
-        every { auditRepository.createAuditLog(any()) } returns Result.success(Unit)
-        every { createTaskUseCase.execute(fakeTask, fakeUserName) } returns Result.success(Unit)
 
-        // When
-        val result = auditRepository.createAuditLog(fakeAuditLog)
-
-        // Then
-        assertThat(result.isSuccess).isTrue()
-
-    }
-
-    @Test
-    fun `should not create auditLog when Task didn't created successfully`() {
-        //given
-        every { fakeTaskValidator.doIfTaskNotExistsOrThrow(fakeTask, any()) } answers {
-            secondArg<() -> Unit>().invoke()
-        }
-        every { fakeTaskValidator.validateTaskBeforeCreation(fakeTask) } just Runs
-        every { fakeTasksRepository.createTask(fakeTask) } returns Result.success(Unit)
-        every { createTaskUseCase.execute(fakeTask, fakeUserName) } returns Result.success(Unit)
-        every { auditRepository.createAuditLog(any()) } returns Result.failure(Exception())
-
-        // When
-        val result = auditRepository.createAuditLog(fakeAuditLog)
-
-        // Then
-        assertThat(result.isFailure).isTrue()
-
-    }
-
-    @Test
-    fun `should not create Task when there is already Task with the same id`() {
-        every { fakeTaskValidator.doIfTaskNotExistsOrThrow(fakeTask, any()) } throws
-                CannotCompleteTaskOperationException("There is existing fakeTask with same id")
-
-        // When
-        val result = createTaskUseCase.execute(fakeTask, fakeUserName)
-
-        // Then
-        assertThat(result.isFailure).isTrue()
-    }
-
-
-    @Test
-    fun `should not be able to create Task with non existing projectId`() {
-        every { fakeTaskValidator.doIfTaskNotExistsOrThrow(fakeTask, any()) } throws
-                InvalidTaskException("Project with ID ${fakeTask.projectId} does not exist.")
-
-        // When
-        val result = createTaskUseCase.execute(fakeTask, fakeUserName)
-
-        // Then
-        assertThat(result.isFailure).isTrue()
-    }
-
-    @Test
-    fun `should not be able to create Task with the same title within the same projectId`() {
-        every { fakeTaskValidator.doIfTaskNotExistsOrThrow(fakeTask, any()) } throws
-                InvalidTaskException("Task with the same title already exist in this project.")
-
-        // When
-        val result = createTaskUseCase.execute(fakeTask, fakeUserName)
-
-        // Then
-        assertThat(result.isFailure).isTrue()
-    }
-
-}
-
-    */
