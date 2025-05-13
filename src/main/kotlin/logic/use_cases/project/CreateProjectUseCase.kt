@@ -16,21 +16,21 @@ class CreateProjectUseCase(
     private val projectValidator: ProjectValidator,
     private val createAuditLogUseCase: CreateAuditLogUseCase,
 ) {
-	suspend fun execute(project: Project) {
-		projectValidator.validateProjectFieldsNotBlank(project)
-		projectValidator.validateUserIsAuthorized(project.createdByUserName)
-		projectValidator.validateProjectNotExists(project.id)
+    suspend fun execute(project: Project) {
+        projectValidator.validateProjectFieldsNotBlank(project)
+        projectValidator.validateUserIsAuthorized(project.createdByUserName)
+        projectValidator.validateProjectNotExists(project.id)
 
-		projectRepository.createProject(project)
+        projectRepository.createProject(project)
 
-		createAuditLogUseCase.execute(
-			AuditLog(
-				entityType = EntityType.PROJECT,
-				entityId = project.id,
-				description = "Project created successfully.",
-				userName = project.createdByUserName,
-				createdAt = LocalDateTime.now(),
-			)
-		)
-	}
+        createAuditLogUseCase.execute(
+            AuditLog(
+                entityType = EntityType.PROJECT,
+                entityId = project.id,
+                description = "Project created successfully.",
+                userName = project.createdByUserName,
+                createdAt = LocalDateTime.now(),
+            )
+        )
+    }
 }
