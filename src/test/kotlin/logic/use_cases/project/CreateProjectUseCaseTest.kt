@@ -10,7 +10,6 @@ import logic.entities.Project
 import logic.entities.User
 import logic.entities.UserType
 import logic.repositories.ProjectsRepository
-import logic.repositories.UserRepository
 import logic.use_cases.audit_log.CreateAuditLogUseCase
 import net.thechance.logic.exceptions.InvalidProjectFieldsException
 import net.thechance.logic.exceptions.ProjectAlreadyExistException
@@ -22,15 +21,14 @@ import kotlin.uuid.ExperimentalUuidApi
 
 class CreateProjectUseCaseTest {
 
+    private lateinit var createProjectUseCase: CreateProjectUseCase
     private val projectRepository: ProjectsRepository = mockk(relaxed = true)
-    private val userRepository: UserRepository = mockk(relaxed = true)
+    private val projectValidator: ProjectValidator = mockk(relaxed = true)
+    private val createAuditLogUseCase: CreateAuditLogUseCase = mockk(relaxed = true)
 
-    private val auditRepository: CreateAuditLogUseCase = mockk(relaxed = true)
     private lateinit var fakeProject: Project
     private lateinit var adminUser: User
     private lateinit var mateUser: User
-    private lateinit var createProjectUseCase: CreateProjectUseCase
-    private val projectValidator: ProjectValidator = mockk(relaxed = true)
 
     @OptIn(ExperimentalUuidApi::class)
     @BeforeEach
@@ -42,7 +40,7 @@ class CreateProjectUseCaseTest {
             CreateProjectUseCase(
                 projectRepository = projectRepository,
                 projectValidator = projectValidator,
-                createAuditLogUseCase = auditRepository
+                createAuditLogUseCase = createAuditLogUseCase
             )
     }
 
