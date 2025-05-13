@@ -2,14 +2,8 @@
 
 package net.thechance.ui.featuresui
 
-
-import kotlinx.coroutines.*
-import logic.entities.ProgressionState
 import logic.entities.Project
-import logic.entities.Task
-import logic.use_cases.progression_state.ProgressionStatesUseCases
 import logic.use_cases.project.ProjectUseCases
-import logic.use_cases.task.TasksUseCases
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.core.io.ConsoleIO
 import net.thechance.ui.core.io.TextStyle
@@ -22,14 +16,8 @@ class ProjectsUi(
     private val session: UserSession,
     private val consoleIO: ConsoleIO
 ) {
-    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        consoleIO.printer.printText("Unexpected error: ${throwable.message}", TextStyle.ERROR)
-    }
-    private val projectsScope: CoroutineScope =
-        CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
-
-    fun createProject() = projectsScope.launch {
+    suspend fun createProject() {
         consoleIO.printer.printText("Create Project.", TextStyle.TITLE)
 
         val projectName = receiveStringInput("Enter Project Name : ")
@@ -80,19 +68,14 @@ class ProjectsUi(
             .execute(project.copy(description = projectDescription))
     }
 
-    fun deleteProject(projectId: Uuid) {
-        projectsScope.launch {
+    suspend fun deleteProject(projectId: Uuid) {
             try {
                 projectUseCases.deleteProjectUseCase
                     .execute(projectId, session.currentUser.name)
             } catch (exception: Exception) {
                 consoleIO.printer.printText("Error : ${exception.message}", TextStyle.ERROR)
             }
-        }
-    }
 
-    suspend fun getAllUserProjects(userName: String): List<Project> {
-        return projectUseCases.getAllProjectsByUsernameUseCase.execute(userName)
     }
 
     private fun receiveStringInput(message: String): String {

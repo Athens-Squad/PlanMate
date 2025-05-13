@@ -2,7 +2,6 @@
 
 package net.thechance.ui.featuresui
 
-import kotlinx.coroutines.*
 import logic.entities.AuditLog
 import logic.use_cases.audit_log.AuditLogUseCases
 import net.thechance.ui.core.io.ConsoleIO
@@ -15,12 +14,6 @@ class AuditLogUi(
     private val consoleIO: ConsoleIO,
     private val auditLogUseCases: AuditLogUseCases
 ) {
-    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        consoleIO.printer.printText("Unexpected error: ${throwable.message}", TextStyle.ERROR)
-    }
-    private val logScope: CoroutineScope =
-        CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
-
 
     suspend fun showTaskHistory(taskId: Uuid) {
         consoleIO.printer.printText(
@@ -61,7 +54,7 @@ class AuditLogUi(
         }
     }
 
-    private fun showHistoryOption() {
+    private suspend fun showHistoryOption() {
         consoleIO.printer.printText(
             "Select Option (1 , 2 )",
             TextStyle.TITLE
@@ -79,21 +72,20 @@ class AuditLogUi(
 
     }
 
-    private fun clearHistory() {
-        logScope.launch {
-            try {
-                clearLog()
-                consoleIO.printer.printText(
-                    "History Deleted Successfully.",
-                    TextStyle.SUCCESS
-                )
-            } catch (exception: Exception) {
-                consoleIO.printer.printText(
-                    "Error: ${exception.message}",
-                    TextStyle.ERROR
-                )
-            }
+    private suspend fun clearHistory() {
+        try {
+            clearLog()
+            consoleIO.printer.printText(
+                "History Deleted Successfully.",
+                TextStyle.SUCCESS
+            )
+        } catch (exception: Exception) {
+            consoleIO.printer.printText(
+                "Error: ${exception.message}",
+                TextStyle.ERROR
+            )
         }
+
     }
 
     private suspend fun clearLog() {

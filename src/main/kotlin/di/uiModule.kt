@@ -26,7 +26,6 @@ val uiModule = module {
     singleOf(::ProjectsUi)
     singleOf(::ProgressionStateUi)
     singleOf(::TasksUi)
-    singleOf(::AuthenticationUi)
 
 //presenters
     singleOf(::ProjectsPresenter)
