@@ -28,7 +28,7 @@ class AuditLogUi(
             TextStyle.TITLE
         )
 
-        val taskHistory = auditLogUseCases.getAuditLogsByTaskIdUseCase.execute(taskId)
+        val taskHistory = auditLogUseCases.getAuditLogsByProjectIdUseCase.execute(taskId)
         if (taskHistory.isEmpty()) {
             consoleIO.printer.printText("No history found", TextStyle.ERROR)
             return
@@ -61,7 +61,7 @@ class AuditLogUi(
         }
     }
 
-    fun showHistoryOption() {
+    private fun showHistoryOption() {
         consoleIO.printer.printText(
             "Select Option (1 , 2 )",
             TextStyle.TITLE
@@ -120,5 +120,7 @@ class AuditLogUi(
             "At: ${log.createdAt}",
             TextStyle.INFO
         )
+
+        consoleIO.printer.printText("--------------------------------------", TextStyle.INFO)
     }
 }

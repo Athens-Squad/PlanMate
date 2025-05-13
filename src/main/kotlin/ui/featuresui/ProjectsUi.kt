@@ -19,8 +19,6 @@ import kotlin.uuid.Uuid
 
 class ProjectsUi(
     private val projectUseCases: ProjectUseCases,
-    private val progressionStatesUseCases: ProgressionStatesUseCases,
-    private val tasksUseCases: TasksUseCases,
     private val session: UserSession,
     private val consoleIO: ConsoleIO
 ) {
@@ -30,38 +28,34 @@ class ProjectsUi(
     private val projectsScope: CoroutineScope =
         CoroutineScope(Dispatchers.IO + SupervisorJob() + exceptionHandler)
 
-    fun createProject() {
+
+    fun createProject() = projectsScope.launch {
         consoleIO.printer.printText("Create Project.", TextStyle.TITLE)
 
         val projectName = receiveStringInput("Enter Project Name : ")
         val projectDescription = receiveStringInput("Enter Project Description : ")
 
-        projectsScope.launch {
-            try {
-                projectUseCases.createProjectUseCase.execute(
-                    Project(
-                        name = projectName,
-                        description = projectDescription,
-                        createdByUserName = session.currentUser.name
-                    )
+        try {
+            projectUseCases.createProjectUseCase.execute(
+                Project(
+                    name = projectName,
+                    description = projectDescription,
+                    createdByUserName = session.currentUser.name
                 )
-                consoleIO.printer.printText("Project created successfully.", TextStyle.SUCCESS)
-            } catch (exception: Exception) {
-                consoleIO.printer.printText("Error : ${exception.message}", TextStyle.ERROR)
-            }
+            )
+            consoleIO.printer.printText("Project created successfully.", TextStyle.SUCCESS)
+        } catch (exception: Exception) {
+            consoleIO.printer.printText("Error : ${exception.message}", TextStyle.ERROR)
         }
     }
 
     suspend fun editProject(project: Project) {
         consoleIO.printer.printText("Edit Project", TextStyle.TITLE)
-
         consoleIO.printer.printText("Select your option (1 or 2) : ", TextStyle.TITLE)
-
         consoleIO.printer.printOptions(EditProjectOptions.entries)
 
-        val inputEditOption = consoleIO.reader.readNumberFromUser()
-
         try {
+            val inputEditOption = consoleIO.reader.readNumberFromUser()
             when (inputEditOption) {
                 EditProjectOptions.NAME.optionNumber -> editProjectName(project)
                 EditProjectOptions.DESCRIPTION.optionNumber -> editProjectDescription(project)
@@ -73,17 +67,17 @@ class ProjectsUi(
 
     }
 
+    private suspend fun editProjectName(project: Project) {
+        val projectName = receiveStringInput("Enter New Project Name : ")
+
+        projectUseCases.updateProjectUseCase.execute(project.copy(name = projectName))
+    }
+
     private suspend fun editProjectDescription(project: Project) {
         val projectDescription = receiveStringInput("Enter New Project Description : ")
 
         projectUseCases.updateProjectUseCase
             .execute(project.copy(description = projectDescription))
-    }
-
-    private suspend fun editProjectName(project: Project) {
-        val projectName = receiveStringInput("Enter New Project Name : ")
-
-        projectUseCases.updateProjectUseCase.execute(project.copy(name = projectName))
     }
 
     fun deleteProject(projectId: Uuid) {
@@ -95,18 +89,6 @@ class ProjectsUi(
                 consoleIO.printer.printText("Error : ${exception.message}", TextStyle.ERROR)
             }
         }
-    }
-
-    suspend fun getProgressionStatesByProjectId(projectId: Uuid): List<ProgressionState> {
-        return progressionStatesUseCases.getProgressionStatesByProjectIdUseCase.execute(projectId)
-    }
-
-    suspend fun getTasksByProjectId(projectId: Uuid): List<Task> {
-        return tasksUseCases.getTasksByProjectIdUseCase.execute(projectId)
-    }
-
-    suspend fun getProject(projectId: Uuid): Project {
-        return projectUseCases.getProjectByIdUseCase.execute(projectId)
     }
 
     suspend fun getAllUserProjects(userName: String): List<Project> {

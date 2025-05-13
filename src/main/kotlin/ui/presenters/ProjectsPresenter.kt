@@ -5,6 +5,8 @@ package net.thechance.ui.presenters
 import logic.entities.ProgressionState
 import logic.entities.Project
 import logic.entities.Task
+import logic.use_cases.progression_state.GetProgressionStatesByProjectIdUseCase
+import logic.use_cases.task.GetTasksByProjectIdUseCase
 import net.thechance.ui.core.io.ConsoleIO
 import net.thechance.ui.core.io.TextStyle
 import net.thechance.ui.featuresui.AuditLogUi
@@ -15,16 +17,18 @@ import net.thechance.ui.options.project.ProjectMateOptions
 import net.thechance.ui.options.project.ProjectOptions
 import kotlin.uuid.ExperimentalUuidApi
 
-class ProjectPresenter(
+class ProjectsPresenter(
     private val consoleIO: ConsoleIO,
     private val projectsUi: ProjectsUi,
     private val tasksUi: TasksUi,
+    private val getTasksByProjectIdUseCase: GetTasksByProjectIdUseCase,
+    private val getProgressionStatesByProjectIdUseCase: GetProgressionStatesByProjectIdUseCase,
     private val progressionStateUi: ProgressionStateUi,
     private val auditLogsUi: AuditLogUi
 ) {
     suspend fun showDetails(project: Project, isAdmin: Boolean) {
-        val states = projectsUi.getProgressionStatesByProjectId(project.id)
-        val tasks = projectsUi.getTasksByProjectId(project.id)
+        val states = getProgressionStatesByProjectIdUseCase.execute(project.id)
+        val tasks = getTasksByProjectIdUseCase.execute(project.id)
 
         showSwimlane(project, states, tasks)
 
@@ -70,7 +74,7 @@ class ProjectPresenter(
             when (option) {
                 ProjectOptions.CREATE_TASK.optionNumber -> tasksUi.createTask(
                     project.id,
-                    projectsUi.getProgressionStatesByProjectId(
+                    getProgressionStatesByProjectIdUseCase.execute(
                         project.id
                     )
                 )
@@ -80,8 +84,8 @@ class ProjectPresenter(
                 ProjectOptions.MANAGE_STATES.optionNumber -> progressionStateUi.manageStates(project.id)
 
                 ProjectOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(
-                    projectsUi.getTasksByProjectId(project.id),
-                    projectsUi.getProgressionStatesByProjectId(project.id)
+                    getTasksByProjectIdUseCase.execute(project.id),
+                    getProgressionStatesByProjectIdUseCase.execute(project.id)
                 )
 
                 ProjectOptions.SHOW_HISTORY.optionNumber -> auditLogsUi.showTaskHistory(project.id)
@@ -102,14 +106,14 @@ class ProjectPresenter(
             when (option) {
                 ProjectMateOptions.CREATE_TASK.optionNumber -> tasksUi.createTask(
                     project.id,
-                    projectsUi.getProgressionStatesByProjectId(
+                    getProgressionStatesByProjectIdUseCase.execute(
                         project.id
                     )
                 )
 
                 ProjectMateOptions.MANAGE_TASKS.optionNumber -> tasksUi.manageTasks(
-                    projectsUi.getTasksByProjectId(project.id),
-                    projectsUi.getProgressionStatesByProjectId(project.id)
+                    getTasksByProjectIdUseCase.execute(project.id),
+                    getProgressionStatesByProjectIdUseCase.execute(project.id)
                 )
 
                 ProjectMateOptions.SHOW_HISTORY.optionNumber -> auditLogsUi.showProjectHistory(project.id)

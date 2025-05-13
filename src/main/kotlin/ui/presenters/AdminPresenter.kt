@@ -1,6 +1,7 @@
 package net.thechance.ui.presenters
 
 import logic.entities.Project
+import logic.use_cases.project.GetAllProjectsByUsernameUseCase
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.core.Presenter
 import net.thechance.ui.core.io.ConsoleIO
@@ -13,7 +14,8 @@ class AdminPresenter(
     private val consoleIO: ConsoleIO,
     private val projectsUi: ProjectsUi,
     private val authenticationUi: AuthenticationUi,
-    private val projectPresenter: ProjectPresenter,
+    private val projectsPresenter: ProjectsPresenter,
+    private val getAllProjectsByUsernameUseCase: GetAllProjectsByUsernameUseCase,
     private val session: UserSession
 ) : Presenter {
 
@@ -40,10 +42,10 @@ class AdminPresenter(
     }
 
     private suspend fun showProjects() {
-        val projects = projectsUi.getAllUserProjects(session.currentUser.name)
+        val projects = getAllProjectsByUsernameUseCase.execute(session.currentUser.name)
         val selected = selectProject(projects)
         selected?.let {
-            projectPresenter.showDetails(it, isAdmin = true)
+            projectsPresenter.showDetails(it, isAdmin = true)
         }
     }
 

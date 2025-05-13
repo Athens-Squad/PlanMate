@@ -27,21 +27,11 @@ class ProgressionStateUi(
                 val inputStateOption = consoleIO.reader.readNumberFromUser()
 
                 when (inputStateOption) {
-                    ProgressionStateOptions.CREATE.optionNumber -> {
-                        createProgressionState(projectId).also {
-                            consoleIO.printer.printText("created successful", TextStyle.SUCCESS)
-                            return
-                        }
-                    }
+                    ProgressionStateOptions.CREATE.optionNumber -> createProgressionState(projectId)
 
                     ProgressionStateOptions.EDIT.optionNumber -> editProgressionState(progressionStates)
 
-                    ProgressionStateOptions.DELETE.optionNumber -> {
-                        deleteProgressionState(progressionStates)
-                            .also {
-                                consoleIO.printer.printText("State Deleted Successfully", TextStyle.SUCCESS)
-                            }
-                    }
+                    ProgressionStateOptions.DELETE.optionNumber -> deleteProgressionState(progressionStates)
                 }
             } while (inputStateOption != ProgressionStateOptions.BACK.optionNumber &&
                 inputStateOption != ProgressionStateOptions.DELETE.optionNumber
@@ -53,35 +43,28 @@ class ProgressionStateUi(
 
     private suspend fun createProgressionState(projectId: Uuid) {
         consoleIO.printer.printText("Create State.", TextStyle.TITLE)
-
         val stateName = receiveStringInput("Enter State Name : ")
 
-        return progressionStatesUseCases.createProgressionStateUseCase.execute(
+        progressionStatesUseCases.createProgressionStateUseCase.execute(
             ProgressionState(
                 name = stateName,
                 projectId = projectId
             )
         )
+        consoleIO.printer.printText("created successful", TextStyle.SUCCESS)
     }
 
     private suspend fun editProgressionState(progressionStates: List<ProgressionState>) {
         consoleIO.printer.printText("Edit State", TextStyle.TITLE)
 
-        consoleIO.printer.printText(
-            progressionStates.map {
-                it.name
-            }.toString(),
-            TextStyle.OPTION
-        )
-
-        val inputProgressionState = consoleIO.reader.readStringFromUser()
+        printProgressionStates(progressionStates)
+        consoleIO.printer.printText("Select Progression State : ", TextStyle.TITLE)
+        val currentProgressionState = getProgressionState(progressionStates)
 
         consoleIO.printer.printText("Select your option (1) : ", TextStyle.TITLE)
-
         consoleIO.printer.printOptions(EditProgressionStateOptions.entries)
         val inputEditOption = consoleIO.reader.readNumberFromUser()
 
-        val currentProgressionState = getProgressionState(inputProgressionState, progressionStates)
         val progressionStateName = receiveStringInput("Enter New State Name : ")
 
         when (inputEditOption) {
@@ -91,31 +74,25 @@ class ProgressionStateUi(
                         name = progressionStateName
                     )
                 )
+                consoleIO.printer.printText("Progression State Updated Successfully", TextStyle.SUCCESS)
             }
 
             else -> throw Exception("Invalid Input!")
         }
     }
 
+
+
     private suspend fun deleteProgressionState(progressionStates: List<ProgressionState>) {
         consoleIO.printer.printText("Delete State", TextStyle.TITLE)
 
-        consoleIO.printer.printText(
-            progressionStates.map {
-                it.name
-            }.toString(),
-            TextStyle.OPTION
-        )
+        printProgressionStates(progressionStates)
+        consoleIO.printer.printText("Select Progression State To Delete: ", TextStyle.TITLE)
+        val currentState = getProgressionState(progressionStates)
 
-        val inputState = consoleIO.reader.readStringFromUser()
-
-
-        getProgressionStateId(inputState, progressionStates)
-            .also { progressionStateId ->
-                progressionStatesUseCases.deleteProgressionStateUseCase.execute(progressionStateId)
-            }
+        progressionStatesUseCases.deleteProgressionStateUseCase.execute(currentState.id)
+        consoleIO.printer.printText("State Deleted Successfully", TextStyle.SUCCESS)
     }
-
 
     private fun receiveStringInput(message: String): String {
         consoleIO.printer.printText(message, TextStyle.OPTION)
@@ -126,10 +103,14 @@ class ProgressionStateUi(
         return progressionStates.first { it.name == inputStateName }.id
     }
 
+    private fun printProgressionStates(progressionStates: List<ProgressionState>) {
+        consoleIO.printer.printText(progressionStates.joinToString { it.name + ", " }, TextStyle.OPTION)
+    }
+
     private fun getProgressionState(
-        inputStateName: String,
         progressionStates: List<ProgressionState>
     ): ProgressionState {
+        val inputStateName = consoleIO.reader.readStringFromUser()
         return progressionStates.first { it.name == inputStateName }
     }
 }

@@ -2,17 +2,17 @@ package net.thechance.ui.presenters
 
 import logic.entities.Project
 import logic.entities.UserType
+import logic.use_cases.project.GetAllProjectsByUsernameUseCase
 import net.thechance.data.authentication.UserSession
 import net.thechance.ui.core.Presenter
 import net.thechance.ui.core.io.ConsoleIO
 import net.thechance.ui.core.io.TextStyle
-import net.thechance.ui.featuresui.ProjectsUi
 import net.thechance.ui.options.MateOptions
 
 class MatePresenter(
     private val consoleIO: ConsoleIO,
-    private val projectsUi: ProjectsUi,
-    private val projectPresenter: ProjectPresenter,
+    private val projectsPresenter: ProjectsPresenter,
+    private val getAllProjectsByUsernameUseCase: GetAllProjectsByUsernameUseCase,
     private val session: UserSession
 ) : Presenter {
 
@@ -33,10 +33,10 @@ class MatePresenter(
 
     private suspend fun showProjects() {
         val adminName = (session.currentUser.type as UserType.MateUser).adminName
-        val projects = projectsUi.getAllUserProjects(adminName)
+        val projects = getAllProjectsByUsernameUseCase.execute(adminName)
         val selected = selectProject(projects)
         selected?.let {
-            projectPresenter.showDetails(it, isAdmin = false)
+            projectsPresenter.showDetails(it, isAdmin = false)
 
         }
     }

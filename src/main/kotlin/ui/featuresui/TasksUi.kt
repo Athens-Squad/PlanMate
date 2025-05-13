@@ -30,8 +30,8 @@ class TasksUi(
         tasksCoroutineScope.launch {
             try {
                 do {
-                    consoleIO.printer.printText("Select A Task :", TextStyle.TITLE)
                     consoleIO.printer.printText("0 : Back", TextStyle.OPTION)
+                    consoleIO.printer.printText("Select A Task :", TextStyle.TITLE)
 
                     val inputTaskName = consoleIO.reader.readStringFromUser()
                     if (inputTaskName == "0") return@launch
