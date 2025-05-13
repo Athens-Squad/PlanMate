@@ -8,7 +8,7 @@ import kotlinx.coroutines.test.runTest
 import logic.entities.EntityType
 import logic.repositories.AuditRepository
 import net.thechance.logic.exceptions.InvalidAuditLogFieldsException
-import net.thechance.logic.use_cases.audit_log.auditLogValidations.AuditLogValidator
+import net.thechance.logic.validators.auditLogValidations.AuditLogValidator
 import java.time.LocalDateTime
 import kotlin.test.BeforeTest
 import kotlin.test.Test
