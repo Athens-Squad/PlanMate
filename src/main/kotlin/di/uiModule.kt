@@ -8,7 +8,7 @@ import net.thechance.ui.featuresui.*
 import net.thechance.ui.presenters.AdminPresenter
 import net.thechance.ui.presenters.AuthenticationPresenter
 import net.thechance.ui.presenters.MatePresenter
-import net.thechance.ui.presenters.ProjectPresenter
+import net.thechance.ui.presenters.ProjectsPresenter
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
@@ -26,10 +26,9 @@ val uiModule = module {
     singleOf(::ProjectsUi)
     singleOf(::ProgressionStateUi)
     singleOf(::TasksUi)
-    singleOf(::AuthenticationUi)
 
 //presenters
-    singleOf(::ProjectPresenter)
+    singleOf(::ProjectsPresenter)
     singleOf(::MatePresenter)
     singleOf(::AdminPresenter)
     singleOf(::AuthenticationPresenter)

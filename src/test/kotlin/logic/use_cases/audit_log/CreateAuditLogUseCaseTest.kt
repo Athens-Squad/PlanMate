@@ -5,16 +5,15 @@ import com.google.common.truth.Truth.assertThat
 import helper.auditlog.createTestAuditLog
 import io.mockk.*
 import kotlinx.coroutines.test.runTest
-import logic.repositories.AuditRepository
 import logic.entities.EntityType
+import logic.repositories.AuditRepository
 import net.thechance.logic.exceptions.InvalidAuditLogFieldsException
 import net.thechance.logic.use_cases.audit_log.auditLogValidations.AuditLogValidator
+import java.time.LocalDateTime
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
-import java.time.LocalDateTime
 import kotlin.uuid.ExperimentalUuidApi
-import kotlin.uuid.Uuid
 
 class CreateAuditLogUseCaseTest {
 
@@ -39,14 +38,14 @@ class CreateAuditLogUseCaseTest {
             userName = "user 1",
             createdAt = LocalDateTime.of(2025, 4, 28, 20, 0)
         )
-        every { logValidator.validateBeforeCreation(auditLog) } returns true
+        every { logValidator.validateAuditLogFieldsNotBlank(auditLog) } returns true
         coEvery { auditRepository.createAuditLog(auditLog) } returns Unit
 
         //when
         createAuditLogUseCase.execute(auditLog)
 
        //then
-        verify { logValidator.validateBeforeCreation(auditLog) }
+        verify { logValidator.validateAuditLogFieldsNotBlank(auditLog) }
         coVerify(exactly = 1) { auditRepository.createAuditLog(auditLog) }
     }
 
@@ -54,14 +53,14 @@ class CreateAuditLogUseCaseTest {
     fun `should not create audit log when description is missing`() = runTest {
         //given
         val invalidAuditLog = createTestAuditLog(description = "")
-         coEvery { logValidator.validateBeforeCreation(invalidAuditLog) } throws InvalidAuditLogFieldsException()
+         coEvery { logValidator.validateAuditLogFieldsNotBlank(invalidAuditLog) } throws InvalidAuditLogFieldsException()
 
          //when
         assertFailsWith<InvalidAuditLogFieldsException> { createAuditLogUseCase.execute(invalidAuditLog) }
 
 
         //then
-        verify { logValidator.validateBeforeCreation(invalidAuditLog) }
+        verify { logValidator.validateAuditLogFieldsNotBlank(invalidAuditLog) }
         coVerify(exactly = 0) { auditRepository.createAuditLog(any()) }
     }
 
@@ -70,14 +69,14 @@ class CreateAuditLogUseCaseTest {
     fun `should not create audit log when userName is missing`() = runTest {
         //given
         val invalidAuditLog = createTestAuditLog(userName = "")
-        every { logValidator.validateBeforeCreation(invalidAuditLog) } throws InvalidAuditLogFieldsException()
+        every { logValidator.validateAuditLogFieldsNotBlank(invalidAuditLog) } throws InvalidAuditLogFieldsException()
 
         //when
         assertFailsWith<InvalidAuditLogFieldsException> {
             createAuditLogUseCase.execute(invalidAuditLog)
         }
         //then
-        verify {  logValidator.validateBeforeCreation(invalidAuditLog) }
+        verify {  logValidator.validateAuditLogFieldsNotBlank(invalidAuditLog) }
         coVerify(exactly = 0) { auditRepository.createAuditLog(any()) }
     }
 
@@ -91,7 +90,7 @@ class CreateAuditLogUseCaseTest {
             createdAt = LocalDateTime.of(2025, 4, 28, 10, 0)
         )
         //when
-         every { logValidator.validateBeforeCreation(auditLog)} returns true
+         every { logValidator.validateAuditLogFieldsNotBlank(auditLog)} returns true
         coEvery { auditRepository.createAuditLog(auditLog) } throws RuntimeException("Failed to create audit log")
 
         //then
@@ -100,7 +99,7 @@ class CreateAuditLogUseCaseTest {
         }
 
         assertThat(exception.message).isEqualTo("Failed to create audit log")
-        verify {logValidator.validateBeforeCreation(auditLog) }
+        verify {logValidator.validateAuditLogFieldsNotBlank(auditLog) }
         coVerify(exactly = 1) { auditRepository.createAuditLog(auditLog) }
     }
 }

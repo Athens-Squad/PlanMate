@@ -7,6 +7,9 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 interface ProjectValidator {
-	suspend fun validateProjectBeforeCreation(project: Project, username: String): Boolean
-	suspend fun validateProjectAfterCreation(projectId: Uuid, username: String): Boolean
+	fun validateProjectFieldsNotBlank(project: Project): Boolean
+	suspend fun validateUserIsTheProjectOwner(projectId: Uuid, username: String): Boolean
+	suspend fun validateUserIsAuthorized(username: String): Boolean
+	suspend fun validateProjectNotExists(projectId: Uuid): Boolean
+	suspend fun validateProjectAlreadyExists(projectId: Uuid): Boolean
 }

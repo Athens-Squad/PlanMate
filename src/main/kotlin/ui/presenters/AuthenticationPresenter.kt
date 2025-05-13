@@ -15,42 +15,42 @@ import kotlin.uuid.ExperimentalUuidApi
 class AuthenticationPresenter(
     private val authUseCases: AuthenticationUseCases,
     private val session: UserSession,
-    private val consoleIo: ConsoleIO,
+    private val consoleIO: ConsoleIO,
     private val adminPresenter: AdminPresenter,
     private val matePresenter: MatePresenter
 ) : Presenter {
     override suspend fun start() {
-        consoleIo.printer.printOptions(AuthenticationOptions.entries)
-        val option = consoleIo.reader.readNumberFromUser()
+        consoleIO.printer.printOptions(AuthenticationOptions.entries)
+        val option = consoleIO.reader.readNumberFromUser()
         when (option) {
             AuthenticationOptions.LOGIN.optionNumber -> handleLogin()
             AuthenticationOptions.REGISTER_AS_ADMIN.optionNumber -> handleRegistration()
             else -> {
-                consoleIo.printer.printText("Invalid Option.", TextStyle.ERROR)
+                consoleIO.printer.printText("Invalid Option.", TextStyle.ERROR)
                 start()
             }
         }
     }
 
     private suspend fun handleLogin() {
-        val name = prompt("Enter Username:")
-        val pass = prompt("Enter Password:")
+        val name = receiveUserInfo("Enter Username:")
+        val pass = receiveUserInfo("Enter Password:")
         try {
             session.currentUser = authUseCases.loginUseCase.execute(name, pass)
-            consoleIo.printer.printText("Login successful!", TextStyle.SUCCESS)
+            consoleIO.printer.printText("Login successful!", TextStyle.SUCCESS)
             if (session.currentUser.type is UserType.AdminUser)
                 adminPresenter.start()
             else
                 matePresenter.start()
         } catch (e: Exception) {
-            consoleIo.printer.printText("Error: ${e.message}", TextStyle.ERROR)
+            consoleIO.printer.printText("Error: ${e.message}", TextStyle.ERROR)
             start()
         }
     }
 
     private suspend fun handleRegistration() {
-        val name = prompt("Enter Username:")
-        val pass = prompt("Enter Password:")
+        val name = receiveUserInfo("Enter Username:")
+        val pass = receiveUserInfo("Enter Password:")
         try {
             authUseCases.registerAsAdminUseCase.execute(
                 User(
@@ -58,16 +58,16 @@ class AuthenticationPresenter(
                     type = UserType.AdminUser
                 ), pass
             )
-            consoleIo.printer.printText("Registration successful!", TextStyle.SUCCESS)
+            consoleIO.printer.printText("Registration successful!", TextStyle.SUCCESS)
             handleLogin()
         } catch (e: Exception) {
-            consoleIo.printer.printText("Registration failed: ${e.message}", TextStyle.ERROR)
+            consoleIO.printer.printText("Registration failed: ${e.message}", TextStyle.ERROR)
             start()
         }
     }
 
-    private fun prompt(message: String): String {
-        consoleIo.printer.printText(message)
-        return consoleIo.reader.readStringFromUser()
+    private fun receiveUserInfo(message: String): String {
+        consoleIO.printer.printText(message)
+        return consoleIO.reader.readStringFromUser()
     }
 }

@@ -6,18 +6,14 @@ import com.google.common.truth.Truth.assertThat
 import helper.auditlog.createTestAuditLog
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import logic.entities.AuditLog
-import logic.repositories.AuditRepository
 import logic.entities.EntityType
-import net.thechance.logic.exceptions.InvalidEntityIdForAuditLog
-import net.thechance.logic.use_cases.audit_log.auditLogValidations.AuditLogValidator
-import org.junit.Before
+import logic.repositories.AuditRepository
 import org.junit.jupiter.api.BeforeEach
-import kotlin.test.Test
 import java.time.LocalDateTime
+import kotlin.test.Test
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -25,13 +21,11 @@ class GetAuditLogsByProjectIdUseCaseTest {
 
     private lateinit var auditRepository: AuditRepository
     private lateinit var getAuditLogsByProjectIdUseCase: GetAuditLogsByProjectIdUseCase
-    private lateinit var logValidator: AuditLogValidator
 
     @BeforeEach
     fun setUp() {
         auditRepository = mockk()
-        logValidator = mockk()
-        getAuditLogsByProjectIdUseCase = GetAuditLogsByProjectIdUseCase(auditRepository, logValidator)
+        getAuditLogsByProjectIdUseCase = GetAuditLogsByProjectIdUseCase(auditRepository)
     }
 
   @Test
@@ -55,7 +49,6 @@ class GetAuditLogsByProjectIdUseCaseTest {
             )
         )
 
-       every { logValidator.validateAfterCreation(projectId)} returns true
         coEvery { auditRepository.getAuditLogs() } returns expected
         //when
 
@@ -70,7 +63,6 @@ class GetAuditLogsByProjectIdUseCaseTest {
     @Test
     fun `getAuditLogs returns empty list when invalid project id is given`() = runTest {
         val invalidProjectId = Uuid.random()
-        every { logValidator.validateAfterCreation(invalidProjectId) } returns false
         coEvery { auditRepository.getAuditLogs() } returns emptyList()
 
 
@@ -93,7 +85,6 @@ class GetAuditLogsByProjectIdUseCaseTest {
                 createdAt = LocalDateTime.of(2025, 4, 28, 8, 0)
             )
         )
-          every { logValidator.validateAfterCreation(projectId) }  returns  true
         coEvery { auditRepository.getAuditLogs() } returns logs
 
         val result = getAuditLogsByProjectIdUseCase.execute(projectId)

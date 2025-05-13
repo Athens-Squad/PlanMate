@@ -7,6 +7,5 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 interface AuditLogValidator {
-	fun validateBeforeCreation(auditLog: AuditLog): Boolean
-	fun validateAfterCreation(entityId: Uuid): Boolean
+	fun validateAuditLogFieldsNotBlank(auditLog: AuditLog): Boolean
 }
