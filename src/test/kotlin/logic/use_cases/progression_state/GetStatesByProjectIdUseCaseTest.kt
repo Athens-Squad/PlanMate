@@ -7,7 +7,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import logic.repositories.ProgressionStateRepository
-import net.thechance.logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
+import net.thechance.logic.validators.progressionStateValidations.ProgressionStateValidator
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

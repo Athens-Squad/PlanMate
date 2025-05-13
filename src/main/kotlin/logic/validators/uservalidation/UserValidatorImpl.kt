@@ -1,4 +1,4 @@
-package net.thechance.logic.use_cases.authentication.uservalidation
+package net.thechance.logic.validators.uservalidation
 
 import logic.entities.UserType
 import logic.repositories.UserRepository

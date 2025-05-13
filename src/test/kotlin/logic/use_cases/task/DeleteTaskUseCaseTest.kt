@@ -16,7 +16,7 @@ import logic.repositories.AuditRepository
 import logic.repositories.TasksRepository
 import logic.use_cases.audit_log.CreateAuditLogUseCase
 
-import logic.use_cases.task.taskvalidations.TaskValidator
+import net.thechance.logic.validators.taskvalidations.TaskValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
@@ -25,7 +25,7 @@ import kotlin.uuid.ExperimentalUuidApi
 
 class DeleteTaskUseCaseTest {
     private lateinit var deleteTaskUseCase: DeleteTaskUseCase
-    private val fakeTaskValidator :  TaskValidator = mockk(relaxed = true)
+    private val fakeTaskValidator : TaskValidator = mockk(relaxed = true)
     val fakeTasksRepository : TasksRepository = mockk(relaxed = true)
     private val fakeAuditLogUseCase : CreateAuditLogUseCase = mockk(relaxed = true)
 

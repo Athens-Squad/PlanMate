@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class, ExperimentalUuidApi::class, ExperimentalUuidApi::class)
 
-package logic.use_cases.progression_state.progressionStateValidations
+package net.thechance.logic.validators.progressionStateValidations
 
 import logic.entities.ProgressionState
 import logic.exceptions.InvalidProgressionStateFieldsException
@@ -9,7 +9,7 @@ import logic.exceptions.ProgressionStateAlreadyExistsException
 import logic.exceptions.ProgressionStateNotFoundException
 import logic.repositories.ProgressionStateRepository
 import logic.repositories.ProjectsRepository
-import net.thechance.logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
+import net.thechance.logic.validators.progressionStateValidations.ProgressionStateValidator
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 

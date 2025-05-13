@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalUuidApi::class)
 
-package net.thechance.logic.use_cases.progression_state.progressionStateValidations
+package net.thechance.logic.validators.progressionStateValidations
 
 import logic.entities.ProgressionState
 import kotlin.uuid.ExperimentalUuidApi
