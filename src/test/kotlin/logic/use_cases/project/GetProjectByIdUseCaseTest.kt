@@ -6,10 +6,9 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
-import logic.entities.Project
 import logic.repositories.ProjectsRepository
 import net.thechance.logic.exceptions.NoProjectFoundException
-import net.thechance.logic.use_cases.project.projectValidations.ProjectValidator
+import net.thechance.logic.validators.projectValidations.ProjectValidator
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.BeforeTest

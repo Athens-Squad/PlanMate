@@ -8,7 +8,7 @@ import kotlinx.coroutines.test.runTest
 import logic.entities.Project
 import logic.repositories.ProjectsRepository
 import net.thechance.logic.exceptions.NotAuthorizedUserException
-import net.thechance.logic.use_cases.project.projectValidations.ProjectValidator
+import net.thechance.logic.validators.projectValidations.ProjectValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
