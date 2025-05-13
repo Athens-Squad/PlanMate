@@ -23,6 +23,7 @@ class TaskValidatorImpl(
 		}
 	}
 
+	@OptIn(ExperimentalUuidApi::class)
 	override suspend fun validateProjectExists(projectId: Uuid): Boolean {
 		return when {
 			checkIfProjectNotExists(projectId) -> throw NoProjectFoundForTaskException()
