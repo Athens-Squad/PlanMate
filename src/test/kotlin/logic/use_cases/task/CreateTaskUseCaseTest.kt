@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalUuidApi::class)
+
 package logic.use_cases.task
 
 import helper.task_helper.FakeTask
@@ -7,12 +9,10 @@ import logic.entities.EntityType
 import logic.exceptions.*
 import logic.repositories.TasksRepository
 import logic.use_cases.audit_log.CreateAuditLogUseCase
-import logic.use_cases.task.taskvalidations.TaskValidator
 import logic.use_cases.task.taskvalidations.TaskValidatorImpl
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.time.LocalDateTime
 import kotlin.uuid.ExperimentalUuidApi
 
 class CreateTaskUseCaseTest {
@@ -64,24 +64,18 @@ class CreateTaskUseCaseTest {
         }
     }
 
-    @OptIn(ExperimentalUuidApi::class)
     @Test
-    fun `should not create task if project no found `() {
+    fun `should not create task if project no found`() {
         runTest {
-            //given
+            // Given
             val dummyTask = FakeTask.fakeTask
             val dummyUserName = FakeTask.fakeUserName
 
+            coEvery { fakeTaskValidator.validateProjectExists(dummyTask.projectId) } throws NoProjectFoundForTaskException()
 
-            coEvery { fakeTaskValidator.validateTaskFieldsNotBlank(dummyTask) } returns true
-            coEvery { fakeTaskValidator.validateTaskNotExists(dummyTask.id) } returns true
-            coEvery { fakeTaskValidator.validateProgressionStateExists(dummyTask.currentProgressionState.id) } returns true
-            coEvery { fakeTaskValidator.validateProjectExists(dummyTask.id) } throws NoProjectFoundForTaskException()
-            coEvery { fakeTasksRepository.createTask(dummyTask) } just runs
-
-            //when & then
+            // When & Then
             assertThrows<NoProjectFoundForTaskException> {
-                createTaskUseCase.execute(dummyTask ,dummyUserName)
+                createTaskUseCase.execute(dummyTask, dummyUserName)
             }
         }
     }
@@ -125,7 +119,6 @@ class CreateTaskUseCaseTest {
             //given
             val dummyTask = FakeTask.fakeTask
             val dummyUserName = FakeTask.fakeUserName
-            val dummyAuditLog = FakeTask.fakeAuditLog
             //when
             coEvery { fakeTaskValidator.validateTaskFieldsNotBlank(dummyTask) } returns true
             coEvery { fakeTaskValidator.validateTaskNotExists(dummyTask.id) } returns true
