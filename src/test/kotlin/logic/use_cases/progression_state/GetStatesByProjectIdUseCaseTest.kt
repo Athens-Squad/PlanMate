@@ -1,38 +1,46 @@
-/*package logic.use_cases.progression_state
+@file:OptIn(ExperimentalUuidApi::class)
 
+package logic.use_cases.progression_state
+
+import helper.progression_state_helper.createDummyState
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
-import junit.framework.TestCase.assertEquals
 import kotlinx.coroutines.test.runTest
-import logic.entities.ProgressionState
 import logic.repositories.ProgressionStateRepository
+import net.thechance.logic.use_cases.progression_state.progressionStateValidations.ProgressionStateValidator
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.uuid.ExperimentalUuidApi
 
 class GetStatesByProjectIdUseCaseTest {
 
-    lateinit var getStatesByProjectId: GetProgressionStatesByProjectIdUseCase
-    lateinit var progressionStateRepository: ProgressionStateRepository
+    private lateinit var getStatesByProjectId: GetProgressionStatesByProjectIdUseCase
+    private lateinit var progressionStateRepository: ProgressionStateRepository
+    private lateinit var validator: ProgressionStateValidator
 
     @BeforeEach
     fun setUp() {
         progressionStateRepository = mockk(relaxed = true)
-        getStatesByProjectId = GetProgressionStatesByProjectIdUseCase(progressionStateRepository)
+        validator = mockk()
+        getStatesByProjectId = GetProgressionStatesByProjectIdUseCase(validator, progressionStateRepository)
     }
 
     @Test
     fun `should return states for the given project ID`() {
         runTest {
             // Given
-            val projectId = "projectId"
+            val state = createDummyState.dummyState()
             val states = listOf(
-                ProgressionState(id = "1", name = "State 1", projectId = "projectId"),
-                ProgressionState(id = "2", name = "State 2", projectId = "projectId")
+                state,
+                state.copy(name = "done")
             )
-            coEvery { progressionStateRepository.getProgressionStatesByProjectId(projectId) } returns states
+
+            coEvery { validator.validateProjectExists(state.projectId) } returns true
+            coEvery { progressionStateRepository.getProgressionStatesByProjectId(state.projectId) } returns states
+
             // When
-            val result = getStatesByProjectId.execute(projectId)
+            val result = getStatesByProjectId.execute(state.projectId)
 
             // Then
             assertEquals(2, result.size)
@@ -41,4 +49,3 @@ class GetStatesByProjectIdUseCaseTest {
 
 }
 
- */
