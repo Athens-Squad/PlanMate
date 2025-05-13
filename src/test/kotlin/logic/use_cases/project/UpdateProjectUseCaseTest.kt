@@ -9,7 +9,7 @@ import logic.entities.EntityType
 import logic.repositories.*
 import logic.use_cases.audit_log.CreateAuditLogUseCase
 import net.thechance.logic.exceptions.InvalidProjectFieldsException
-import net.thechance.logic.use_cases.project.projectValidations.ProjectValidator
+import net.thechance.logic.validators.projectValidations.ProjectValidator
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
