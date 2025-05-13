@@ -21,7 +21,7 @@ class AuditLogUi(
             TextStyle.TITLE
         )
 
-        val taskHistory = auditLogUseCases.getAuditLogsByProjectIdUseCase.execute(taskId)
+        val taskHistory = auditLogUseCases.getAuditLogsByTaskIdUseCase.execute(taskId)
         if (taskHistory.isEmpty()) {
             consoleIO.printer.printText("No history found", TextStyle.ERROR)
             return

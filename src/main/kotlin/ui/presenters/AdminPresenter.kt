@@ -8,6 +8,7 @@ import logic.entities.UserType
 import logic.use_cases.authentication.RegisterAsMateUseCase
 import logic.use_cases.project.GetAllProjectsByUsernameUseCase
 import net.thechance.data.authentication.UserSession
+import net.thechance.logic.exceptions.NoProjectFoundException
 import net.thechance.ui.core.Presenter
 import net.thechance.ui.core.io.ConsoleIO
 import net.thechance.ui.core.io.TextStyle
@@ -48,15 +49,13 @@ class AdminPresenter(
     private suspend fun showProjects() {
         val projects = getAllProjectsByUsernameUseCase.execute(session.currentUser.name)
         val selected = selectProject(projects)
-        selected?.let {
-            projectsPresenter.showDetails(it, isAdmin = true)
-        }
+
+        projectsPresenter.showDetails(selected, isAdmin = true)
     }
 
-    private fun selectProject(projects: List<Project>): Project? {
+    private fun selectProject(projects: List<Project>): Project {
         if (projects.isEmpty()) {
-            consoleIO.printer.printText("No projects found.", TextStyle.ERROR)
-            return null
+            throw NoProjectFoundException()
         }
 
         projects.map { it.name }.forEach {
@@ -65,7 +64,7 @@ class AdminPresenter(
         consoleIO.printer.printText("Select project by name:", TextStyle.TITLE)
 
         val name = consoleIO.reader.readStringFromUser()
-        return projects.find { it.name == name }
+        return projects.find { it.name == name } ?: throw NoProjectFoundException()
     }
 
     private suspend fun createMate() {

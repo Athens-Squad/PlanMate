@@ -88,7 +88,7 @@ class ProjectsPresenter(
                     getProgressionStatesByProjectIdUseCase.execute(project.id)
                 )
 
-                ProjectOptions.SHOW_HISTORY.optionNumber -> auditLogsUi.showTaskHistory(project.id)
+                ProjectOptions.SHOW_HISTORY.optionNumber -> auditLogsUi.showProjectHistory(project.id)
 
                 ProjectOptions.DELETE.optionNumber -> projectsUi.deleteProject(project.id)
             }

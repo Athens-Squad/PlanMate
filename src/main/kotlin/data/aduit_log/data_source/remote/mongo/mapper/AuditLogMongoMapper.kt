@@ -1,6 +1,4 @@
-@file:OptIn(ExperimentalUuidApi::class, ExperimentalUuidApi::class, ExperimentalUuidApi::class,
-    ExperimentalUuidApi::class, ExperimentalUuidApi::class, ExperimentalUuidApi::class, ExperimentalUuidApi::class
-)
+@file:OptIn(ExperimentalUuidApi::class)
 
 package net.thechance.data.aduit_log.data_source.remote.mongo.mapper
 
