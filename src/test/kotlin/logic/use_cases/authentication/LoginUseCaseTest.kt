@@ -1,105 +1,85 @@
 package logic.use_cases.authentication
 
-import com.google.common.truth.Truth.assertThat
 import data.authentication.utils.PasswordHashing
-import helper.authentication_helper.FakeUser
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
+import logic.entities.User
 import logic.exceptions.InvalidCredentialsException
-import logic.exceptions.UserNotFoundException
 import logic.repositories.AuthenticationRepository
 import net.thechance.logic.use_cases.authentication.uservalidation.UserValidator
-import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import kotlin.test.Test
+import kotlin.test.BeforeTest
 
 class LoginUseCaseTest {
-
+    private lateinit var loginUseCase: LoginUseCase
     private lateinit var authenticationRepository: AuthenticationRepository
     private lateinit var passwordHashing: PasswordHashing
-    private lateinit var loginUseCase: LoginUseCase
     private lateinit var userValidator: UserValidator
 
-    @BeforeEach
-    fun setup() {
-        authenticationRepository = mockk(relaxed = true)
-        passwordHashing = PasswordHashing()
+    @BeforeTest
+    fun setUp() {
+        authenticationRepository = mockk()
+        passwordHashing = mockk()
         userValidator = mockk()
-        loginUseCase = LoginUseCase(authenticationRepository, passwordHashing, userValidator)
 
+        loginUseCase = LoginUseCase(
+            authenticationRepository = authenticationRepository,
+            passwordHashing = passwordHashing,
+            userValidator = userValidator
+        )
     }
 
     @Test
-    fun `should login successfully when correct username and password are given`() {
-        runTest {
-            val expectedUser = FakeUser.createUser
-            coEvery {  userValidator.isUsernameNotValid(any()) } returns false
-            coEvery { userValidator.isPasswordNotValid(any()) } returns false
-            coEvery {   authenticationRepository.login(any(), any()) } returns expectedUser
+    fun `should throw InvalidCredentialsException when username is invalid`() = runTest {
+        // Given
+        val username = "invalidUser"
+        val password = "password123"
 
-            val result = loginUseCase.execute(expectedUser.name, expectedUser.password)
+        coEvery { userValidator.isUsernameNotValid(username) } returns true
+        coEvery { userValidator.isPasswordNotValid(password) } returns false
 
-            assertThat(result).isEqualTo(expectedUser)
+        // When & Then
+        assertThrows<InvalidCredentialsException> {
+            loginUseCase.execute(username, password)
+        }
+    }
+
+
+    @Test
+    fun `should throw InvalidCredentialsException when password is invalid`() = runTest {
+        // Given
+        val username = "validUser"
+        val password = "short"
+
+        coEvery { userValidator.isUsernameNotValid(username) } returns false
+        coEvery { userValidator.isPasswordNotValid(password) } returns true
+
+        // When & Then
+        assertThrows<InvalidCredentialsException> {
+            loginUseCase.execute(username, password)
         }
     }
 
     @Test
-    fun `login should fail when password is only spaces`() {
-        runTest {
-            val user = FakeUser.createUser.copy(password="     ")
-            coEvery { userValidator.isPasswordNotValid(user.password)} returns true
-            coEvery { userValidator.isUsernameNotValid(any()) } returns false
+    fun `should call authenticationRepository login when credentials are valid`() = runTest {
+        // Given
+        val username = "validUser"
+        val password = "password123"
+        val hashedPassword = "hashedPassword"
+        val user = mockk<User>()
 
-            assertThrows<Exception> { loginUseCase.execute(user.name, user.password) }
-        }
-    }
+        coEvery { userValidator.isUsernameNotValid(username) } returns false
+        coEvery { userValidator.isPasswordNotValid(password) } returns false
+        coEvery { passwordHashing.hash(password) } returns hashedPassword
+        coEvery { authenticationRepository.login(username, hashedPassword) } returns user
 
-    @Test
-    fun `login should fail when incorrect username is given (user not found)`() {
-        runTest {
-            val user = FakeUser.createUser
-            coEvery { authenticationRepository.login(username = user.name, password = user.password) } throws
-                    UserNotFoundException()
+        // When
+        val result = loginUseCase.execute(username, password)
 
-            assertThrows<Exception> { loginUseCase.execute(user.name, user.password) }
-        }
-
-    }
-
-    @Test
-    fun `login should fail when incorrect password is given is incorrect`() {
-        runTest {
-            val user = FakeUser.createUser
-            coEvery { authenticationRepository.login(username = user.name, password = user.password) } throws
-                    InvalidCredentialsException()
-
-            assertThrows<Exception> { loginUseCase.execute(user.name, user.password) }
-        }
-
-    }
-
-    @Test
-    fun `login should fail when username field is empty`() {
-        runTest {
-            val user = FakeUser.createUser.copy(name = "")
-            coEvery { userValidator.isUsernameNotValid(user.name) } returns true
-
-            assertThrows<Exception> { loginUseCase.execute(user.name, user.password) }
-        }
-
-    }
-
-    @Test
-    fun `login should fail when password field is empty`() {
-        runTest {
-            val user = FakeUser.createUser.copy(password = "")
-
-            coEvery { userValidator.isPasswordNotValid(user.password) } returns true
-            coEvery { userValidator.isUsernameNotValid(any())  } returns false
-
-            assertThrows<Exception> { loginUseCase.execute(user.name, user.password) }
-        }
-
+        // Then
+        assertEquals(user, result)
     }
 }
