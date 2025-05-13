@@ -18,9 +18,9 @@ import kotlin.uuid.ExperimentalUuidApi
 
 class CreateStateUseCaseTest {
 
-    lateinit var createProgressionStateUseCase: CreateProgressionStateUseCase
-    val stateRepository: ProgressionStateRepository = mockk(relaxed = true)
-    var progressionStateValidator: ProgressionStateValidator = mockk(relaxed = true)
+    private lateinit var createProgressionStateUseCase: CreateProgressionStateUseCase
+    private val stateRepository: ProgressionStateRepository = mockk(relaxed = true)
+    private var progressionStateValidator: ProgressionStateValidator = mockk(relaxed = true)
 
 
     @BeforeEach
@@ -52,7 +52,10 @@ class CreateStateUseCaseTest {
             // given
             val progressionState = createDummyState.dummyState()
 
-            coEvery { progressionStateValidator.validateBeforeCreation(progressionState) } throws ProgressionStateAlreadyExistsException()
+            coEvery { progressionStateValidator.validateProgressionStateNotExists(progressionState.id) } throws
+                    ProgressionStateAlreadyExistsException()
+            coEvery { progressionStateValidator.validateProjectExists(progressionState.projectId) } returns true
+            coEvery { progressionStateValidator.validateProgressionStateFieldsNotBlank(progressionState) } returns true
 
             // when & then
             assertThrows<ProgressionStateAlreadyExistsException> {
