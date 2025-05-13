@@ -8,12 +8,12 @@ import net.thechance.logic.use_cases.project.projectValidations.ProjectValidator
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
-class GetProjectByIdUseCase(private val projectRepository: ProjectsRepository,
+class GetProjectByIdUseCase(
+	private val projectRepository: ProjectsRepository,
 	private val projectValidator: ProjectValidator
 ) {
 	suspend fun execute(projectId: Uuid): Project {
-		return projectRepository.getProjects().first {
-			projectValidator.validateProjectAfterCreation(projectId = projectId, username = it.createdByUserName)
-		}
+		projectValidator.validateProjectAlreadyExists(projectId)
+		return projectRepository.getProjects().first { it.id == projectId }
 	}
 }

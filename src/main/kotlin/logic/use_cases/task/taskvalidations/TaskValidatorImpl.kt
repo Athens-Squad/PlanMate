@@ -15,45 +15,55 @@ class TaskValidatorImpl(
     private val projectsRepository: ProjectsRepository,
     private val statesRepository: ProgressionStateRepository
 ) : TaskValidator {
-	override suspend fun validateTaskBeforeCreation(task: Task): Boolean {
+
+	override fun validateTaskFieldsNotBlank(task: Task): Boolean {
 		return when {
-			!task.checkIsFieldsAreValid() -> throw InvalidTaskFieldsException()
-			!task.checkIfProjectExists() -> throw NoProjectFoundForTaskException()
-			!task.checkIfTaskProgressionStateExists() -> throw NoProgressionStateFoundForTaskException()
-			task.checkIfTaskExists() -> throw TaskAlreadyExistsException()
+			task.checkIsFieldsAreBlank() -> throw InvalidTaskFieldsException()
 			else -> { true }
 		}
 	}
 
-	override suspend fun validateTaskAfterCreation(
-		taskId: Uuid
-	): Boolean {
-		val task = tasksRepository.getAllTasks().find { it.id == taskId }
-			?: throw TaskNotFoundException()
-
+	override suspend fun validateProjectExists(projectId: Uuid): Boolean {
 		return when {
-			!task.checkIsFieldsAreValid() -> throw InvalidProgressionStateFieldsException()
-			!task.checkIfProjectExists() -> throw NoProjectFoundForProgressionStateException()
-			!task.checkIfTaskProgressionStateExists() -> throw NoProgressionStateFoundForTaskException()
+			checkIfProjectNotExists(projectId) -> throw NoProjectFoundForTaskException()
 			else -> { true }
 		}
 	}
 
-	private fun Task.checkIsFieldsAreValid(): Boolean {
-		return id.toString().isNotBlank() && name.isNotBlank() && projectId.toString().isNotBlank()
+	override suspend fun validateProgressionStateExists(progressionStateId: Uuid): Boolean {
+		return when {
+			checkIfProgressionStatesNotExists(progressionStateId)-> throw NoProgressionStateFoundForTaskException()
+			else -> { true }
+		}
 	}
 
-	private suspend fun Task.checkIfTaskExists(): Boolean {
-		return tasksRepository.getAllTasks().any { it.id == id }
+	override suspend fun validateTaskNotExists(taskId: Uuid): Boolean {
+		return when {
+			getCurrentTask(taskId) != null -> throw TaskAlreadyExistsException()
+			else -> { true }
+		}
 	}
 
-	private suspend fun Task.checkIfProjectExists(): Boolean {
-		return projectsRepository.getProjects().any { it.id == projectId }
+	override suspend fun validateTaskAlreadyExists(taskId: Uuid): Boolean {
+		return when {
+			getCurrentTask(taskId) == null -> throw TaskNotFoundException()
+			else -> { true }
+		}
 	}
 
+	private fun Task.checkIsFieldsAreBlank(): Boolean {
+		return id.toString().isBlank() || name.isBlank() || projectId.toString().isBlank()
+	}
 
+	private suspend fun getCurrentTask(taskId: Uuid): Task? {
+		return tasksRepository.getAllTasks().firstOrNull { it.id == taskId }
+	}
 
-	private suspend fun Task.checkIfTaskProgressionStateExists(): Boolean {
-		return statesRepository.getProgressionStates().any { it.id == currentProgressionState.id }
+	private suspend fun checkIfProjectNotExists(projectId: Uuid): Boolean {
+		return projectsRepository.getProjects().none { it.id == projectId }
+	}
+
+	private suspend fun checkIfProgressionStatesNotExists(progressionStateId: Uuid): Boolean {
+		return statesRepository.getProgressionStates().none { it.id == progressionStateId }
 	}
 }

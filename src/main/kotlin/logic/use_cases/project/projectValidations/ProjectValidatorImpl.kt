@@ -14,52 +14,67 @@ class ProjectValidatorImpl(
 	private val userRepository: UserRepository,
 	private val projectsRepository: ProjectsRepository
 ): ProjectValidator {
-
-	override suspend fun validateProjectBeforeCreation(project: Project, username: String): Boolean {
+	override fun validateProjectFieldsNotBlank(project: Project): Boolean {
 		return when {
-			username.checkIfUsernameIsNotValid() -> { throw InvalidUsernameForProjectException() }
-			project.checkIfFieldIsNotValid() -> { throw InvalidProjectFieldsException() }
-			!checkIfUserAuthorized(username) -> { throw NotAuthorizedUserException() }
-			checkIfProjectExists(projectId = project.id)-> { throw ProjectAlreadyExistException() }
+			project.checkIfFieldsAreBlank() -> throw InvalidProjectFieldsException()
 			else -> { true }
 		}
 	}
 
-	override suspend fun validateProjectAfterCreation(projectId: Uuid, username: String): Boolean {
+	override suspend fun validateUserIsAuthorized(username: String): Boolean {
 		return when {
-			username.checkIfUsernameIsNotValid() -> { throw InvalidUsernameForProjectException() }
-			!checkIfUserAuthorized(username) -> { throw NotAuthorizedUserException() }
-			projectId.toString().isBlank() || !checkIfProjectExists(projectId) -> { throw NoProjectFoundException() }
-			checkIfUserIsNotProjectOwner(username) -> { throw NotAuthorizedUserException() }
+			username.isBlank() -> throw InvalidUsernameForProjectException()
+			checkIfUserNotAuthorized(username) -> throw NotAuthorizedUserException()
 			else -> { true }
 		}
 	}
 
-	private fun String.checkIfUsernameIsNotValid(): Boolean {
-		return this.isBlank()
+	override suspend fun validateUserIsTheProjectOwner(projectId: Uuid, username: String): Boolean {
+		return when {
+			checkIfUserIsNotTheProjectOwner(projectId, username) -> throw NotAuthorizedUserException()
+			else -> { true }
+		}
 	}
 
-	private fun Project.checkIfFieldIsNotValid(): Boolean {
-		return this.name.isBlank() && this.createdByUserName.isBlank()
+	override suspend fun validateProjectNotExists(projectId: Uuid): Boolean {
+		return when {
+			getCurrentProject(projectId) != null -> throw ProjectAlreadyExistException()
+			else -> { true }
+		}
 	}
 
-	private suspend fun checkIfUserAuthorized(username: String): Boolean {
+	override suspend fun validateProjectAlreadyExists(projectId: Uuid): Boolean {
+		return when {
+			getCurrentProject(projectId) == null -> throw NoProjectFoundException()
+			else -> { true }
+		}
+	}
+
+	private fun Project.checkIfFieldsAreBlank(): Boolean {
+		return name.isBlank() || createdByUserName.isBlank()
+	}
+
+	private suspend fun checkIfUserNotAuthorized(username: String): Boolean {
 		val user = userRepository.getUserByUsername(username)
 		return when(user.type) {
-			is UserType.AdminUser -> true
+			is UserType.AdminUser -> false
 			is UserType.MateUser -> {
-				checkIfUserAuthorized(user.type.adminName)
-				false
+				checkIfUserNotAuthorized(user.type.adminName)
+				true
 			}
 		}
 	}
 
-	private suspend fun checkIfUserIsNotProjectOwner(username: String): Boolean {
-		return getProjects().none { it.createdByUserName == username }
+	private suspend fun checkIfUserIsNotTheProjectOwner(projectId: Uuid, username: String): Boolean {
+		return getCurrentProject(projectId) !in getAllUserProjects(username)
 	}
 
-	private suspend fun checkIfProjectExists(projectId: Uuid): Boolean {
-		return getProjects().any { it.id == projectId }
+	private suspend fun getAllUserProjects(username: String): List<Project> {
+		return getProjects().filter { it.createdByUserName == username }
+	}
+
+	private suspend fun getCurrentProject(projectId: Uuid): Project? {
+		return getProjects().firstOrNull { it.id == projectId }
 	}
 
 	private suspend fun getProjects(): List<Project> {

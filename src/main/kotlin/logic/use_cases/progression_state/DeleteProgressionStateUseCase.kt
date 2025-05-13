@@ -13,7 +13,7 @@ class DeleteProgressionStateUseCase(
 	private val progressionStateValidator: ProgressionStateValidator
 ) {
 	suspend fun execute(progressionStateId: Uuid) {
-		progressionStateValidator.validateAfterCreation(progressionStateId)
+		progressionStateValidator.validateProgressionStateAlreadyExists(progressionStateId)
 		repository.deleteProgressionState(progressionStateId)
 	}
 }

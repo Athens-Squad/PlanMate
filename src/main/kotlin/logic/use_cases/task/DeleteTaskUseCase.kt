@@ -18,7 +18,8 @@ class DeleteTaskUseCase(
     private val taskValidator: TaskValidator
 ) {
     suspend fun execute(taskId: Uuid, userName: String) {
-        taskValidator.validateTaskAfterCreation(taskId)
+        taskValidator.validateTaskAlreadyExists(taskId)
+
 	    taskRepository.deleteTask(taskId)
 
 	    createAuditLogUseCase.execute(
